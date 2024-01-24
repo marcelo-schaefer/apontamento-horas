@@ -1,0 +1,58 @@
+{
+  "dadosSolicitante": {
+    "outputData": {
+      "NMatricula": "5515",
+      "ANome": "Marcelo Schaefer",
+      "NCodigoEmpresa": "1",
+      "ADescricaoEmpresa": "Senior Sistemas",
+      "NCodigoFilial": "1101",
+      "ADescricaoFilial": "Matriz",
+      "ACodigoPosto": "106.01.000548.0203.220",
+      "ADescricaoPosto": "Posto de Trabalhao Padrão",
+      "ACodigoCentroCusto": "294.663.894",
+      "ADescricaoCentroCusto": "Centro de Custo Padrão",
+      "DDataAdmissao": "01/01/2020",
+      "ARetorno": "OK"
+    }
+  },
+
+  "colaboradorPossuiPrevidencia": {
+    "outputData": {
+      "APossuiBeneficio": "S",
+      "AContribuicao": "basica",
+      "APorcentagemContribuicao": "4",
+      "ARegime": "regressivo",
+      "APessoaPolitica": "S",
+      "ARetorno": "OK"
+    }
+  },
+
+  "retornaDependetes": {
+    "outputData": {
+      "dependentes": [
+        {
+          "APossuiPrevidencia": "N",
+          "NId": "1",
+          "ANome": "dependente 1",
+          "DDataNascimento": "01/01/2010",
+          "ACpf": "777.888.999-11"
+        },
+        {
+          "APossuiPrevidencia": "S",
+          "NId": "2",
+          "ANome": "dependente 2",
+          "DDataNascimento": "01/01/2011",
+          "ACpf": "777.888.999-22"
+        },
+        {
+          "APossuiPrevidencia": "N",
+          "NId": "3",
+          "ANome": "dependente 3",
+          "DDataNascimento": "01/01/2012",
+          "ACpf": "?"
+        }
+      ],
+      "ARetorno": "OK"
+    }
+  }
+}

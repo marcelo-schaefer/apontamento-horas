@@ -1,0 +1,19 @@
+SELECT 
+CASE WHEN pp.numeroSolicitacao IS NULL THEN '' ELSE pp.numeroSolicitacao END as "Numero solicitação",
+CASE WHEN pp.dataSolicitacao IS NULL THEN '' ELSE pp.dataSolicitacao END as "Data solicitação",
+CASE WHEN pp.empresaSolicitante IS NULL THEN '' ELSE pp.empresaSolicitante END as "Empresa",
+CASE WHEN pp.filialSolicitante IS NULL THEN '' ELSE pp.filialSolicitante END as "Filail",    
+CASE WHEN pp.nomeMatriculaSolicitante IS NULL THEN '' ELSE pp.nomeMatriculaSolicitante END as "Nome/Matricula Colaboradore",
+CASE WHEN pp.dataAdmissaoSolicitante IS NULL THEN '' ELSE pp.dataAdmissaoSolicitante END as "Data Admissão",
+CASE WHEN pp.postoSolicitante IS NULL THEN '' ELSE pp.postoSolicitante END as "Posto de Trabalho",
+CASE WHEN pp.centroCustoSolicitante IS NULL THEN '' ELSE pp.centroCustoSolicitante END as "Centro de Custo",
+CASE WHEN pp.tipoSolicitacao IS NULL THEN '' ELSE pp.tipoSolicitacao END as "Tipo de Solicitação",
+CASE WHEN pp.opcaoContribuicao IS NULL THEN '' ELSE pp.opcaoContribuicao END as "Opção de Contribuição",
+CASE WHEN pp.contribuicao IS NULL THEN '' ELSE pp.contribuicao END as "% Contribuição",
+CASE WHEN pp.tipoRegime IS NULL THEN '' ELSE pp.tipoRegime END as "Tipo de Regime",
+CASE WHEN pp.beneficairios IS NULL THEN '' ELSE pp.beneficairios END as "Beneficiários",
+CASE WHEN pp.observacaoSolicitante IS NULL THEN '' ELSE pp.observacaoSolicitante END as "Justificativa",
+CASE WHEN pp.statusSolicitacao IS NULL THEN '' ELSE pp.statusSolicitacao END as "Status"
+FROM "platform-workflow"."bpm_previdencia_privada" pp 
+WHERE pp.start_date >= ${"platform-workflow"."bpm_previdencia_privada"."start_date":  Data_inicial}
+AND pp.start_date <= ${"platform-workflow"."bpm_previdencia_privada"."start_date":  Data_final}

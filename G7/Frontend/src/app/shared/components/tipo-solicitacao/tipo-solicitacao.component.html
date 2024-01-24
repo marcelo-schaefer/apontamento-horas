@@ -1,0 +1,25 @@
+<nz-card style="margin-top: 15px" nzBorderless>
+  <nz-spin [nzSpinning]="isLoading">
+    <nz-tabset
+      (nzSelectedIndexChange)="identificaTipoSolicitacao($event)"
+      [(nzSelectedIndex)]="indexTipoSolicitacao"
+    >
+      <nz-tab nzTitle="Adesão" [nzDisabled]="desabilitarInclusao"
+        ><app-dados-solicitacao
+          #DadosSolicitacaoComponentAdesao
+        ></app-dados-solicitacao
+      ></nz-tab>
+
+      <nz-tab nzTitle="Alteração" [nzDisabled]="desabilitarAlteracao"
+        ><app-dados-solicitacao
+          #DadosSolicitacaoComponentAlteracao
+        ></app-dados-solicitacao
+      ></nz-tab>
+
+      <nz-tab nzTitle="Suspensão (Exclusão)" [nzDisabled]="desabilitarAlteracao"
+        ><app-dados-solicitacao
+          #DadosSolicitacaoComponentExclusao
+        ></app-dados-solicitacao
+      ></nz-tab>
+    </nz-tabset> </nz-spin
+></nz-card>

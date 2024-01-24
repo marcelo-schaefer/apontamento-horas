@@ -1,0 +1,57 @@
+image: arquiteturasenior/node-sonar-runner:stable
+
+stages:
+  - build
+  # - qa
+  - deploy
+
+before_script:
+  - PROJECT_VERSION=${CI_COMMIT_SHA:0:7}
+
+build:
+  stage: build
+  cache:
+    key: $CI_PROJECT_NAME
+    paths:
+      - node_modules/
+  before_script:
+    - rm -rf dist
+    - rm -rf ./package-lock.json
+    - npm install
+  script:
+    - npm run build:prod --ssl true
+  artifacts:
+    paths:
+      - dist
+
+# sonarqube:develop:
+#   stage: qa
+#   script:
+#     - sonar-scanner -Dsonar.host.url=$SONAR_URL -Drevision=$PROJECT_VERSION -Dsonar.projectName=unstable_$CI_PROJECT_NAME -Dsonar.projectVersion=$PROJECT_VERSION -Dsonar.projectKey=unstable_$CI_PROJECT_NAME -Dsonar.exclusions=**/src/assets/*
+#   only:
+#     - develop
+
+# sonarqube:release:
+#   stage: qa
+#   script:
+#     - sonar-scanner -Dsonar.host.url=$SONAR_URL -Drevision=$PROJECT_VERSION -Dsonar.projectName=release_$CI_PROJECT_NAME -Dsonar.projectVersion=$PROJECT_VERSION -Dsonar.projectKey=release_$CI_PROJECT_NAME -Dsonar.exclusions=**/src/assets/*
+#   only:
+#     - master
+
+image_update:
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: ['']
+  variables:
+    DOCKER_TLS_CERTDIR: ''
+  stage: deploy
+  script:
+    - cp -R nginx dist/
+    - cp entrypoint.sh dist/
+    - echo "{\"auths\":{\"registry.gitlab.com\":{\"username\":\"$GITLAB_USER\",\"password\":\"$GITLAB_TOKEN\"}}}" > /kaniko/.docker/config.json
+    - IMAGE_TAG=registry.gitlab.com/$GITLAB_USER/docker-registry/$CI_PROJECT_NAME:$CI_COMMIT_REF_NAME
+    - /kaniko/executor --context $CI_PROJECT_DIR/dist --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $IMAGE_TAG
+  only:
+    - master
+    - staging
+    - develop

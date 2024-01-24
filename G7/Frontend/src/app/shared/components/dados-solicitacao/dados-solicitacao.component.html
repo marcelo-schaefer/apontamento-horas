@@ -1,0 +1,272 @@
+<nz-card style="margin-top: 15px" nzBorderless>
+  <nz-spin [nzSpinning]="isLoading">
+    <form
+      nz-form
+      [formGroup]="formDadosSolicitacao"
+      [nzLayout]="'vertical'"
+      autocomplete="off"
+    >
+      <div nz-row [nzGutter]="24">
+        <div nz-col [nzSpan]="8">
+          <nz-form-item>
+            <nz-form-label nzfor="contribuicao"
+              >Opção de Contribuição:
+            </nz-form-label>
+            <nz-form-control nzErrorTip="Campo obrigatorio">
+              <nz-select
+                formControlName="contribuicao"
+                id="contribuicao"
+                nzPlaceHolder="Selecione uma contribuição"
+                nzShowSearch
+                (ngModelChange)="contribuicaoSelecionada($event)"
+              >
+                <nz-option nzValue="basica" nzLabel="Básica"></nz-option>
+                <nz-option
+                  nzValue="voluntaria"
+                  nzLabel="Voluntária"
+                ></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div
+          nz-col
+          [nzSpan]="8"
+          [hidden]="this.tipoSolicitacao == 2 || formDadosSolicitacao.get('contribuicao').value != 'basica' "
+        >
+          <nz-form-item>
+            <nz-form-label nzfor="porcentagemContribuicaoBasica"
+              >Porcentual Atual:
+            </nz-form-label>
+            <nz-form-control nzErrorTip="Campo obrigatorio">
+              <nz-select
+                formControlName="porcentagemContribuicaoBasica"
+                id="porcentagemContribuicaoBasica"
+                nzPlaceHolder="Selecione uma porcentagem"
+                nzShowSearch
+              >
+                <nz-option
+                  *ngFor="let o of porcentagemContribuicaoBasica"
+                  [nzValue]="o"
+                  [nzLabel]="o  + '%'"
+                ></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+        <div
+          nz-col
+          [nzSpan]="8"
+          [hidden]="formDadosSolicitacao.get('contribuicao').value == 'basica' && this.tipoSolicitacao != 2"
+        >
+          <nz-form-item>
+            <nz-form-label nzFor="porcentagemContribuicaoVoluntaria"
+              >Porcentual Atual:</nz-form-label
+            >
+
+            <nz-form-control nzErrorTip="Campo obrigatorio">
+              <nz-input-group [nzSuffix]="botaoAjuda">
+                <input
+                  nz-input
+                  formControlName="porcentagemContribuicaoVoluntaria"
+                  id="porcentagemContribuicaoVoluntaria"
+                  allowZero="true"
+                  suffix="%"
+                  placeholder="0%"
+                  mask="separator.2"
+                  (input)="limitarNumero($event)"
+                />
+              </nz-input-group>
+            </nz-form-control>
+          </nz-form-item>
+
+          <ng-template #botaoAjuda>
+            <samp
+              nz-icon
+              nz-tooltip
+              nzTooltipTitle="O percentual é limitado até 30%"
+              nzType="info-circle"
+              ><span></span
+            ></samp>
+          </ng-template>
+        </div>
+      </div>
+
+      <div nz-row [nzGutter]="24">
+        <div nz-col [nzSpan]="8">
+          <nz-form-item>
+            <nz-form-label nzfor="regime">Tipo de Regime: </nz-form-label>
+            <nz-form-control nzErrorTip="Campo obrigatorio">
+              <nz-select
+                formControlName="regime"
+                id="regime"
+                nzPlaceHolder="Selecione um tipo de regime"
+                nzShowSearch
+              >
+                <nz-option
+                  nzValue="progressivo"
+                  nzLabel="Progressivo"
+                ></nz-option>
+                <nz-option
+                  nzValue="regressivo"
+                  nzLabel="Regressivo"
+                ></nz-option>
+              </nz-select>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row [nzGutter]="24">
+        <div nz-col [nzSpan]="12">
+          <nz-switch
+            formControlName="pessoaPolitica"
+            id="pessoaPolitica"
+            [nzCheckedChildren]="checkedTemplate"
+            [nzUnCheckedChildren]="unCheckedTemplate"
+          >
+          </nz-switch>
+
+          <ng-template #checkedTemplate
+            ><span nz-icon nzType="check"></span
+          ></ng-template>
+          <ng-template #unCheckedTemplate
+            ><span nz-icon nzType="close"></span
+          ></ng-template>
+          <span style="margin-left: 10px"
+            >Sou uma pessoa politicamente exposta</span
+          >
+        </div>
+      </div>
+      <br />
+      <br />
+
+      <div>
+        <nz-table
+          class="top-20"
+          [nzData]="dependentes.value"
+          [nzNoResult]="listaVazia"
+          nzShowPagination="false"
+        >
+          <thead>
+            <tr>
+              <th
+                [(nzChecked)]="allChecked"
+                [nzIndeterminate]="indeterminate"
+                (nzCheckedChange)="checkAll($event)"
+                [nzDisabled]="desabiliatrCheckBox"
+              ></th>
+              <th>Nome</th>
+              <th>Datas de Nascimento</th>
+              <th>CPF</th>
+              <th nzWidth="100px">
+                <button
+                  nz-button
+                  nzType="primary"
+                  (click)="adicioanrLinha()"
+                  [disabled]="desabiliatrCheckBox"
+                >
+                  Incluir Beneficiário
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody
+            formArrayName="dependentes"
+            *ngIf="dependentes.controls.length > 0"
+          >
+            <tr
+              *ngFor="let dependente of dependentes.controls; let idx = index"
+              [formGroupName]="idx"
+            >
+              <td nzAlign="center">
+                <nz-switch
+                  [nzCheckedChildren]="checkedTemplate"
+                  [nzUnCheckedChildren]="unCheckedTemplate"
+                  (ngModelChange)="checkedAt($event, idx)"
+                  formControlName="selecionado"
+                ></nz-switch>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control nzErrorTip="Campo obrigatorio">
+                    <input
+                      *ngIf="dependente.get('editarCampos')?.value;else nome_preenchido"
+                      nz-input
+                      formControlName="nome"
+                      placeholder="Informe o nome do dependente"
+                    />
+                  </nz-form-control>
+                </nz-form-item>
+
+                <ng-template #nome_preenchido
+                  >{{dependente.get('nome').value}}</ng-template
+                >
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control nzErrorTip="Campo obrigatorio">
+                    <app-date-picker-custom
+                      *ngIf="dependente.get('editarCampos')?.value;else nascimento_preenchido"
+                      formControlName="dataNascimento"
+                      nzFormat="dd/MM/yyyy"
+                    ></app-date-picker-custom>
+                  </nz-form-control>
+                </nz-form-item>
+                <ng-template #nascimento_preenchido
+                  >{{dependente.get('dataNascimento').value}}</ng-template
+                >
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control nzErrorTip="Campo obrigatorio">
+                    <input
+                      *ngIf="dependente.get('editarCpf')?.value;else cpf_preenchido"
+                      nz-input
+                      formControlName="cpf"
+                      id="cpf"
+                      placeholder="000.000.000-00"
+                      mask="000.000.000-00"
+                    />
+                  </nz-form-control>
+                </nz-form-item>
+
+                <ng-template #cpf_preenchido
+                  >{{dependente.get('cpf').value}}</ng-template
+                >
+              </td>
+
+              <td
+                *ngIf="dependente.get('editarCampos')?.value"
+                [nzAlign]="'center'"
+              >
+                <button
+                  (click)="excluirData(idx)"
+                  nz-button
+                  nzType="default"
+                  nzDanger
+                  [disabled]="desabiliatrCheckBox"
+                >
+                  <span nz-icon nzType="delete" nzTheme="outline"></span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+
+          <tbody></tbody
+        ></nz-table>
+      </div>
+    </form> </nz-spin
+></nz-card>
+
+<ng-template #listaVazia>
+  <nz-empty
+    style="position: absolut"
+    nzNotFoundContent="Nenhum dependente foi encontrado"
+  ></nz-empty>
+</ng-template>
+<ng-template #checkedTemplate><i nz-icon nzType="check"></i></ng-template>
+<ng-template #unCheckedTemplate><i nz-icon nzType="close"></i></ng-template>
