@@ -152,7 +152,12 @@ export class AlteracaoBeneficiariosComponent implements OnInit {
   distribuicaoNaoAtingeCem = (
     control: AbstractControl
   ): { distribuicaoNaoAtingeCem: boolean } => {
-    if (!control.value || Number(control.value) < 1) return null;
+    if (
+      !control.value ||
+      Number(control.value) < 1 ||
+      this.dependentes.length < 2
+    )
+      return null;
 
     if (
       this.dependentes.controls.reduce(
