@@ -1,0 +1,148 @@
+<nz-card
+  nzTitle="Alteração de Beneficiários"
+  style="margin-top: 15px"
+  nzBorderless
+>
+  <nz-spin [nzSpinning]="isLoading">
+    <form
+      nz-form
+      [formGroup]="formDadosSolicitacao"
+      [nzLayout]="'vertical'"
+      autocomplete="off"
+    >
+      <div>
+        <nz-table
+          class="top-20"
+          [nzData]="dependentes.value"
+          [nzNoResult]="listaVazia"
+          nzShowPagination="false"
+        >
+          <thead>
+            <tr>
+              <th nzWidth="30%">Nome</th>
+              <th nzWidth="20%">Parentesco</th>
+              <th nzWidth="15%">Datas de Nascimento</th>
+              <th nzWidth="15%">% Distribuição</th>
+              <th nzWidth="10%">
+                <button
+                  nz-button
+                  nzType="primary"
+                  (click)="adicioanrLinha()"
+                  [disabled]="desabilitarBotoes"
+                >
+                  Incluir Beneficiário
+                </button>
+              </th>
+            </tr>
+          </thead>
+          <tbody formArrayName="dependentes">
+            <tr
+              *ngFor="let dependente of dependentes.controls; let idx = index"
+              [formGroupName]="idx"
+            >
+              <td>
+                <nz-form-item>
+                  <nz-form-control nzErrorTip="Campo obrigatorio">
+                    <input
+                      nz-input
+                      formControlName="aNome"
+                      placeholder="Informe o nome do beneficiário"
+                    />
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control nzErrorTip="Campo obrigatorio">
+                    <nz-select
+                      formControlName="parentesco"
+                      id="parentesco"
+                      nzPlaceHolder="Selecione uma parentesco"
+                      nzShowSearch
+                    >
+                      <nz-option
+                        *ngFor="let o of listaParentescos"
+                        [nzValue]="o"
+                        [nzLabel]="o.ADescricaoParentesco"
+                      ></nz-option>
+                    </nz-select>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control nzErrorTip="Campo obrigatorio">
+                    <app-date-picker-custom
+                      formControlName="dataNascimento"
+                      nzFormat="dd/MM/yyyy"
+                    ></app-date-picker-custom>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td>
+                <nz-form-item>
+                  <nz-form-control [nzErrorTip]="DistribuicaoErrorTpl">
+                    <input
+                      nz-input
+                      formControlName="nDistribuicao"
+                      id="nDistribuicao"
+                      placeholder="0 %"
+                      suffix=" %"
+                      [mask]="desabilitarBotoes ? '' : '0||00||000'"
+                      (blur)="marcarErrosDistribuicao()"
+                    />
+
+                    <ng-template #DistribuicaoErrorTpl let-control>
+                      <ng-container *ngIf="control.hasError('required')">
+                        Campo obrigatório
+                      </ng-container>
+
+                      <ng-container
+                        *ngIf="control.hasError('distribuicaoMaiorQueCem')"
+                      >
+                        A somatória das distribuições não deve passar de 100%
+                      </ng-container>
+                      <ng-container
+                        *ngIf="control.hasError('distribuicaoNaoAtingeCem')"
+                      >
+                        A somatória das distribuições deve atingir 100%
+                      </ng-container>
+                      <ng-container
+                        *ngIf="control.hasError('distribuicaoZerada')"
+                      >
+                        A distribuição não pode estar zerada
+                      </ng-container>
+                    </ng-template>
+                  </nz-form-control>
+                </nz-form-item>
+              </td>
+
+              <td [nzAlign]="'center'">
+                <button
+                  (click)="excluir(idx)"
+                  nz-button
+                  nzType="default"
+                  nzDanger
+                  [disabled]="desabilitarBotoes"
+                >
+                  <span nz-icon nzType="delete" nzTheme="outline"></span>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </nz-table>
+      </div>
+    </form> </nz-spin
+></nz-card>
+
+<ng-template #listaVazia>
+  <nz-empty
+    style="position: absolut"
+    nzNotFoundContent="Nenhum dependente foi encontrado"
+  ></nz-empty>
+</ng-template>
+<ng-template #checkedTemplate><i nz-icon nzType="check"></i></ng-template>
+<ng-template #unCheckedTemplate><i nz-icon nzType="close"></i></ng-template>

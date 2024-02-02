@@ -1,11 +1,9 @@
-import { PossuiPrevidencia } from '../../previdencia-privada/models/possui-previdencia';
-
-export class Colaborador extends PossuiPrevidencia {
-  NMatricula: string;
+export class Colaborador {
+  NMatricula: number;
   ANome: string;
-  NTipoColaborador: string;
+  NTipoColaborador: number;
   empresa: string;
-  NCodigoEmpresa: string;
+  NCodigoEmpresa: number;
   ADescricaoEmpresa: string;
   filial: string;
   NCodigoFilial: string;
@@ -13,10 +11,7 @@ export class Colaborador extends PossuiPrevidencia {
   posto: string;
   ACodigoPosto: string;
   ADescricaoPosto: string;
-  centroCusto: string;
-  ACodigoCentroCusto: string;
-  ADescricaoCentroCusto: string;
-  DDataAdmissao: string;
+  ACpf: string;
   ARetorno: string;
 }
 

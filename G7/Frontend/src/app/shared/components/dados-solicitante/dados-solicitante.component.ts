@@ -33,25 +33,21 @@ export class DadosSolicitanteComponent implements OnInit {
       posto: { value: '', disabled: true },
       ACodigoPosto: { value: '', disabled: true },
       ADescricaoPosto: { value: '', disabled: true },
-      centroCusto: { value: '', disabled: true },
-      ACodigoCentroCusto: { value: '', disabled: true },
-      ADescricaoCentroCusto: { value: '', disabled: true },
-      DDataAdmissao: { value: '', disabled: true },
+      ACpf: { value: '', disabled: true },
     });
   }
 
   preencherFormulario(solicitante: Colaborador): void {
     this.formDadosSolicitante.patchValue({
       ...solicitante,
-      solicitante: solicitante.NMatricula + ' - ' + solicitante.ANome,
+      solicitante:
+        solicitante.NMatricula.toString() + ' - ' + solicitante.ANome,
       empresa:
-        solicitante.NCodigoEmpresa + ' - ' + solicitante.ADescricaoEmpresa,
+        solicitante.NCodigoEmpresa.toString() +
+        ' - ' +
+        solicitante.ADescricaoEmpresa,
       posto: solicitante.ACodigoPosto + ' - ' + solicitante.ADescricaoPosto,
       filial: solicitante.NCodigoFilial + ' - ' + solicitante.ADescricaoFilial,
-      centroCusto:
-        solicitante.ACodigoCentroCusto +
-        ' - ' +
-        solicitante.ADescricaoCentroCusto,
     });
   }
 

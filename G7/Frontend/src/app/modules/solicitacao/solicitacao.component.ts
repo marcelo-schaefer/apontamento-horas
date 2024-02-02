@@ -8,13 +8,13 @@ import {
 } from 'src/app/core/service/workflow/workflow-cockpit/dist/workflow-cockpit';
 import { DadosSolicitanteComponent } from 'src/app/shared/components/dados-solicitante/dados-solicitante.component';
 import { Colaborador } from 'src/app/services/colaborador/models/colaboradores.model';
-import { ObservacaoComponent } from 'src/app/shared/components/observacao/observacao.component';
 import { format } from 'date-fns';
-import { Dependente } from 'src/app/shared/model/dependente';
-import { TipoSolicitacaoComponent } from 'src/app/shared/components/tipo-solicitacao/tipo-solicitacao.component';
-import { TermoCienciaComponent } from 'src/app/shared/components/termo-ciencia/termo-ciencia.component';
-import { PrevidenciaPrivadaService } from 'src/app/services/previdencia-privada/previdencia-privada.service';
-import { PersistirPrevidencia } from 'src/app/services/previdencia-privada/models/persistir-previdencia';
+import { DadosPlanoVidaComponent } from 'src/app/shared/components/dados-plano-vida/dados-plano-vida.component';
+import { AlteracaoBeneficiariosComponent } from 'src/app/shared/components/alteracao-beneficiarios/alteracao-beneficiarios.component';
+import { Parentesco } from 'src/app/services/seguro-vida/models/parentesco';
+import { SeguroVidaService } from 'src/app/services/seguro-vida/seguro-vida.service';
+import { PersisteSolicitacao } from 'src/app/services/seguro-vida/models/persiste-solicitacao';
+import { PlanoSeguroVida } from 'src/app/services/seguro-vida/models/plano-seguro-vida';
 
 @Component({
   selector: 'app-solicitacao',
@@ -25,23 +25,21 @@ export class SolicitacaoComponent implements OnInit {
   @ViewChild(DadosSolicitanteComponent, { static: true })
   dadosSolicitanteComponent: DadosSolicitanteComponent;
 
-  @ViewChild(TipoSolicitacaoComponent, { static: true })
-  tipoSolicitacaoComponent: TipoSolicitacaoComponent;
+  @ViewChild(DadosPlanoVidaComponent, { static: true })
+  dadosPlanoVidaComponent: DadosPlanoVidaComponent;
 
-  @ViewChild(TermoCienciaComponent, { static: true })
-  termoCienciaComponent: TermoCienciaComponent;
-
-  @ViewChild(ObservacaoComponent, { static: true })
-  observacaoComponent: ObservacaoComponent;
+  @ViewChild(AlteracaoBeneficiariosComponent, { static: true })
+  alteracaoBeneficiariosComponent: AlteracaoBeneficiariosComponent;
 
   usernameSolicitante: string;
   solicitante: Colaborador;
-  dependentes: Dependente[];
+  planoSolicitante: PlanoSeguroVida;
+  listaGrausParentescos: Parentesco[];
 
   constructor(
     private wfService: WorkflowService,
     private colaboradorService: ColaboradorService,
-    private previdenciaPrivadaService: PrevidenciaPrivadaService,
+    private seguroVidaService: SeguroVidaService,
     private notification: NzNotificationService
   ) {
     this.wfService.onSubmit(this.submit.bind(this));
@@ -50,11 +48,10 @@ export class SolicitacaoComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.usernameSolicitante = this.wfService.getUser().username;
     await this.buscaSolicitante();
-    await this.buscaPossuiPrevidencia();
-    await this.buscaDependentes();
-    this.tipoSolicitacaoComponent.preencherDadosColaborador(
-      this.solicitante,
-      this.dependentes
+    await this.buscaPlanoSeguroVida();
+    await this.buscaGrauParentescos();
+    this.alteracaoBeneficiariosComponent.preencherListaParentescos(
+      this.listaGrausParentescos
     );
   }
 
@@ -67,7 +64,6 @@ export class SolicitacaoComponent implements OnInit {
 
   async buscaSolicitante(): Promise<void> {
     this.dadosSolicitanteComponent.loadingForm(true);
-    this.tipoSolicitacaoComponent.loadingForm(true);
 
     await this.colaboradorService
       .buscaSolicitante(this.usernameSolicitante)
@@ -93,54 +89,55 @@ export class SolicitacaoComponent implements OnInit {
     this.dadosSolicitanteComponent.loadingForm(false);
   }
 
-  async buscaPossuiPrevidencia(): Promise<void> {
-    await this.previdenciaPrivadaService
-      .buscaPossuiPrevidencia(this.usernameSolicitante)
+  async buscaPlanoSeguroVida(): Promise<void> {
+    await this.seguroVidaService
+      .buscaPlanoSeguroVida(this.usernameSolicitante)
       .toPromise()
       .then(
         (data) => {
           if (data.outputData.ARetorno != 'OK') {
             this.criaNotificacao(
-              'Erro ao identificar se solicitante ja possui previdencia privada, ' +
+              'Erro ao buscar seguro de vida do solicitante, ' +
                 data.outputData.ARetorno
             );
           } else {
-            this.solicitante = Object.assign(this.solicitante, data.outputData);
+            this.planoSolicitante = data.outputData;
+            this.dadosPlanoVidaComponent.preencherFormulario(
+              this.planoSolicitante
+            );
           }
         },
         () => {
           this.criaNotificacao(
-            'Erro ao identificar solicitante ja possui previdencia privada, tente mais tarde ou contate o administrador.'
+            'Erro ao buscar seguro de vida do solicitante, tente mais tarde ou contate o administrador.'
           );
         }
       );
   }
 
-  async buscaDependentes(): Promise<void> {
-    await this.colaboradorService
-      .buscaDependentes(this.usernameSolicitante)
+  async buscaGrauParentescos(): Promise<void> {
+    await this.seguroVidaService
+      .buscaGrauParentescos()
       .toPromise()
       .then(
         (data) => {
           if (data.outputData.ARetorno != 'OK') {
             this.criaNotificacao(
-              'Erro ao buscar os dependentes, ' + data.outputData.ARetorno
+              'Erro ao buscar graus de parentescos, ' + data.outputData.ARetorno
             );
-          } else this.dependentes = data.outputData.dependentes;
+          } else this.listaGrausParentescos = data.outputData.parentescos;
         },
         () => {
           this.criaNotificacao(
-            'Erro ao buscar os dependentes, tente mais tarde ou contate o administrador.'
+            'Erro ao buscar graus de parentescos, tente mais tarde ou contate o administrador.'
           );
         }
       );
-
-    this.tipoSolicitacaoComponent.loadingForm(false);
   }
 
-  async persisteSolicitacao(): Promise<void> {
-    await this.previdenciaPrivadaService
-      .persisteSolicitacao(this.montaCorpoPersistencia())
+  async persistirSolicitacao(): Promise<void> {
+    await this.seguroVidaService
+      .persistirSolicitacao(this.montaCorpoPersistencia())
       .toPromise()
       .then(
         (data) => {
@@ -155,73 +152,42 @@ export class SolicitacaoComponent implements OnInit {
           this.criaNotificacao(
             'Erro ao persistir solicitaçãos, tente mais tarde ou contate o administrador.'
           );
-          this.wfService.abortSubmit();
+          // this.wfService.abortSubmit();
         }
       );
-
-    this.tipoSolicitacaoComponent.loadingForm(false);
   }
 
-  montaCorpoPersistencia(): PersistirPrevidencia {
-    const dadosSolicitacao = this.tipoSolicitacaoComponent.value;
+  montaCorpoPersistencia(): PersisteSolicitacao {
     return {
-      AContribuicao: dadosSolicitacao.contribuicao,
-      APorcentagemContribuicao: dadosSolicitacao.porcentagemContribuicao,
-      ARegime: dadosSolicitacao.regime,
-      beneficiarios: dadosSolicitacao.dependentes,
+      nEmpresa: this.solicitante.NCodigoEmpresa,
+      nTipoColaborador: this.solicitante.NTipoColaborador,
+      nMatricula: this.solicitante.NMatricula,
+      nCodigoPlano: this.planoSolicitante.NCodigoPlano,
+      nCodigoOperadora: this.planoSolicitante.NCodigoOperadora,
+      beneficiartios: this.alteracaoBeneficiariosComponent.value,
     };
   }
 
   validarEnvio(): boolean {
-    return (
-      this.tipoSolicitacaoComponent.validarForm() &&
-      this.termoCienciaComponent.validarForm()
-    );
+    return this.alteracaoBeneficiariosComponent.validarForm();
   }
 
   async submit(step: WfProcessStep): Promise<WfFormData> {
     if (this.validarEnvio()) {
-      await this.persisteSolicitacao();
+      await this.persistirSolicitacao();
 
-      const observacaoSolicitante = this.observacaoComponent.value.observacao;
-      const dadosSolicitacao = this.tipoSolicitacaoComponent.value;
       return {
         formData: {
+          ...this.dadosSolicitanteComponent.value,
           numeroSolicitacao: step.processInstanceId,
           dataSolicitacao: format(new Date(), 'dd/MM/yyyy'),
-          tipoSolicitacao:
-            this.tipoSolicitacaoComponent.retornaTipoSolicitacao(),
-          opcaoContribuicao: dadosSolicitacao.contribuicaoFormatada,
-          tipoRegime: dadosSolicitacao.regimeFormatado,
-          contribuicao: dadosSolicitacao.porcentagemContribuicao + '%',
+          nomeProcesso: 'Solicitação de Alteração de Seguro de Vida',
           solicitante: JSON.stringify(this.solicitante),
-          dadosSolicitacao: JSON.stringify(dadosSolicitacao),
-          observacaoSolicitante: observacaoSolicitante,
-          empresaSolicitante:
-            this.solicitante.NCodigoEmpresa.toString() +
-            ' - ' +
-            this.solicitante.ADescricaoEmpresa,
-          nomeMatriculaSolicitante:
-            this.solicitante.NMatricula.toString() +
-            ' - ' +
-            this.solicitante.ANome,
-          dataAdmissaoSolicitante: this.solicitante.DDataAdmissao,
-          filialSolicitante:
-            this.solicitante.NCodigoFilial +
-            ' - ' +
-            this.solicitante.ADescricaoFilial,
-          postoSolicitante:
-            this.solicitante.ACodigoPosto +
-            ' - ' +
-            this.solicitante.ADescricaoPosto,
-          centroCustoSolicitante:
-            this.solicitante.ACodigoCentroCusto +
-            ' - ' +
-            this.solicitante.ADescricaoCentroCusto,
-          beneficairios: dadosSolicitacao.dependentes
-            .map((dependente) => dependente.ANome)
-            .join(', '),
-          statusSolicitacao: 'Aprovado',
+          planoSolicitante: JSON.stringify(this.planoSolicitante),
+          listaGrausParentescos: JSON.stringify(this.listaGrausParentescos),
+          dependentes: JSON.stringify(
+            this.alteracaoBeneficiariosComponent.value
+          ),
         },
       };
     }

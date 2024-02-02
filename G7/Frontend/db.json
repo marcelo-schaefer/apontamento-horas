@@ -9,47 +9,35 @@
       "ADescricaoFilial": "Matriz",
       "ACodigoPosto": "106.01.000548.0203.220",
       "ADescricaoPosto": "Posto de Trabalhao Padrão",
-      "ACodigoCentroCusto": "294.663.894",
-      "ADescricaoCentroCusto": "Centro de Custo Padrão",
-      "DDataAdmissao": "01/01/2020",
+      "ACpf": "777.888.999-11",
       "ARetorno": "OK"
     }
   },
 
-  "colaboradorPossuiPrevidencia": {
+  "planoSeguroVida": {
     "outputData": {
-      "APossuiBeneficio": "S",
-      "AContribuicao": "basica",
-      "APorcentagemContribuicao": "4",
-      "ARegime": "regressivo",
-      "APessoaPolitica": "S",
+      "NCodigoPlano": 1,
+      "ADescricaoPlano": "Plano Vida",
+      "NCodigoOperadora": 1001,
+      "ADescricaoOperadora": "Bradesco Seguros",
       "ARetorno": "OK"
     }
   },
 
-  "retornaDependetes": {
+  "buscaGrauParentescos": {
     "outputData": {
-      "dependentes": [
+      "parentescos": [
         {
-          "APossuiPrevidencia": "N",
-          "NId": "1",
-          "ANome": "dependente 1",
-          "DDataNascimento": "01/01/2010",
-          "ACpf": "777.888.999-11"
+          "NCodigoParentesco": 1,
+          "ADescricaoParentesco": "Filho"
         },
         {
-          "APossuiPrevidencia": "S",
-          "NId": "2",
-          "ANome": "dependente 2",
-          "DDataNascimento": "01/01/2011",
-          "ACpf": "777.888.999-22"
+          "NCodigoParentesco": 2,
+          "ADescricaoParentesco": "Pai/Mãe"
         },
         {
-          "APossuiPrevidencia": "N",
-          "NId": "3",
-          "ANome": "dependente 3",
-          "DDataNascimento": "01/01/2012",
-          "ACpf": "?"
+          "NCodigoParentesco": 3,
+          "ADescricaoParentesco": "Cônjuge"
         }
       ],
       "ARetorno": "OK"

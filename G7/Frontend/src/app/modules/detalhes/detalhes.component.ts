@@ -1,11 +1,12 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { WorkflowService } from 'src/app/core/service/workflow/workflow.service';
 import { Colaborador } from 'src/app/services/colaborador/models/colaboradores.model';
+import { Dependente } from 'src/app/services/seguro-vida/models/dependente';
+import { Parentesco } from 'src/app/services/seguro-vida/models/parentesco';
+import { PlanoSeguroVida } from 'src/app/services/seguro-vida/models/plano-seguro-vida';
+import { AlteracaoBeneficiariosComponent } from 'src/app/shared/components/alteracao-beneficiarios/alteracao-beneficiarios.component';
+import { DadosPlanoVidaComponent } from 'src/app/shared/components/dados-plano-vida/dados-plano-vida.component';
 import { DadosSolicitanteComponent } from 'src/app/shared/components/dados-solicitante/dados-solicitante.component';
-import { ObservacaoComponent } from 'src/app/shared/components/observacao/observacao.component';
-import { TermoCienciaComponent } from 'src/app/shared/components/termo-ciencia/termo-ciencia.component';
-import { TipoSolicitacaoComponent } from 'src/app/shared/components/tipo-solicitacao/tipo-solicitacao.component';
-import { DadosSolicitacao } from 'src/app/shared/model/dados-solicitacao';
 
 @Component({
   selector: 'app-detalhes',
@@ -16,14 +17,11 @@ export class DetalhesComponent implements OnInit {
   @ViewChild(DadosSolicitanteComponent, { static: true })
   dadosSolicitanteComponent: DadosSolicitanteComponent;
 
-  @ViewChild(TipoSolicitacaoComponent, { static: true })
-  tipoSolicitacaoComponent: TipoSolicitacaoComponent;
+  @ViewChild(DadosPlanoVidaComponent, { static: true })
+  dadosPlanoVidaComponent: DadosPlanoVidaComponent;
 
-  @ViewChild(TermoCienciaComponent, { static: true })
-  termoCienciaComponent: TermoCienciaComponent;
-
-  @ViewChild(ObservacaoComponent, { static: true })
-  observacaoComponent: ObservacaoComponent;
+  @ViewChild(AlteracaoBeneficiariosComponent, { static: true })
+  alteracaoBeneficiariosComponent: AlteracaoBeneficiariosComponent;
 
   constructor(private wfService: WorkflowService) {}
 
@@ -34,21 +32,22 @@ export class DetalhesComponent implements OnInit {
   async getProcessVariables(): Promise<void> {
     await this.wfService.requestProcessVariables().then((value) => {
       const solicitante = JSON.parse(value.solicitante) as Colaborador;
+      const planoSolicitante = JSON.parse(
+        value.planoSolicitante
+      ) as PlanoSeguroVida;
+      const listaGrausParentescos = JSON.parse(
+        value.listaGrausParentescos
+      ) as Parentesco[];
+      const dependentes = JSON.parse(value.dependentes) as Dependente[];
 
       this.dadosSolicitanteComponent.preencherFormulario(solicitante);
-      this.tipoSolicitacaoComponent.preencherTipoSolicitacao(
-        value.tipoSolicitacao
+      this.dadosPlanoVidaComponent.preencherFormulario(planoSolicitante);
+      this.alteracaoBeneficiariosComponent.preencherListaParentescos(
+        listaGrausParentescos
       );
-      this.tipoSolicitacaoComponent.preencherDadosSolicitacao(
-        JSON.parse(value.dadosSolicitacao) as DadosSolicitacao
-      );
+      this.alteracaoBeneficiariosComponent.preencherDependentes(dependentes);
 
-      this.termoCienciaComponent.setValue(true);
-      this.observacaoComponent.preencherDados(value.observacaoSolicitante);
-
-      this.tipoSolicitacaoComponent.desabilitarForm();
-      this.termoCienciaComponent.desabilitarForm();
-      this.observacaoComponent.desabilitar();
+      this.alteracaoBeneficiariosComponent.desabilitarForm();
     });
   }
 }
