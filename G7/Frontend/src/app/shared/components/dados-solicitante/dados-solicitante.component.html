@@ -12,37 +12,7 @@
             <nz-form-label nzFor="solicitante">Matrícula/Nome:</nz-form-label>
 
             <nz-form-control>
-              <input
-                disabled
-                nz-input
-                formControlName="solicitante"
-                id="solicitante"
-              />
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-
-        <div nz-col [nzSpan]="6">
-          <nz-form-item>
-            <nz-form-label nzFor="DDataAdmissao">Data Admissão:</nz-form-label>
-
-            <nz-form-control>
-              <input
-                nz-input
-                disabled
-                formControlName="DDataAdmissao"
-                id="DDataAdmissao"
-              />
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-
-        <div nz-col [nzSpan]="6">
-          <nz-form-item>
-            <nz-form-label nzFor="posto">Posto de Trabalho:</nz-form-label>
-
-            <nz-form-control>
-              <input nz-input disabled formControlName="posto" id="posto" />
+              <input nz-input formControlName="solicitante" id="solicitante" />
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -52,7 +22,7 @@
             <nz-form-label nzFor="empresa">Empresa:</nz-form-label>
 
             <nz-form-control>
-              <input nz-input disabled formControlName="empresa" id="empresa" />
+              <input nz-input formControlName="empresa" id="empresa" />
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -62,22 +32,27 @@
             <nz-form-label nzFor="filial">Filial:</nz-form-label>
 
             <nz-form-control>
-              <input nz-input disabled formControlName="filial" id="filial" />
+              <input nz-input formControlName="filial" id="filial" />
             </nz-form-control>
           </nz-form-item>
         </div>
 
         <div nz-col [nzSpan]="6">
           <nz-form-item>
-            <nz-form-label nzFor="centroCusto">Centro de Custo:</nz-form-label>
+            <nz-form-label nzFor="posto">Posto de Trabalho:</nz-form-label>
 
             <nz-form-control>
-              <input
-                nz-input
-                disabled
-                formControlName="centroCusto"
-                id="centroCusto"
-              />
+              <input nz-input formControlName="posto" id="posto" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="6">
+          <nz-form-item>
+            <nz-form-label nzFor="ACpf">CPF:</nz-form-label>
+
+            <nz-form-control>
+              <input nz-input formControlName="ACpf" id="ACpf" />
             </nz-form-control>
           </nz-form-item>
         </div>

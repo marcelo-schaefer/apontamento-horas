@@ -1,4 +1,3 @@
-import { ObservacaoComponent } from './components/observacao/observacao.component';
 import { NzTableModule } from 'ng-zorro-antd/table';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -30,11 +29,10 @@ import { NgxCurrencyModule } from 'ngx-currency';
 import { NzTimePickerModule } from 'ng-zorro-antd/time-picker';
 import { DadosSolicitanteComponent } from './components/dados-solicitante/dados-solicitante.component';
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
-import { TermoCienciaComponent } from './components/termo-ciencia/termo-ciencia.component';
-import { TipoSolicitacaoComponent } from './components/tipo-solicitacao/tipo-solicitacao.component';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
-import { DadosSolicitacaoComponent } from './components/dados-solicitacao/dados-solicitacao.component';
 import { DatePickerCustomComponent } from './components/date-picker-custom/date-picker-custom.component';
+import { DadosPlanoVidaComponent } from './components/dados-plano-vida/dados-plano-vida.component';
+import { AlteracaoBeneficiariosComponent } from './components/alteracao-beneficiarios/alteracao-beneficiarios.component';
 
 const NG_ZORRO_MODULES = [
   NzButtonModule,
@@ -65,12 +63,10 @@ const NG_ZORRO_MODULES = [
 ];
 
 const COMPONENTS = [
-  ObservacaoComponent,
   DadosSolicitanteComponent,
-  TermoCienciaComponent,
-  TipoSolicitacaoComponent,
-  DadosSolicitacaoComponent,
   DatePickerCustomComponent,
+  DadosPlanoVidaComponent,
+  AlteracaoBeneficiariosComponent,
 ];
 
 @NgModule({
