@@ -152,7 +152,7 @@ export class SolicitacaoComponent implements OnInit {
           this.criaNotificacao(
             'Erro ao persistir solicitaçãos, tente mais tarde ou contate o administrador.'
           );
-          // this.wfService.abortSubmit();
+          this.wfService.abortSubmit();
         }
       );
   }
