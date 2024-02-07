@@ -1,0 +1,154 @@
+@========================================================================================@
+@ [FEAT][#FABPRH-2335]: Serviço para consultar o ----s----------------------------------- @
+@========================================================================================@
+@ **************************************************************************** @
+@ Front End: Desevolvido por: Marcelo Filho                                    @
+@ Back End: Desenvolvido por: Rafael Oliveira                                  @
+@ Data: 07/02/2024                                                             @
+@ Revisão: 1                                                                   @
+@ Data Revisão:                                                                @
+@ Autor Revisão:                                                               @
+@ Descrição: Serviço para retornar o plano de seguro de vidao do colaborador   @
+@ **************************************************************************** @
+@==============================================================================@
+@ Import ----------------------------------------------------------------------@
+
+ 
+Definir interno.br.com.senior.automacao.bpm.hcm.beneficios.PlanoSeguroVida ws;
+@==============================================================================@
+                                                                       
+@==============================================================================@
+@ Funcao ----------------------------------------------------------------------@
+@==============================================================================@
+Definir Funcao buscarPlanos ();
+Definir Funcao buscarColaborador ();
+Definir Funcao escopoRegra();
+                                                                           
+@==============================================================================@
+@ Variaveis -------------------------------------------------------------------@
+@==============================================================================@
+Definir Numero nNumEmp;nNumEmp=0;
+Definir Numero nTipCol;nTipCol=0;
+Definir Numero nNumCad;nNumCad=0;
+Definir Numero nCodPla;nCodPla=0;
+Definir Numero nCodOem;nCodOem=0;
+Definir Alfa   aNomPla;aNomPla="";
+Definir Alfa   aNomOem;aNomOem="";
+Definir Data   dDatZer;dDatZer=0;
+Definir Alfa   aRetorno;aRetorno="";
+
+@------------------------------------------------------------------------------@
+@-------------------------------Colaborador                         -----------@
+@------------------------------------------------------------------------------@
+Definir Alfa aNomUsu; aNomUsu = ws.aUsuarioSolicitante;
+
+@------------------------------------------------------------------------------@
+@>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>@
+@------------------------------------------------------------------------------@
+@                                                                              @
+@                                                                              @
+@ -----------------------------------------------------------------------------@
+@   main              main              main              main           main  @
+@ -----------------------------------------------------------------------------@
+escopoRegra ();
+@                                                                              @
+@                                                                              @
+@ -----------------------------------------------------------------------------@
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<@
+@------------------------------------------------------------------------------@
+@------------------------------------------------------------------------------@
+@<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<@
+@------------------------------------------------------------------------------@
+@ FUNÇÕES ---------------------------------------------------------------------@
+@------------------------------------------------------------------------------@
+@>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>@
+@------------------------------------------------------------------------------@
+Funcao escopoRegra ();
+Inicio
+  buscarColaborador (); 
+  buscarPlanos (); 
+  ws.NCodigoPlano = nCodPla;
+  ws.ADescricaoPlano = aNomPla;
+  ws.NCodigoOperadora = nCodOem;
+  ws.ADescricaoOperadora = aNomOem;
+  ws.ARetorno = aRetorno;                                           
+Fim;   
+
+
+
+@==============================================================================@
+@------------------------------------------------------------------------------@
+@ Busca Colaborador -----------------------------------------------------------@
+@------------------------------------------------------------------------------@
+@==============================================================================@
+Funcao buscarColaborador ();
+Inicio
+  Definir Alfa aQuery;
+  Definir Alfa aCursor;
+  aQuery = " SELECT FUN.NUMEMP,FUN.TIPCOL,FUN.NUMCAD "+
+           " FROM R034FUN FUN  "+
+           " INNER JOIN R034USU USU ON (FUN.NUMEMP = USU.NUMEMP AND FUN.TIPCOL = USU.TIPCOL AND FUN.NUMCAD = USU.NUMCAD) "+
+           " INNER JOIN R910ENT ENT ON (ENT.CODENT = USU.CODUSU) "+
+           " WHERE UPPER(ENT.NOMENT) = UPPER(:aNomUsu) ";   
+
+  SQL_Criar(aCursor);
+  SQL_UsarSqlSenior2(aCursor,0);
+  SQL_UsarAbrangencia(aCursor, 0);
+  SQL_DefinirComando(aCursor, aQuery);    
+  SQL_DefinirAlfa (aCursor, "aNomUsu", aNomUsu);
+  SQL_AbrirCursor(aCursor);
+  Se(SQL_EOF(aCursor)=0)
+  {
+    SQL_RetornarInteiro(aCursor,"NUMEMP",nNumEmp);
+    SQL_RetornarInteiro(aCursor,"TIPCOL",nTipCol);
+    SQL_RetornarInteiro(aCursor,"NUMCAD",nNumCad);        
+  }
+  SQL_FecharCursor(aCursor);
+  SQL_Destruir(aCursor);
+                    
+Fim
+
+@==============================================================================@
+@------------------------------------------------------------------------------@
+@ Busca Planos ----------------------------------------------------------------@
+@------------------------------------------------------------------------------@
+@==============================================================================@
+Funcao buscarPlanos();
+{
+ aQuery = " SELECT PLA.CODPLA, PLA.NOMPLA, OEM.CODOEM, OEM.NOMOEM "+
+           " FROM R034FUN FUN  "+
+           " INNER JOIN R164ASS ASS ON (FUN.NUMEMP = ASS.NUMEMP AND FUN.TIPCOL = ASS.TIPCOL AND FUN.NUMCAD = ASS.NUMCAD) "+
+           " INNER JOIN R164PLA PLA ON (PLA.CODOEM = ASS.CODOEM AND PLA.CODPLA = ASS.CODPLA) "+
+           " INNER JOIN R032OEM OEM ON (OEM.CODOEM = PLA.CODOEM) "+
+           " WHERE FUN.NUMEMP =:nNumEmp "+
+           " AND   FUN.TIPCOL =:nTipCol "+
+           " AND   FUN.NUMCAD =:nNumCad  "+
+           " AND   ASS.MESINC <=:dDatSis "+
+           " AND   ( ASS.MESEXC >=:dDatSis OR ASS.MESEXC =:dDatZer ) "; 
+  SQL_Criar(aCursor);
+  SQL_UsarSqlSenior2(aCursor,0);
+  SQL_UsarAbrangencia(aCursor, 0);
+  SQL_DefinirComando(aCursor, aQuery);    
+  SQL_DefinirInteiro(aCursor,"nNumEmp",nNumEmp);
+  SQL_DefinirInteiro(aCursor,"nTipCol",nTipCol);
+  SQL_DefinirInteiro(aCursor,"nNumCad",nNumCad);  
+  SQL_DefinirData(aCursor,"dDatSis",DatSis);
+  SQL_DefinirData(aCursor,"dDatZer",dDatZer);    
+    
+  SQL_AbrirCursor(aCursor);    
+  Se (SQL_EOF(aCursor) = 0) 
+  {
+    SQL_RetornarInteiro   (aCursor, "CodOem", nCodOem);
+    SQL_RetornarAlfa      (aCursor, "NomOem", aNomOem);
+    SQL_RetornarInteiro   (aCursor, "CodPla", nCodPla);
+    SQL_RetornarAlfa      (aCursor, "NomPla", aNomPla);
+    aRetorno = "OK";            
+  }
+  Senao
+  {
+    aRetorno = "NOK";
+  }   
+  SQL_FecharCursor(aCursor);
+  SQL_Destruir(aCursor);
+  
+}

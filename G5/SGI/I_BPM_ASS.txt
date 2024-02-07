@@ -1,0 +1,77 @@
+
+--------------------------------------------------------------------------------
+Código: 1 - Descrição: Interface
+--------------------------------------------------------------------------------
+
+ECodUsu = CodUsu;
+--------------------------------------------------------------------------------
+Código: 2 - Descrição: Ação limparCampos
+--------------------------------------------------------------------------------
+
+LimparValorCampoSGI("R164ASS.CodOem");
+LimparValorCampoSGI("R164ASS.CodPla");
+LimparValorCampoSGI("R164ASS.MesInc");
+--------------------------------------------------------------------------------
+Código: 3 - Descrição: Tabela R164ASS
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+Código: 4 - Descrição: Tabela USU_TASS000
+--------------------------------------------------------------------------------
+
+Se ((CodOpe = "DepoisInserir") ou (CodOpe = "DepoisAlterar"))
+{
+
+}
+--------------------------------------------------------------------------------
+Código: 5 - Descrição: Tabela USU_TASS001
+--------------------------------------------------------------------------------
+
+Se ((CodOpe = "AntesInserir") ou (CodOpe = "AntesAlterar"))
+{
+    Definir Numero nValor; nValor = 0 ;
+    Definir Numero nNumEmp; nNumEmp = USU_TASS001_USU_NumEmp;
+    Definir Numero nTipCol; nTipCol = USU_TASS001_USU_TipCol;
+    Definir Numero nNumCad; nNumCad = USU_TASS001_USU_NumCad;
+    Definir Numero nCodOem; nCodOem = USU_TASS001_USU_CodOem;
+    Definir Numero nCodPla; nCodPla = USU_TASS001_USU_CodPla;
+    Definir Data   dMesInc; dMesInc = USU_TASS001_USU_MesInc;
+    Definir Data   dDatRev; dDatRev = USU_TASS001_USU_DatRev;
+    Definir Alfa aCursor;
+    Definir Alfa aQuery;aQuery = " SELECT SUM(USU_PERCEN) TOTAL "+
+                                 " FROM USU_TASS001 "+
+                                 " WHERE USU_NumEmp     =:nNumEmp "+
+                                       " AND USU_TipCol =:nTipCol "+
+                                       " AND USU_NumCad =:nNumCad "+
+                                       " AND USU_CodOem =:nCodOem "+
+                                       " AND USU_CodPla =:nCodPla "+
+                                       " AND USU_MesInc =:dMesInc "+
+                                       " AND USU_DatRev =:dDatRev ";                                                                                                  
+    SQL_Criar(aCursor);                  
+    SQL_UsarSqlSenior2(aCursor,0);       
+    SQL_UsarAbrangencia(aCursor, 0);     
+    SQL_DefinirComando(aCursor, aQuery);    
+    SQL_DefinirInteiro(aCursor, "nNumEmp", nNumEmp);
+    SQL_DefinirInteiro(aCursor, "nTipCol", nTipCol);
+    SQL_DefinirInteiro(aCursor, "nNumCad", nNumCad);
+    SQL_DefinirInteiro(aCursor, "nCodOem", nCodOem);
+    SQL_DefinirInteiro(aCursor, "nCodPla", nCodPla);
+    SQL_DefinirData(aCursor, "dMesInc", dMesInc);
+    SQL_DefinirData(aCursor, "dDatRev", dDatRev);             
+    SQL_AbrirCursor(aCursor);    
+    Se (SQL_EOF(aCursor) = 0) 
+    {
+      SQL_RetornarFlutuante(aCursor,"TOTAL",nValor);        
+    }   
+    SQL_FecharCursor(aCursor);
+    SQL_Destruir(aCursor); 
+    
+    Se (nValor > 100)
+    {
+      Definir Alfa aValor; ConverteMascara(1,nValor,aValor,"999,99");
+      Definir Alfa aMsg; aMsg = "% Distribuição '{"+aValor+"}' ultrapassa o limite de 100%";
+      mensagemLog(aMsg);
+    }     
+    
+}
