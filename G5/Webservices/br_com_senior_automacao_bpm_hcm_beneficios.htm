@@ -1,0 +1,282 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<HTML xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>br.com.senior.automacao.bpm.hcm.beneficios</title>
+	<link rel="stylesheet" type="text/css" href="senior.css">
+	<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-1">
+	<meta charset="ISO-8859-1">
+</head>
+
+<body>
+<!-- Titulo do Serviço -->
+
+<h1>br.com.senior.automacao.bpm.hcm.beneficios</h1>
+<!-- Breve descrição do serviço -->
+
+<h2>Tipo de execução</h2>
+<p>
+	Para cada tipo de execução, existem diferentes parâmetros que podem ser comuns a todas as portas. 
+	Acesse o Manual do Usuário na nuvem em "<a target="_blank" href="http://documentacao.senior.com.br">http://documentacao.senior.com.br</a>" para mais informações.
+</p>
+
+	<h2>WSDL</h2>
+	<ul>
+		<li>Síncrono: http://localhost:8080/g5-senior-services/rubi_Syncbr_com_senior_automacao_bpm_hcm_beneficios?wsdl</li>				
+		<li>Assíncrono: http://localhost:8080/g5-senior-services/rubi_Asyncbr_com_senior_automacao_bpm_hcm_beneficios?wsdl</li>	 
+		<li>Agendado: http://localhost:8080/g5-senior-services/rubi_Scheduledbr_com_senior_automacao_bpm_hcm_beneficios?wsdl</li>
+	</ul>	
+
+<!-- Indice das portas -->
+<h2>Portas</h2>
+<ul>
+			<li><a href="#planoSeguroVida">planoSeguroVida</a></li>
+			<li><a href="#gravarPlanoSeguroVida">gravarPlanoSeguroVida</a></li>
+	</ul>
+
+<!-- Portas -->
+	
+	<h3><a name="planoSeguroVida"></a>planoSeguroVida</h3>
+	<p></p>
+	<p><b>Necessita autenticação: </b>Sim</p>
+	<p><b>Situação de versão: </b> Atual </p>
+	<p><b>Versão: </b>1</p>
+		<p><b>Requisição: </b></p>
+
+	<pre>
+&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ser=&quot;http://services.senior.com.br&quot;&gt;
+  &lt;soapenv:Body&gt;
+    &lt;ser:planoSeguroVida&gt;
+      &lt;user&gt;<span class="bordo">String</span>&lt;/user&gt;
+      &lt;password&gt;<span class="bordo">String</span>&lt;/password&gt;
+      &lt;encryption&gt;<span class="bordo">Integer</span>&lt;/encryption&gt;
+      &lt;parameters&gt;
+        &lt;AUsuarioSolicitante&gt;<span class="bordo">String</span>&lt;/AUsuarioSolicitante&gt;
+      &lt;/parameters&gt;
+    &lt;/ser:planoSeguroVida&gt;
+  &lt;/soapenv:Body&gt;
+&lt;/soapenv:Envelope&gt;
+	
+	</pre>
+
+	<!-- tabela #1 -->
+			<p><b>Atributos de "parameters":</b></p>
+		<table>
+			<tr>
+				<th>Nome</th>
+				<th>Preenchimento</th>
+				<th>Tipo</th>
+				<th>Descrição</th>
+			</tr>
+																										<tr>
+						<td>AUsuarioSolicitante</TD>
+						<td> Opcional </TD>
+						<td>String</td>
+						<td></TD>
+					</tr>
+			        									</table>
+		
+	<p><b>Resposta:</b></p>
+	<pre>
+&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ser=&quot;http://services.senior.com.br&quot;&gt;
+  &lt;soapenv:Body&gt;
+    &lt;ser:planoSeguroVidaResponse&gt;
+      &lt;result&gt;
+        &lt;NCodigoPlano&gt;<span class="bordo">Integer</span>&lt;/NCodigoPlano&gt;
+        &lt;ADescricaoPlano&gt;<span class="bordo">String</span>&lt;/ADescricaoPlano&gt;
+        &lt;NCodigoOperadora&gt;<span class="bordo">Integer</span>&lt;/NCodigoOperadora&gt;
+        &lt;ADescricaoOperadora&gt;<span class="bordo">String</span>&lt;/ADescricaoOperadora&gt;
+        &lt;ARetorno&gt;<span class="bordo">String</span>&lt;/ARetorno&gt;
+        &lt;erroExecucao&gt;<span class="bordo">String</span>&lt;/erroExecucao&gt;
+      &lt;/result&gt;
+    &lt;/ser:planoSeguroVidaResponse&gt;
+  &lt;/soapenv:Body&gt;
+&lt;/soapenv:Envelope&gt;
+
+	</pre>
+	
+	<p><b>Atributos de "result":</b></p>
+		
+		<table>
+			<tr>
+				<th>Nome</th>
+				<th>Preenchimento</th>
+				<th>Tipo</th>
+				<th>Descrição</th>
+			</tr>
+		<tr>
+			<td>erroExecucao</td>
+			<td>Opcional</td>
+			<td>String</td>
+			<td></td>
+		</tr>			
+								<tr>
+						<td>NCodigoPlano</td>
+						<td> Opcional </td>
+					<td>Integer</td>
+						<td></td>
+					</tr>
+												<tr>
+						<td>ADescricaoPlano</td>
+						<td> Opcional </td>
+					<td>String</td>
+						<td></td>
+					</tr>
+												<tr>
+						<td>NCodigoOperadora</td>
+						<td> Opcional </td>
+					<td>Integer</td>
+						<td></td>
+					</tr>
+												<tr>
+						<td>ADescricaoOperadora</td>
+						<td> Opcional </td>
+					<td>String</td>
+						<td></td>
+					</tr>
+												<tr>
+						<td>ARetorno</td>
+						<td> Opcional </td>
+					<td>String</td>
+						<td></td>
+					</tr>
+									</table>	
+	
+	
+	<h3><a name="gravarPlanoSeguroVida"></a>gravarPlanoSeguroVida</h3>
+	<p></p>
+	<p><b>Necessita autenticação: </b>Sim</p>
+	<p><b>Situação de versão: </b> Atual </p>
+	<p><b>Versão: </b>1</p>
+		<p><b>Requisição: </b></p>
+
+	<pre>
+&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ser=&quot;http://services.senior.com.br&quot;&gt;
+  &lt;soapenv:Body&gt;
+    &lt;ser:gravarPlanoSeguroVida&gt;
+      &lt;user&gt;<span class="bordo">String</span>&lt;/user&gt;
+      &lt;password&gt;<span class="bordo">String</span>&lt;/password&gt;
+      &lt;encryption&gt;<span class="bordo">Integer</span>&lt;/encryption&gt;
+      &lt;parameters&gt;
+        &lt;NEmpresa&gt;<span class="bordo">Integer</span>&lt;/NEmpresa&gt;
+        &lt;NTipoColaborador&gt;<span class="bordo">Integer</span>&lt;/NTipoColaborador&gt;
+        &lt;NMatricula&gt;<span class="bordo">Integer</span>&lt;/NMatricula&gt;
+        &lt;NCodigoPlano&gt;<span class="bordo">Integer</span>&lt;/NCodigoPlano&gt;
+        &lt;NCodigoOperadora&gt;<span class="bordo">Integer</span>&lt;/NCodigoOperadora&gt;
+        &lt;beneficiarios&gt;
+          &lt;ANome&gt;<span class="bordo">String</span>&lt;/ANome&gt;
+          &lt;NCodigoParentesco&gt;<span class="bordo">Integer</span>&lt;/NCodigoParentesco&gt;
+          &lt;ADataNascimento&gt;<span class="bordo">String</span>&lt;/ADataNascimento&gt;
+          &lt;NDistribuicao&gt;<span class="bordo">Double</span>&lt;/NDistribuicao&gt;
+        &lt;/beneficiarios&gt;
+      &lt;/parameters&gt;
+    &lt;/ser:gravarPlanoSeguroVida&gt;
+  &lt;/soapenv:Body&gt;
+&lt;/soapenv:Envelope&gt;
+	
+	</pre>
+
+	<!-- tabela #1 -->
+			<p><b>Atributos de "parameters":</b></p>
+		<table>
+			<tr>
+				<th>Nome</th>
+				<th>Preenchimento</th>
+				<th>Tipo</th>
+				<th>Descrição</th>
+			</tr>
+																										<tr>
+						<td>NEmpresa</TD>
+						<td> Opcional </TD>
+						<td>Integer</td>
+						<td></TD>
+					</tr>
+			        																<tr>
+						<td>NTipoColaborador</TD>
+						<td> Opcional </TD>
+						<td>Integer</td>
+						<td></TD>
+					</tr>
+			        																<tr>
+						<td>NMatricula</TD>
+						<td> Opcional </TD>
+						<td>Integer</td>
+						<td></TD>
+					</tr>
+			        																<tr>
+						<td>NCodigoPlano</TD>
+						<td> Opcional </TD>
+						<td>Integer</td>
+						<td></TD>
+					</tr>
+			        																<tr>
+						<td>NCodigoOperadora</TD>
+						<td> Opcional </TD>
+						<td>Integer</td>
+						<td></TD>
+					</tr>
+			        																<tr>
+						<td>beneficiarios</TD>
+						<td> Opcional </TD>
+						<td>Set</td>
+						<td></TD>
+					</tr>
+			        			        			<tr>
+			<td>beneficiarios.ANome</td>
+			<td> Opcional </td>
+			<td>String</td>
+			<td></td>
+		</tr>
+					<tr>
+			<td>beneficiarios.NCodigoParentesco</td>
+			<td> Opcional </td>
+			<td>Integer</td>
+			<td></td>
+		</tr>
+					<tr>
+			<td>beneficiarios.ADataNascimento</td>
+			<td> Opcional </td>
+			<td>DateTime</td>
+			<td></td>
+		</tr>
+					<tr>
+			<td>beneficiarios.NDistribuicao</td>
+			<td> Opcional </td>
+			<td>Double</td>
+			<td></td>
+		</tr>
+						        									</table>
+		
+	<p><b>Resposta:</b></p>
+	<pre>
+&lt;soapenv:Envelope xmlns:soapenv=&quot;http://schemas.xmlsoap.org/soap/envelope/&quot; xmlns:ser=&quot;http://services.senior.com.br&quot;&gt;
+  &lt;soapenv:Body&gt;
+    &lt;ser:gravarPlanoSeguroVidaResponse&gt;
+      &lt;result&gt;
+        &lt;erroExecucao&gt;<span class="bordo">String</span>&lt;/erroExecucao&gt;
+      &lt;/result&gt;
+    &lt;/ser:gravarPlanoSeguroVidaResponse&gt;
+  &lt;/soapenv:Body&gt;
+&lt;/soapenv:Envelope&gt;
+
+	</pre>
+	
+	<p><b>Atributos de "result":</b></p>
+		
+		<table>
+			<tr>
+				<th>Nome</th>
+				<th>Preenchimento</th>
+				<th>Tipo</th>
+				<th>Descrição</th>
+			</tr>
+		<tr>
+			<td>erroExecucao</td>
+			<td>Opcional</td>
+			<td>String</td>
+			<td></td>
+		</tr>			
+					</table>	
+	
+</BODY>
+</HTML>
