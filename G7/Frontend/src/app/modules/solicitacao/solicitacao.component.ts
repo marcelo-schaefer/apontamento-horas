@@ -164,7 +164,7 @@ export class SolicitacaoComponent implements OnInit {
       nMatricula: this.solicitante.NMatricula,
       nCodigoPlano: this.planoSolicitante.NCodigoPlano,
       nCodigoOperadora: this.planoSolicitante.NCodigoOperadora,
-      beneficiartios: this.alteracaoBeneficiariosComponent.value,
+      beneficiarios: this.alteracaoBeneficiariosComponent.value,
     };
   }
 

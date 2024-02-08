@@ -6,7 +6,7 @@ export class PersisteSolicitacao {
   nMatricula: number;
   nCodigoPlano: number;
   nCodigoOperadora: number;
-  beneficiartios: Dependente[];
+  beneficiarios: Dependente[];
 }
 export class RetornoPersisteSolicitacao {
   outputData: {
