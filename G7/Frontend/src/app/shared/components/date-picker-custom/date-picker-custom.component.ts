@@ -100,7 +100,7 @@ export class DatePickerCustomComponent implements ControlValueAccessor {
   disabledDate = (current: Date): boolean => {
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
-    return current > currentDate;
+    return current < currentDate;
   };
 
   writeValue(date: Date): void {

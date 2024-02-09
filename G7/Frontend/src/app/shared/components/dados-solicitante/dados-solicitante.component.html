@@ -19,40 +19,99 @@
 
         <div nz-col [nzSpan]="6">
           <nz-form-item>
-            <nz-form-label nzFor="empresa">Empresa:</nz-form-label>
+            <nz-form-label nzFor="empresaSolicitante">Empresa:</nz-form-label>
 
             <nz-form-control>
-              <input nz-input formControlName="empresa" id="empresa" />
+              <input
+                nz-input
+                formControlName="empresaSolicitante"
+                id="empresaSolicitante"
+              />
             </nz-form-control>
           </nz-form-item>
         </div>
 
         <div nz-col [nzSpan]="6">
           <nz-form-item>
-            <nz-form-label nzFor="filial">Filial:</nz-form-label>
+            <nz-form-label nzFor="filialSolicitante">Filial:</nz-form-label>
 
             <nz-form-control>
-              <input nz-input formControlName="filial" id="filial" />
+              <input
+                nz-input
+                formControlName="filialSolicitante"
+                id="filialSolicitante"
+              />
             </nz-form-control>
           </nz-form-item>
         </div>
 
         <div nz-col [nzSpan]="6">
           <nz-form-item>
-            <nz-form-label nzFor="posto">Posto de Trabalho:</nz-form-label>
+            <nz-form-label nzFor="postoSolicitante"
+              >Posto de Trabalho:</nz-form-label
+            >
 
             <nz-form-control>
-              <input nz-input formControlName="posto" id="posto" />
+              <input
+                nz-input
+                formControlName="postoSolicitante"
+                id="postoSolicitante"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div
+        nz-row
+        [nzGutter]="24"
+        *ngIf="solicitante?.AEhGestor != 'S' && solicitante?.AEhRhu != 'S'"
+      >
+        <div nz-col [nzSpan]="6">
+          <nz-form-item>
+            <nz-form-label nzFor="centroCustoSolicitante"
+              >Centro de Custo:</nz-form-label
+            >
+
+            <nz-form-control>
+              <input
+                nz-input
+                formControlName="centroCustoSolicitante"
+                id="centroCustoSolicitante"
+              />
             </nz-form-control>
           </nz-form-item>
         </div>
 
         <div nz-col [nzSpan]="6">
           <nz-form-item>
-            <nz-form-label nzFor="ACpf">CPF:</nz-form-label>
+            <nz-form-label nzFor="DDataAdmissao"
+              >Data de Admissão:</nz-form-label
+            >
 
             <nz-form-control>
-              <input nz-input formControlName="ACpf" id="ACpf" />
+              <input
+                nz-input
+                formControlName="DDataAdmissao"
+                id="DDataAdmissao"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="6">
+          <nz-form-item>
+            <nz-form-label nzFor="solicitantePcd"
+              >Colaborador PCD:</nz-form-label
+            >
+
+            <nz-form-control>
+              <input
+                nz-input
+                lab
+                formControlName="solicitantePcd"
+                id="solicitantePcd"
+              />
             </nz-form-control>
           </nz-form-item>
         </div>

@@ -1,0 +1,156 @@
+<nz-card nzTitle="Dados do Colaborador" style="margin-top: 15px" nzBorderless>
+  <nz-spin [nzSpinning]="isLoading">
+    <form
+      nz-form
+      [formGroup]="formDadosDesligamento"
+      [nzLayout]="'vertical'"
+      autocomplete="off"
+    >
+      <div nz-row [nzGutter]="24">
+        <div nz-col [nzSpan]="8">
+          <nz-form-item>
+            <nz-form-label nzFor="nCausaDemissao"
+              >Causa da Demissão:</nz-form-label
+            >
+
+            <nz-form-control>
+              <nz-select
+                formControlName="nCausaDemissao"
+                id="nCausaDemissao"
+                nzShowSearch
+                nzPlaceHolder="Selecione um cauda de demissão"
+              >
+                <nz-option
+                  *ngFor="let o of motivosDesligamento?.causaDemissao"
+                  [nzValue]="o.NCodigo"
+                  [nzLabel]="o.NCodigo + ' - ' + o.ADescricao"
+                ></nz-option> </nz-select
+            ></nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="6">
+          <nz-form-item>
+            <nz-form-label nzFor="nMotivoDesligamento"
+              >Motivo do Desligamento:</nz-form-label
+            >
+
+            <nz-form-control>
+              <nz-select
+                formControlName="nMotivoDesligamento"
+                id="nMotivoDesligamento"
+                nzShowSearch
+                nzPlaceHolder="Selecione um motivo para o desligamento"
+              >
+                <nz-option
+                  *ngFor="let o of motivosDesligamento?.motivoDesligamento"
+                  [nzValue]="o.NCodigo"
+                  [nzLabel]="o.NCodigo + ' - ' + o.ADescricao"
+                ></nz-option> </nz-select
+            ></nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="5">
+          <nz-form-item>
+            <nz-form-label nzFor="dataDemissao"
+              >Data de Demissão:</nz-form-label
+            >
+
+            <nz-form-control nzErrorTip="Campo obrigatorio">
+              <app-date-picker-custom
+                formControlName="dataDemissao"
+                nzFormat="dd/MM/yyyy"
+              ></app-date-picker-custom>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="5">
+          <nz-form-item>
+            <nz-form-label nzFor="dataPagamento"
+              >Data do Pagamento:</nz-form-label
+            >
+
+            <nz-form-control nzErrorTip="Campo obrigatorio">
+              <app-date-picker-custom
+                formControlName="dataPagamento"
+                nzFormat="dd/MM/yyyy"
+              ></app-date-picker-custom>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row [nzGutter]="24">
+        <div nz-col [nzSpan]="6">
+          <nz-form-item>
+            <nz-form-label nzFor="nAvisoPrevio">Aviso Prévio:</nz-form-label>
+
+            <nz-form-control>
+              <nz-select
+                formControlName="nAvisoPrevio"
+                id="nAvisoPrevio"
+                nzShowSearch
+                nzPlaceHolder="Selecione um motivo para o desligamento"
+              >
+                <nz-option
+                  *ngFor="let o of listaAvisoPrevio"
+                  [nzValue]="o.NCodigo"
+                  [nzLabel]="o.NCodigo + ' - ' + o.ADescricao"
+                ></nz-option> </nz-select
+            ></nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="5">
+          <nz-form-item>
+            <nz-form-label nzFor="dataAvisoPrevio"
+              >Data do Aviso Prévio:</nz-form-label
+            >
+            <nz-form-control nzErrorTip="Campo obrigatorio">
+              <app-date-picker-custom
+                formControlName="dataAvisoPrevio"
+                nzFormat="dd/MM/yyyy"
+              ></app-date-picker-custom>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row [nzGutter]="24">
+        <div nz-col [nzSpan]="4">
+          <nz-form-item>
+            <nz-form-label nzFor="aLiberacaoAvisoPrevio"
+              >Liberação Aviso Prévio</nz-form-label
+            >
+
+            <nz-form-control>
+              <nz-select
+                formControlName="aLiberacaoAvisoPrevio"
+                id="aLiberacaoAvisoPrevio"
+                nzShowSearch
+                nzPlaceHolder="Sim/Não"
+              >
+                <nz-option nzValue="S" nzLabel="Sim"></nz-option>
+                <nz-option nzValue="N" nzLabel="Não"></nz-option> </nz-select
+            ></nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row [nzGutter]="24">
+        <div nz-col [nzSpan]="5">
+          <nz-form-item style="display: block">
+            <nz-form-control>
+              <app-file-upload
+                formControlName="anexoDocumento"
+                id="anexoDocumento"
+                titulo="Anexo Documento"
+              ></app-file-upload>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form> </nz-spin
+></nz-card>

@@ -9,12 +9,11 @@ import {
 import { DadosSolicitanteComponent } from 'src/app/shared/components/dados-solicitante/dados-solicitante.component';
 import { Colaborador } from 'src/app/services/colaborador/models/colaboradores.model';
 import { format } from 'date-fns';
-import { DadosPlanoVidaComponent } from 'src/app/shared/components/dados-plano-vida/dados-plano-vida.component';
-import { AlteracaoBeneficiariosComponent } from 'src/app/shared/components/alteracao-beneficiarios/alteracao-beneficiarios.component';
-import { Parentesco } from 'src/app/services/seguro-vida/models/parentesco';
-import { SeguroVidaService } from 'src/app/services/seguro-vida/seguro-vida.service';
-import { PersisteSolicitacao } from 'src/app/services/seguro-vida/models/persiste-solicitacao';
-import { PlanoSeguroVida } from 'src/app/services/seguro-vida/models/plano-seguro-vida';
+import { DadosColaboradorComponent } from 'src/app/shared/components/dados-colaborador/dados-colaborador.component';
+import { DesligamentoService } from 'src/app/services/desligamento/desligamento.service';
+import { MotivoDesligamento } from 'src/app/services/desligamento/models/motivo-desligamento';
+import { DadosDesligamentoComponent } from 'src/app/shared/components/dados-desligamento/dados-desligamento.component';
+import { ObservacaoComponent } from 'src/app/shared/components/observacao/observacao.component';
 
 @Component({
   selector: 'app-solicitacao',
@@ -25,21 +24,23 @@ export class SolicitacaoComponent implements OnInit {
   @ViewChild(DadosSolicitanteComponent, { static: true })
   dadosSolicitanteComponent: DadosSolicitanteComponent;
 
-  @ViewChild(DadosPlanoVidaComponent, { static: true })
-  dadosPlanoVidaComponent: DadosPlanoVidaComponent;
+  @ViewChild(DadosColaboradorComponent, { static: true })
+  dadosColaboradorComponent: DadosColaboradorComponent;
 
-  @ViewChild(AlteracaoBeneficiariosComponent, { static: true })
-  alteracaoBeneficiariosComponent: AlteracaoBeneficiariosComponent;
+  @ViewChild(DadosDesligamentoComponent, { static: true })
+  dadosDesligamentoComponent: DadosDesligamentoComponent;
+
+  @ViewChild(ObservacaoComponent, { static: true })
+  observacaoComponent: ObservacaoComponent;
 
   usernameSolicitante: string;
   solicitante: Colaborador;
-  planoSolicitante: PlanoSeguroVida;
-  listaGrausParentescos: Parentesco[];
+  motivosDesligamento: MotivoDesligamento;
 
   constructor(
     private wfService: WorkflowService,
     private colaboradorService: ColaboradorService,
-    private seguroVidaService: SeguroVidaService,
+    private desligamentoService: DesligamentoService,
     private notification: NzNotificationService
   ) {
     this.wfService.onSubmit(this.submit.bind(this));
@@ -48,10 +49,17 @@ export class SolicitacaoComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.usernameSolicitante = this.wfService.getUser().username;
     await this.buscaSolicitante();
-    await this.buscaPlanoSeguroVida();
-    await this.buscaGrauParentescos();
-    this.alteracaoBeneficiariosComponent.preencherListaParentescos(
-      this.listaGrausParentescos
+    await this.buscaMotivosDesligamento();
+    this.preencherFormularios();
+  }
+
+  preencherFormularios(): void {
+    this.dadosColaboradorComponent.preencherSolicitante(this.solicitante);
+    this.dadosColaboradorComponent.opcoesIniciais();
+
+    this.dadosDesligamentoComponent.preencheSolicitante(this.solicitante);
+    this.dadosDesligamentoComponent.preencheMotivosDesligamento(
+      this.motivosDesligamento
     );
   }
 
@@ -89,93 +97,33 @@ export class SolicitacaoComponent implements OnInit {
     this.dadosSolicitanteComponent.loadingForm(false);
   }
 
-  async buscaPlanoSeguroVida(): Promise<void> {
-    await this.seguroVidaService
-      .buscaPlanoSeguroVida(this.usernameSolicitante)
+  async buscaMotivosDesligamento(): Promise<void> {
+    await this.desligamentoService
+      .buscaMotivosDesliagmento()
       .toPromise()
       .then(
         (data) => {
-          if (data.outputData.ARetorno != 'OK') {
+          if (this.solicitante.ARetorno != 'OK') {
             this.criaNotificacao(
-              'Erro ao buscar seguro de vida do solicitante, ' +
+              'Erro ao buscar motivos do desligamento, ' +
                 data.outputData.ARetorno
             );
-          } else {
-            this.planoSolicitante = data.outputData;
-            this.dadosPlanoVidaComponent.preencherFormulario(
-              this.planoSolicitante
-            );
-          }
+          } else this.motivosDesligamento = data.outputData;
         },
         () => {
           this.criaNotificacao(
-            'Erro ao buscar seguro de vida do solicitante, tente mais tarde ou contate o administrador.'
+            'Erro ao buscar motivos do desligamento, tente mais tarde ou contate o administrador.'
           );
         }
       );
-  }
-
-  async buscaGrauParentescos(): Promise<void> {
-    await this.seguroVidaService
-      .buscaGrauParentescos()
-      .toPromise()
-      .then(
-        (data) => {
-          if (data.outputData.ARetorno != 'OK') {
-            this.criaNotificacao(
-              'Erro ao buscar graus de parentescos, ' + data.outputData.ARetorno
-            );
-          } else this.listaGrausParentescos = data.outputData.parentescos;
-        },
-        () => {
-          this.criaNotificacao(
-            'Erro ao buscar graus de parentescos, tente mais tarde ou contate o administrador.'
-          );
-        }
-      );
-  }
-
-  async persistirSolicitacao(): Promise<void> {
-    await this.seguroVidaService
-      .persistirSolicitacao(this.montaCorpoPersistencia())
-      .toPromise()
-      .then(
-        (data) => {
-          if (data.outputData.ARetorno != 'OK') {
-            this.criaNotificacao(
-              'Erro ao persistir solicitaçãos, ' + data.outputData.ARetorno
-            );
-            this.wfService.abortSubmit();
-          }
-        },
-        () => {
-          this.criaNotificacao(
-            'Erro ao persistir solicitaçãos, tente mais tarde ou contate o administrador.'
-          );
-          this.wfService.abortSubmit();
-        }
-      );
-  }
-
-  montaCorpoPersistencia(): PersisteSolicitacao {
-    return {
-      nEmpresa: this.solicitante.NCodigoEmpresa,
-      nTipoColaborador: this.solicitante.NTipoColaborador,
-      nMatricula: this.solicitante.NMatricula,
-      nCodigoPlano: this.planoSolicitante.NCodigoPlano,
-      nCodigoOperadora: this.planoSolicitante.NCodigoOperadora,
-      beneficiarios: this.alteracaoBeneficiariosComponent.value,
-    };
   }
 
   validarEnvio(): boolean {
-    return this.alteracaoBeneficiariosComponent.validarForm();
+    return true;
   }
 
-  async submit(step: WfProcessStep): Promise<WfFormData> {
+  submit(step: WfProcessStep): WfFormData {
     if (this.validarEnvio()) {
-      await this.persistirSolicitacao();
-
       return {
         formData: {
           ...this.dadosSolicitanteComponent.value,
@@ -183,11 +131,6 @@ export class SolicitacaoComponent implements OnInit {
           dataSolicitacao: format(new Date(), 'dd/MM/yyyy'),
           nomeProcesso: 'Solicitação de Alteração de Seguro de Vida',
           solicitante: JSON.stringify(this.solicitante),
-          planoSolicitante: JSON.stringify(this.planoSolicitante),
-          listaGrausParentescos: JSON.stringify(this.listaGrausParentescos),
-          dependentes: JSON.stringify(
-            this.alteracaoBeneficiariosComponent.value
-          ),
         },
       };
     }

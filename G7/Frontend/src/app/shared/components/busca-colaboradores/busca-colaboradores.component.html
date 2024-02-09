@@ -1,0 +1,29 @@
+<form [formGroup]="formColaborador">
+  <nz-form-item>
+    <nz-form-control nzErrorTip="Campo Obrigatório">
+      <nz-select
+        formControlName="colaboradorSelecionado"
+        id="colaborador"
+        nzAutoFocus
+        nzShowSearch
+        nzServerSearch
+        (nzOnSearch)="onSearch($event)"
+        [nzLoading]="isColaboradoresLoading"
+        [nzDropdownRender]="colaboradorLoading"
+        (nzScrollToBottom)="onScrollToBottom()"
+        nzPlaceHolder="Selecione um colaborador"
+        (ngModelChange)="selectColaborador($event)"
+        [compareWith]="compareColaborador"
+      >
+        <nz-option
+          *ngFor="let o of colaboradores"
+          [nzValue]="o"
+          [nzLabel]="o.NMatricula + ' - ' + o.ANome"
+        ></nz-option>
+      </nz-select>
+      <ng-template #colaboradorLoading>
+        <nz-spin *ngIf="isColaboradoresLoading"></nz-spin>
+      </ng-template>
+    </nz-form-control>
+  </nz-form-item>
+</form>

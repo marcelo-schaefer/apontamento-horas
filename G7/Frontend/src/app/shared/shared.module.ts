@@ -31,8 +31,11 @@ import { DadosSolicitanteComponent } from './components/dados-solicitante/dados-
 import { NzToolTipModule } from 'ng-zorro-antd/tooltip';
 import { NzTabsModule } from 'ng-zorro-antd/tabs';
 import { DatePickerCustomComponent } from './components/date-picker-custom/date-picker-custom.component';
-import { DadosPlanoVidaComponent } from './components/dados-plano-vida/dados-plano-vida.component';
-import { AlteracaoBeneficiariosComponent } from './components/alteracao-beneficiarios/alteracao-beneficiarios.component';
+import { DadosColaboradorComponent } from './components/dados-colaborador/dados-colaborador.component';
+import { BuscaColaboradoresComponent } from './components/busca-colaboradores/busca-colaboradores.component';
+import { DadosDesligamentoComponent } from './components/dados-desligamento/dados-desligamento.component';
+import { FileUploadComponent } from './components/file-upload/file-upload.component';
+import { ObservacaoComponent } from './components/observacao/observacao.component';
 
 const NG_ZORRO_MODULES = [
   NzButtonModule,
@@ -65,8 +68,11 @@ const NG_ZORRO_MODULES = [
 const COMPONENTS = [
   DadosSolicitanteComponent,
   DatePickerCustomComponent,
-  DadosPlanoVidaComponent,
-  AlteracaoBeneficiariosComponent,
+  DadosColaboradorComponent,
+  BuscaColaboradoresComponent,
+  DadosDesligamentoComponent,
+  FileUploadComponent,
+  ObservacaoComponent,
 ];
 
 @NgModule({

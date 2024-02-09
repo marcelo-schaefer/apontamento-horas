@@ -1,0 +1,144 @@
+<nz-card nzTitle="Dados do Colaborador" style="margin-top: 15px" nzBorderless>
+  <nz-spin [nzSpinning]="isLoading">
+    <form
+      nz-form
+      [formGroup]="formDadosColaborador"
+      [nzLayout]="'vertical'"
+      autocomplete="off"
+    >
+      <div nz-row [nzGutter]="24">
+        <div nz-col [nzSpan]="8">
+          <nz-form-item>
+            <nz-form-label nzFor="colaborador">Matrícula/Nome:</nz-form-label>
+
+            <nz-form-control>
+              <app-busca-colaboradores
+                (colaboradorSelecionado)="preencherColaboradorSelecionado($event)"
+              ></app-busca-colaboradores>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="8">
+          <nz-form-item>
+            <nz-form-label nzFor="postoColaboradorSelecionado"
+              >Posto de Trabalho:</nz-form-label
+            >
+
+            <nz-form-control nzErrorTip="Campo obrigatorio">
+              <input
+                nz-input
+                formControlName="postoColaboradorSelecionado"
+                id="postoColaboradorSelecionado"
+                placeholder="Posto de Trabalho do Colaborador"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="8">
+          <nz-form-item>
+            <nz-form-label nzFor="centroCustoColaboradorSelecionado"
+              >Centro de Custo:</nz-form-label
+            >
+
+            <nz-form-control nzErrorTip="Campo obrigatorio">
+              <input
+                nz-input
+                formControlName="centroCustoColaboradorSelecionado"
+                id="centroCustoColaboradorSelecionado"
+                placeholder="Centro de Custo do Colaborador"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row [nzGutter]="24">
+        <div nz-col [nzSpan]="4">
+          <nz-form-item>
+            <nz-form-label nzFor="dataAdmissaoColaboradorSelecionado"
+              >Data Admissão:</nz-form-label
+            >
+
+            <nz-form-control nzErrorTip="Campo obrigatorio">
+              <input
+                nz-input
+                formControlName="dataAdmissaoColaboradorSelecionado"
+                id="dataAdmissaoColaboradorSelecionado"
+                placeholder="Data Admissão do Colaborador"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="4">
+          <nz-form-item>
+            <nz-form-label nzFor="colaboradorSelecionadoPcd"
+              >Colaborador PCD</nz-form-label
+            >
+
+            <nz-form-control>
+              <input
+                nz-input
+                formControlName="colaboradorSelecionadoPcd"
+                id="colaboradorSelecionadoPcd"
+                placeholder="Colaborador PCD"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="4">
+          <nz-form-item>
+            <nz-form-label nzFor="colaboradorSelecionadoPom"
+              >Restrição POM:</nz-form-label
+            >
+
+            <nz-form-control>
+              <input
+                nz-input
+                formControlName="colaboradorSelecionadoPom"
+                id="colaboradorSelecionadoPom"
+                placeholder="Colaborador POM"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label nzFor="AEstabilidade">Estabilidade:</nz-form-label>
+
+            <nz-form-control>
+              <input
+                nz-input
+                formControlName="AEstabilidade"
+                id="AEstabilidade"
+                placeholder="Estabilidade do Colaborador"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+
+      <div nz-row [nzGutter]="24">
+        <div nz-col [nzSpan]="4">
+          <nz-form-item>
+            <nz-form-label nzFor="DDataTermino"
+              >Data Término Contrato:</nz-form-label
+            >
+
+            <nz-form-control nzErrorTip="Campo obrigatorio">
+              <input
+                nz-input
+                formControlName="DDataTermino"
+                id="DDataTermino"
+                placeholder="Data Término do Colaborador"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+      </div>
+    </form> </nz-spin
+></nz-card>

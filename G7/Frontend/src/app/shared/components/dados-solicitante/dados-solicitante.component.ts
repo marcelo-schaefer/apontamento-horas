@@ -9,6 +9,7 @@ import { Colaborador } from 'src/app/services/colaborador/models/colaboradores.m
 })
 export class DadosSolicitanteComponent implements OnInit {
   formDadosSolicitante: FormGroup;
+  solicitante: Colaborador;
 
   isLoading = false;
 
@@ -21,33 +22,51 @@ export class DadosSolicitanteComponent implements OnInit {
   buildForm(): void {
     this.formDadosSolicitante = this.fb.group({
       solicitante: { value: '', disabled: true },
+      empresaSolicitante: { value: '', disabled: true },
+      filialSolicitante: { value: '', disabled: true },
+      postoSolicitante: { value: '', disabled: true },
+      centroCustoSolicitante: { value: '', disabled: true },
+      solicitantePcd: { value: '', disabled: true },
       NMatricula: { value: '', disabled: true },
       ANome: { value: '', disabled: true },
       NTipoColaborador: { value: '', disabled: true },
-      empresa: { value: '', disabled: true },
       NCodigoEmpresa: { value: '', disabled: true },
       ADescricaoEmpresa: { value: '', disabled: true },
-      filial: { value: '', disabled: true },
       NCodigoFilial: { value: '', disabled: true },
       ADescricaoFilial: { value: '', disabled: true },
-      posto: { value: '', disabled: true },
       ACodigoPosto: { value: '', disabled: true },
       ADescricaoPosto: { value: '', disabled: true },
-      ACpf: { value: '', disabled: true },
+      ACodigoCenrtoCusto: { value: '', disabled: true },
+      ADescricaoCenrtoCusto: { value: '', disabled: true },
+      DDataAdmissao: { value: '', disabled: true },
+      AColaboradorPcd: { value: '', disabled: true },
+      AColaboradorPom: { value: '', disabled: true },
+      AEstabilidade: { value: '', disabled: true },
+      DDataTermino: { value: '', disabled: true },
+      AEhGestor: { value: '', disabled: true },
+      AEhRhu: { value: '', disabled: true },
     });
   }
 
   preencherFormulario(solicitante: Colaborador): void {
+    this.solicitante = solicitante;
     this.formDadosSolicitante.patchValue({
       ...solicitante,
       solicitante:
         solicitante.NMatricula.toString() + ' - ' + solicitante.ANome,
-      empresa:
+      empresaSolicitante:
         solicitante.NCodigoEmpresa.toString() +
         ' - ' +
         solicitante.ADescricaoEmpresa,
-      posto: solicitante.ACodigoPosto + ' - ' + solicitante.ADescricaoPosto,
-      filial: solicitante.NCodigoFilial + ' - ' + solicitante.ADescricaoFilial,
+      filialSolicitante:
+        solicitante.NCodigoFilial + ' - ' + solicitante.ADescricaoFilial,
+      postoSolicitante:
+        solicitante.ACodigoPosto + ' - ' + solicitante.ADescricaoPosto,
+      centroCustoSolicitante:
+        solicitante.ACodigoCenrtoCusto +
+        ' - ' +
+        solicitante.ADescricaoCenrtoCusto,
+      solicitantePcd: solicitante.AColaboradorPcd == 'S' ? 'Sim' : 'Não',
     });
   }
 

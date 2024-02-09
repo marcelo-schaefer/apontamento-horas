@@ -2,19 +2,27 @@ export class Colaborador {
   NMatricula: number;
   ANome: string;
   NTipoColaborador: number;
-  empresa: string;
   NCodigoEmpresa: number;
   ADescricaoEmpresa: string;
-  filial: string;
   NCodigoFilial: string;
   ADescricaoFilial: string;
-  posto: string;
   ACodigoPosto: string;
   ADescricaoPosto: string;
-  ACpf: string;
+  ACodigoCenrtoCusto: string;
+  ADescricaoCenrtoCusto: string;
+  DDataAdmissao: string;
+  AColaboradorPcd: string;
+  AColaboradorPom: string;
+  AEstabilidade: string;
+  DDataTermino: string;
+  AEhGestor: string;
+  AEhRhu: string;
   ARetorno: string;
 }
 
 export class RetornoColaborador {
   outputData: Colaborador;
+}
+export class RetornoColaboradores {
+  outputData: { colaboradores: Colaborador[]; ARetorno: string };
 }
