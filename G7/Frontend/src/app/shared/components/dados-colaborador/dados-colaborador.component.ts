@@ -2,6 +2,7 @@ import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { Colaborador } from 'src/app/services/colaborador/models/colaboradores.model';
 import { BuscaColaboradoresComponent } from '../busca-colaboradores/busca-colaboradores.component';
+import { ColaboradorDesligado } from '../../model/colaborador-desligado';
 
 @Component({
   selector: 'app-dados-colaborador',
@@ -14,7 +15,10 @@ export class DadosColaboradorComponent implements OnInit {
 
   formDadosColaborador: FormGroup;
 
+  colaboradorSelecionado: Colaborador;
   isLoading = false;
+
+  cousaDemissao: number;
 
   constructor(private fb: FormBuilder) {}
 
@@ -25,11 +29,13 @@ export class DadosColaboradorComponent implements OnInit {
   buildForm(): void {
     this.formDadosColaborador = this.fb.group({
       colaboradorSelecionado: { value: '', disabled: true },
-      postoColaboradorSelecionado: { value: '', disabled: true },
-      centroCustoColaboradorSelecionado: { value: '', disabled: true },
-      dataAdmissaoColaboradorSelecionado: { value: '', disabled: true },
-      colaboradorSelecionadoPcd: { value: '', disabled: true },
-      colaboradorSelecionadoPom: { value: '', disabled: true },
+      matriculaColaborador: { value: '', disabled: true },
+      nomeColaborador: { value: '', disabled: true },
+      postoColaborador: { value: '', disabled: true },
+      centroCustoColaborador: { value: '', disabled: true },
+      dataAdmissaoColaborador: { value: '', disabled: true },
+      colaboradorDesligadoPcd: { value: '', disabled: true },
+      colaboradorDesligadoPom: { value: '', disabled: true },
       NMatricula: { value: '', disabled: true },
       ANome: { value: '', disabled: true },
       NTipoColaborador: { value: '', disabled: true },
@@ -52,20 +58,23 @@ export class DadosColaboradorComponent implements OnInit {
   }
 
   preencherColaboradorSelecionado(colaborador: Colaborador): void {
+    this.colaboradorSelecionado = colaborador;
     this.formDadosColaborador.patchValue({
       ...colaborador,
       colaboradorSelecionado:
         colaborador.NMatricula.toString() + ' - ' + colaborador.ANome,
-      postoColaboradorSelecionado:
+      matriculaColaborador: colaborador.NMatricula,
+      nomeColaborador: colaborador.ANome,
+      postoColaborador:
         colaborador.ACodigoPosto + ' - ' + colaborador.ADescricaoPosto,
-      centroCustoColaboradorSelecionado:
+      centroCustoColaborador:
         colaborador.ACodigoCenrtoCusto +
         ' - ' +
         colaborador.ADescricaoCenrtoCusto,
-      dataAdmissaoColaboradorSelecionado: colaborador.DDataAdmissao,
-      colaboradorSelecionadoPcd:
+      dataAdmissaoColaborador: colaborador.DDataAdmissao,
+      colaboradorDesligadoPcd:
         colaborador.AColaboradorPcd == 'S' ? 'Sim' : 'Não',
-      colaboradorSelecionadoPom:
+      colaboradorDesligadoPom:
         colaborador.AColaboradorPom == 'S' ? 'Sim' : 'Não',
     });
   }
@@ -78,8 +87,8 @@ export class DadosColaboradorComponent implements OnInit {
     this.buscaColaboradoresComponent.opcoesIniciais();
   }
 
-  get value(): Colaborador {
-    return this.formDadosColaborador.getRawValue() as Colaborador;
+  get value(): ColaboradorDesligado {
+    return this.formDadosColaborador.getRawValue() as ColaboradorDesligado;
   }
 
   validarForm(): boolean {
@@ -92,5 +101,9 @@ export class DadosColaboradorComponent implements OnInit {
 
   desabilitarForm(): void {
     this.formDadosColaborador.disable();
+  }
+
+  definirCausaDemissao(causa: number): void {
+    this.cousaDemissao = causa;
   }
 }

@@ -19,6 +19,8 @@
       "DDataTermino": "31/12/2024",
       "AEhGestor": "S",
       "AEhRhu": "N",
+      "APapelRhu": "Matriz RHU",
+      "AUsuarioGestor": "senior.mfilho",
       "ARetorno": "OK"
     }
   },
@@ -44,7 +46,9 @@
           "AEstabilidade": "Indeterminado",
           "DDataTermino": "15/07/2024",
           "AEhGestor": "N",
-          "AEhRhu": "S"
+          "AEhRhu": "S",
+          "APapelRhu": "Matriz RHU",
+          "AUsuarioGestor": "senior.mfilho"
         },
         {
           "NMatricula": 98765,
@@ -64,7 +68,9 @@
           "AEstabilidade": "Término 30/06/2023 - 02 - Falta Grave",
           "DDataTermino": "30/06/2023",
           "AEhGestor": "N",
-          "AEhRhu": "N"
+          "AEhRhu": "N",
+          "APapelRhu": "Matriz RHU",
+          "AUsuarioGestor": "senior.mfilho"
         },
         {
           "NMatricula": 45678,
@@ -84,7 +90,9 @@
           "AEstabilidade": "Indeterminado",
           "DDataTermino": "10/03/2025",
           "AEhGestor": "S",
-          "AEhRhu": "S"
+          "AEhRhu": "S",
+          "APapelRhu": "Matriz RHU",
+          "AUsuarioGestor": "senior.mfilho"
         }
       ],
       "ARetorno": "OK"

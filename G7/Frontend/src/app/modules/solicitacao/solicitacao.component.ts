@@ -14,6 +14,8 @@ import { DesligamentoService } from 'src/app/services/desligamento/desligamento.
 import { MotivoDesligamento } from 'src/app/services/desligamento/models/motivo-desligamento';
 import { DadosDesligamentoComponent } from 'src/app/shared/components/dados-desligamento/dados-desligamento.component';
 import { ObservacaoComponent } from 'src/app/shared/components/observacao/observacao.component';
+import { ColaboradorDesligado } from 'src/app/shared/model/colaborador-desligado';
+import { Solicitante } from 'src/app/shared/model/solicitante';
 
 @Component({
   selector: 'app-solicitacao',
@@ -36,6 +38,7 @@ export class SolicitacaoComponent implements OnInit {
   usernameSolicitante: string;
   solicitante: Colaborador;
   motivosDesligamento: MotivoDesligamento;
+  solicitacaoPorColaborador: boolean;
 
   constructor(
     private wfService: WorkflowService,
@@ -54,6 +57,8 @@ export class SolicitacaoComponent implements OnInit {
   }
 
   preencherFormularios(): void {
+    this.solicitacaoPorColaborador =
+      this.solicitante.AEhGestor != 'S' && this.solicitante.AEhRhu != 'S';
     this.dadosColaboradorComponent.preencherSolicitante(this.solicitante);
     this.dadosColaboradorComponent.opcoesIniciais();
 
@@ -118,19 +123,74 @@ export class SolicitacaoComponent implements OnInit {
       );
   }
 
+  transportarCausaDemissao(causa: number): void {
+    if (this.solicitacaoPorColaborador)
+      this.dadosColaboradorComponent.definirCausaDemissao(causa);
+  }
+
+  converteSolicitanteParaColaboradorDesligado(
+    solicitante: Solicitante
+  ): ColaboradorDesligado {
+    return {
+      ...solicitante,
+      matriculaColaborador: solicitante.matriculaSolicitante,
+      nomeColaborador: solicitante.nomeSolicitante,
+      postoColaborador: solicitante.postoSolicitante,
+      centroCustoColaborador: solicitante.centroCustoSolicitante,
+      dataAdmissaoColaborador: solicitante.DDataAdmissao,
+      colaboradorDesligadoPcd:
+        solicitante.AColaboradorPcd == 'S' ? 'Sim' : 'Não',
+      colaboradorDesligadoPom:
+        solicitante.AColaboradorPom == 'S' ? 'Sim' : 'Não',
+    };
+  }
+
+  verificaProxiamEtapa(): string {
+    return this.solicitacaoPorColaborador ||
+      (this.solicitante.AEhRhu == 'S' && this.solicitante.AEhGestor == 'N')
+      ? 'gestor'
+      : this.dadosDesligamentoComponent.value.aLiberacaoAvisoPrevio == 'S'
+      ? 'bp'
+      : 'rhu';
+  }
+
   validarEnvio(): boolean {
-    return true;
+    return (
+      this.dadosDesligamentoComponent.validarForm() &&
+      (!this.solicitacaoPorColaborador
+        ? this.dadosColaboradorComponent.validarForm()
+        : true)
+    );
   }
 
   submit(step: WfProcessStep): WfFormData {
     if (this.validarEnvio()) {
+      const colaboradorDesligado = this.solicitacaoPorColaborador
+        ? this.converteSolicitanteParaColaboradorDesligado(
+            this.dadosSolicitanteComponent.value
+          )
+        : this.dadosColaboradorComponent.value;
       return {
         formData: {
           ...this.dadosSolicitanteComponent.value,
+          ...this.dadosDesligamentoComponent.value,
+          ...colaboradorDesligado,
           numeroSolicitacao: step.processInstanceId,
           dataSolicitacao: format(new Date(), 'dd/MM/yyyy'),
-          nomeProcesso: 'Solicitação de Alteração de Seguro de Vida',
+          nomeProcesso: 'Solicitação de Desligamento',
           solicitante: JSON.stringify(this.solicitante),
+          dadosDesligamento: JSON.stringify(
+            this.dadosDesligamentoComponent.value
+          ),
+          colaborador: JSON.stringify(colaboradorDesligado),
+          tipoDemissao: this.solicitacaoPorColaborador
+            ? 'Por parte do colaborador'
+            : 'Por parte da empresa',
+          observacaoSolicitante: this.observacaoComponent.value.observacao,
+          caminhoSolicitacao: this.verificaProxiamEtapa(),
+          usuarioGestorImediato: colaboradorDesligado.AUsuarioGestor,
+          papelRhu: colaboradorDesligado.APapelRhu,
+          statusSolicitacao: 'Em andamento',
         },
       };
     }

@@ -1,6 +1,7 @@
 import { FormGroup, FormBuilder } from '@angular/forms';
 import { Component, OnInit } from '@angular/core';
 import { Colaborador } from 'src/app/services/colaborador/models/colaboradores.model';
+import { Solicitante } from '../../model/solicitante';
 
 @Component({
   selector: 'app-dados-solicitante',
@@ -22,6 +23,8 @@ export class DadosSolicitanteComponent implements OnInit {
   buildForm(): void {
     this.formDadosSolicitante = this.fb.group({
       solicitante: { value: '', disabled: true },
+      matriculaSolicitante: { value: '', disabled: true },
+      nomeSolicitante: { value: '', disabled: true },
       empresaSolicitante: { value: '', disabled: true },
       filialSolicitante: { value: '', disabled: true },
       postoSolicitante: { value: '', disabled: true },
@@ -52,6 +55,8 @@ export class DadosSolicitanteComponent implements OnInit {
     this.solicitante = solicitante;
     this.formDadosSolicitante.patchValue({
       ...solicitante,
+      matriculaSolicitante: solicitante.NMatricula,
+      nomeSolicitante: solicitante.ANome,
       solicitante:
         solicitante.NMatricula.toString() + ' - ' + solicitante.ANome,
       empresaSolicitante:
@@ -70,8 +75,8 @@ export class DadosSolicitanteComponent implements OnInit {
     });
   }
 
-  get value(): Colaborador {
-    return this.formDadosSolicitante.getRawValue() as Colaborador;
+  get value(): Solicitante {
+    return this.formDadosSolicitante.getRawValue() as Solicitante;
   }
 
   loadingForm(loading: boolean): void {

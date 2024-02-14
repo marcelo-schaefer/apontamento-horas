@@ -13,12 +13,13 @@
               >Causa da Demissão:</nz-form-label
             >
 
-            <nz-form-control>
+            <nz-form-control nzErrorTip="Campo obrigatorio">
               <nz-select
                 formControlName="nCausaDemissao"
                 id="nCausaDemissao"
                 nzShowSearch
                 nzPlaceHolder="Selecione um cauda de demissão"
+                (ngModelChange)="emitirCausaDemissao($event)"
               >
                 <nz-option
                   *ngFor="let o of motivosDesligamento?.causaDemissao"
@@ -35,7 +36,7 @@
               >Motivo do Desligamento:</nz-form-label
             >
 
-            <nz-form-control>
+            <nz-form-control nzErrorTip="Campo obrigatorio">
               <nz-select
                 formControlName="nMotivoDesligamento"
                 id="nMotivoDesligamento"
@@ -61,6 +62,7 @@
               <app-date-picker-custom
                 formControlName="dataDemissao"
                 nzFormat="dd/MM/yyyy"
+                (ngModelChange)="dataDemissaoPreenchida($event)"
               ></app-date-picker-custom>
             </nz-form-control>
           </nz-form-item>
@@ -87,7 +89,7 @@
           <nz-form-item>
             <nz-form-label nzFor="nAvisoPrevio">Aviso Prévio:</nz-form-label>
 
-            <nz-form-control>
+            <nz-form-control nzErrorTip="Campo obrigatorio">
               <nz-select
                 formControlName="nAvisoPrevio"
                 id="nAvisoPrevio"
@@ -108,24 +110,40 @@
             <nz-form-label nzFor="dataAvisoPrevio"
               >Data do Aviso Prévio:</nz-form-label
             >
-            <nz-form-control nzErrorTip="Campo obrigatorio">
+            <nz-form-control [nzErrorTip]="avisoPrevioErrorTpl">
               <app-date-picker-custom
                 formControlName="dataAvisoPrevio"
                 nzFormat="dd/MM/yyyy"
               ></app-date-picker-custom>
+
+              <ng-template #avisoPrevioErrorTpl let-control>
+                <ng-container *ngIf="control.hasError('required')">
+                  Campo obrigatório
+                </ng-container>
+
+                <ng-container
+                  *ngIf="control.hasError('avisoPrevioAntesDemissao')"
+                >
+                  O aviso deve ser antes da data de desligamento
+                </ng-container>
+              </ng-template>
             </nz-form-control>
           </nz-form-item>
         </div>
       </div>
 
-      <div nz-row [nzGutter]="24">
+      <div
+        nz-row
+        [nzGutter]="24"
+        *ngIf="solicitante.AEhGestor == 'S' || solicitante.AEhRhu == 'S'"
+      >
         <div nz-col [nzSpan]="4">
           <nz-form-item>
             <nz-form-label nzFor="aLiberacaoAvisoPrevio"
               >Liberação Aviso Prévio</nz-form-label
             >
 
-            <nz-form-control>
+            <nz-form-control nzErrorTip="Campo obrigatorio">
               <nz-select
                 formControlName="aLiberacaoAvisoPrevio"
                 id="aLiberacaoAvisoPrevio"
@@ -140,7 +158,7 @@
       </div>
 
       <div nz-row [nzGutter]="24">
-        <div nz-col [nzSpan]="5">
+        <div nz-col [nzSpan]="8">
           <nz-form-item style="display: block">
             <nz-form-control>
               <app-file-upload
@@ -152,5 +170,16 @@
           </nz-form-item>
         </div>
       </div>
-    </form> </nz-spin
-></nz-card>
+
+      <div
+        nz-row
+        [nzGutter]="24"
+        *ngIf="solicitante.AEhGestor != 'S' && solicitante.AEhRhu != 'S'"
+      >
+        <div nz-col [nzSpan]="5">
+          <a href="" target="_blank"> Entrevista de desligamento</a>
+        </div>
+      </div>
+    </form>
+  </nz-spin></nz-card
+>

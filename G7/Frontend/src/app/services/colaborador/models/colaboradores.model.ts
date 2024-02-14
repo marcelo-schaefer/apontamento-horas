@@ -17,6 +17,8 @@ export class Colaborador {
   DDataTermino: string;
   AEhGestor: string;
   AEhRhu: string;
+  AUsuarioGestor: string;
+  APapelRhu: string;
   ARetorno: string;
 }
 
