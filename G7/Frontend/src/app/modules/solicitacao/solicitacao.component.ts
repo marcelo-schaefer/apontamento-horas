@@ -124,7 +124,7 @@ export class SolicitacaoComponent implements OnInit {
   }
 
   transportarCausaDemissao(causa: number): void {
-    if (this.solicitacaoPorColaborador)
+    if (!this.solicitacaoPorColaborador)
       this.dadosColaboradorComponent.definirCausaDemissao(causa);
   }
 
@@ -145,11 +145,12 @@ export class SolicitacaoComponent implements OnInit {
     };
   }
 
-  verificaProxiamEtapa(): string {
+  verificaProxiamEtapa(colaborador: ColaboradorDesligado): string {
     return this.solicitacaoPorColaborador ||
       (this.solicitante.AEhRhu == 'S' && this.solicitante.AEhGestor == 'N')
       ? 'gestor'
-      : this.dadosDesligamentoComponent.value.aLiberacaoAvisoPrevio == 'S'
+      : this.dadosDesligamentoComponent.value.aLiberacaoAvisoPrevio == 'S' &&
+        colaborador.AEhAtacadao == 'S' // Colaborador for do Atacadão
       ? 'bp'
       : 'rhu';
   }
@@ -187,7 +188,7 @@ export class SolicitacaoComponent implements OnInit {
             ? 'Por parte do colaborador'
             : 'Por parte da empresa',
           observacaoSolicitante: this.observacaoComponent.value.observacao,
-          caminhoSolicitacao: this.verificaProxiamEtapa(),
+          caminhoSolicitacao: this.verificaProxiamEtapa(colaboradorDesligado),
           usuarioGestorImediato: colaboradorDesligado.AUsuarioGestor,
           papelRhu: colaboradorDesligado.APapelRhu,
           statusSolicitacao: 'Em andamento',

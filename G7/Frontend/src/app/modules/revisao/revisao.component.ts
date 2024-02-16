@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { WfFormData } from 'src/app/core/service/workflow/workflow-cockpit/dist/workflow-cockpit';
 import { WorkflowService } from 'src/app/core/service/workflow/workflow.service';
 import { Colaborador } from 'src/app/services/colaborador/models/colaboradores.model';
 import { DadosColaboradorComponent } from 'src/app/shared/components/dados-colaborador/dados-colaborador.component';
@@ -7,13 +8,14 @@ import { DadosSolicitanteComponent } from 'src/app/shared/components/dados-solic
 import { ObservacaoComponent } from 'src/app/shared/components/observacao/observacao.component';
 import { ColaboradorDesligado } from 'src/app/shared/model/colaborador-desligado';
 import { DadoDesligamento } from 'src/app/shared/model/dado-desligamento';
+import { Solicitante } from 'src/app/shared/model/solicitante';
 
 @Component({
-  selector: 'app-detalhes',
-  templateUrl: './detalhes.component.html',
-  styleUrls: ['./detalhes.component.scss'],
+  selector: 'app-revisao',
+  templateUrl: './revisao.component.html',
+  styleUrls: ['./revisao.component.scss'],
 })
-export class DetalhesComponent implements OnInit {
+export class RevisaoComponent implements OnInit {
   @ViewChild(DadosSolicitanteComponent, { static: true })
   dadosSolicitanteComponent: DadosSolicitanteComponent;
 
@@ -35,7 +37,9 @@ export class DetalhesComponent implements OnInit {
   @ViewChild('observacaoComponentSegundaValidacao', { static: true })
   observacaoComponentSegundaValidacao: ObservacaoComponent;
 
-  constructor(private wfService: WorkflowService) {}
+  constructor(private wfService: WorkflowService) {
+    this.wfService.onSubmit(this.submit.bind(this));
+  }
 
   solicitante: Colaborador;
   colaboradorDesligado: ColaboradorDesligado;
@@ -71,19 +75,17 @@ export class DetalhesComponent implements OnInit {
       this.dadosDesligamentoComponent.preencheSolicitante(this.solicitante);
       this.dadosDesligamentoComponent.preencherFormulario(dadosDesligamento);
       this.dadosDesligamentoComponent.apresentarComoValidador();
-      this.dadosDesligamentoComponent.desabilitarForm();
 
       if (!this.solicitacaoPorColaborador) {
         this.dadosColaboradorComponent.preencherFormulario(
           this.colaboradorDesligado
         );
-        this.dadosColaboradorComponent.desabilitarForm();
-      }
+        this.dadosColaboradorComponent.preencherSolicitante(this.solicitante);
+      } else this.dadosDesligamentoComponent.desabilitarAvisoPrevio();
 
       this.observacaoComponentSolicitante.preencherDados(
         value?.observacaoSolicitante || ''
       );
-      this.observacaoComponentSolicitante.desabilitar();
 
       if (this.caminhoSolicitacao == 'gestor') {
         this.tituloObservacaoPrimeiraValidacao =
@@ -124,5 +126,60 @@ export class DetalhesComponent implements OnInit {
         this.observacaoComponentSegundaValidacao.desabilitar();
       }
     });
+  }
+
+  transportarCausaDemissao(causa: number): void {
+    if (!this.solicitacaoPorColaborador)
+      this.dadosColaboradorComponent.definirCausaDemissao(causa);
+  }
+
+  converteSolicitanteParaColaboradorDesligado(
+    solicitante: Solicitante
+  ): ColaboradorDesligado {
+    return {
+      ...solicitante,
+      matriculaColaborador: solicitante.matriculaSolicitante,
+      nomeColaborador: solicitante.nomeSolicitante,
+      postoColaborador: solicitante.postoSolicitante,
+      centroCustoColaborador: solicitante.centroCustoSolicitante,
+      dataAdmissaoColaborador: solicitante.DDataAdmissao,
+      colaboradorDesligadoPcd:
+        solicitante.AColaboradorPcd == 'S' ? 'Sim' : 'Não',
+      colaboradorDesligadoPom:
+        solicitante.AColaboradorPom == 'S' ? 'Sim' : 'Não',
+    };
+  }
+
+  validarEnvio(): boolean {
+    return (
+      this.dadosDesligamentoComponent.validarForm() &&
+      (!this.solicitacaoPorColaborador
+        ? this.dadosColaboradorComponent.validarForm()
+        : true)
+    );
+  }
+
+  submit(): WfFormData {
+    if (this.validarEnvio()) {
+      const colaboradorDesligado = this.solicitacaoPorColaborador
+        ? this.converteSolicitanteParaColaboradorDesligado(
+            this.dadosSolicitanteComponent.value
+          )
+        : this.dadosColaboradorComponent.value;
+      return {
+        formData: {
+          ...this.dadosDesligamentoComponent.value,
+          ...colaboradorDesligado,
+          solicitante: JSON.stringify(this.solicitante),
+          dadosDesligamento: JSON.stringify(
+            this.dadosDesligamentoComponent.value
+          ),
+          colaborador: JSON.stringify(colaboradorDesligado),
+          observacaoSolicitante:
+            this.observacaoComponentSolicitante.value.observacao,
+        },
+      };
+    }
+    this.wfService.abortSubmit();
   }
 }

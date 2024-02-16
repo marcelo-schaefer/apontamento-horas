@@ -66,8 +66,23 @@ export class DadosDesligamentoComponent implements OnInit {
     });
   }
 
+  preencherFormulario(dados: DadoDesligamento): void {
+    this.preencheMotivosDesligamento(dados.motivosDesligamento);
+    this.formDadosDesligamento.patchValue({
+      ...dados,
+      dataDemissao: new Date(dados.dataDemissao),
+      dataPagamento: new Date(dados.dataPagamento),
+      dataAvisoPrevio: new Date(dados.dataAvisoPrevio),
+    });
+  }
+
   preencheSolicitante(solicitante: Colaborador): void {
-    this.solicitante = solicitante;
+    this.solicitante = JSON.parse(JSON.stringify(solicitante)) as Colaborador;
+  }
+
+  apresentarComoValidador(): void {
+    this.solicitante.AEhGestor = 'S';
+    this.solicitante.AEhRhu = 'S';
   }
 
   preencheMotivosDesligamento(motivosDesligamento: MotivoDesligamento): void {
@@ -147,7 +162,8 @@ export class DadosDesligamentoComponent implements OnInit {
       this.notification.error('Atenção', 'É obrigatorio incluir um anexo');
 
     return (
-      this.formDadosDesligamento.valid &&
+      (this.formDadosDesligamento.valid ||
+        this.formDadosDesligamento.disabled) &&
       this.fileUploadComponent.attachments.length > 0
     );
   }
@@ -158,17 +174,32 @@ export class DadosDesligamentoComponent implements OnInit {
 
   desabilitarForm(): void {
     this.formDadosDesligamento.disable();
+    this.fileUploadComponent.desabilitarForm();
+  }
+
+  habilitarParaValidacoes(): void {
+    this.formDadosDesligamento.get('aLiberacaoAvisoPrevio').disable();
+    this.formDadosDesligamento.get('dataPagamento').enable();
+    this.fileUploadComponent.desabilitarForm();
+  }
+
+  habilitarAvisoPrevio(): void {
+    this.formDadosDesligamento.get('aLiberacaoAvisoPrevio').enable();
+  }
+
+  desabilitarAvisoPrevio(): void {
+    this.formDadosDesligamento.get('aLiberacaoAvisoPrevio').disable();
   }
 
   preencheListaAvisoPrevio(): void {
     this.listaAvisoPrevio = [
       { NCodigo: 1, ADescricao: 'Trabalhado' } as Motivo,
       { NCodigo: 2, ADescricao: 'Indenizado' } as Motivo,
+      { NCodigo: 3, ADescricao: 'Ausência/Dispensa' } as Motivo,
     ];
 
     if (this.solicitante.AEhGestor == 'S' || this.solicitante.AEhRhu == 'S')
       this.listaAvisoPrevio = this.listaAvisoPrevio.concat([
-        { NCodigo: 3, ADescricao: 'Ausência/Dispensa' } as Motivo,
         {
           NCodigo: 4,
           ADescricao: 'Trabalhado Parcial (Novo Emprego)',

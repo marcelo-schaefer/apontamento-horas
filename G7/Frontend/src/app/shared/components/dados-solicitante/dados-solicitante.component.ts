@@ -48,6 +48,9 @@ export class DadosSolicitanteComponent implements OnInit {
       DDataTermino: { value: '', disabled: true },
       AEhGestor: { value: '', disabled: true },
       AEhRhu: { value: '', disabled: true },
+      AUsuarioGestor: { value: '', disabled: true },
+      APapelRhu: { value: '', disabled: true },
+      AEhAtacadao: { value: '', disabled: true },
     });
   }
 

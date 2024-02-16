@@ -1,5 +1,7 @@
 <app-dados-solicitante></app-dados-solicitante>
-<app-dados-colaborador [hidden]="!usernameSolicitante"></app-dados-colaborador>
+<app-dados-colaborador
+  [hidden]="solicitacaoPorColaborador"
+></app-dados-colaborador>
 <app-dados-desligamento
   (causaDemissaoSelecionada)="transportarCausaDemissao($event)"
 ></app-dados-desligamento>

@@ -1,4 +1,4 @@
-<nz-card nzTitle="Dados do Colaborador" style="margin-top: 15px" nzBorderless>
+<nz-card nzTitle="Dados do Desligamento" style="margin-top: 15px" nzBorderless>
   <nz-spin [nzSpinning]="isLoading">
     <form
       nz-form
@@ -135,7 +135,7 @@
       <div
         nz-row
         [nzGutter]="24"
-        *ngIf="solicitante.AEhGestor == 'S' || solicitante.AEhRhu == 'S'"
+        *ngIf="solicitante?.AEhGestor == 'S' || solicitante?.AEhRhu == 'S'"
       >
         <div nz-col [nzSpan]="4">
           <nz-form-item>
@@ -174,7 +174,7 @@
       <div
         nz-row
         [nzGutter]="24"
-        *ngIf="solicitante.AEhGestor != 'S' && solicitante.AEhRhu != 'S'"
+        *ngIf="solicitante?.AEhGestor != 'S' && solicitante?.AEhRhu != 'S'"
       >
         <div nz-col [nzSpan]="5">
           <a href="" target="_blank"> Entrevista de desligamento</a>

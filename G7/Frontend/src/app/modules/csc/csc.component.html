@@ -2,7 +2,9 @@
 <app-dados-colaborador
   [hidden]="solicitacaoPorColaborador"
 ></app-dados-colaborador>
-<app-dados-desligamento></app-dados-desligamento>
+<app-dados-desligamento
+  (causaDemissaoSelecionada)="transportarCausaDemissao($event)"
+></app-dados-desligamento>
 <nz-card style="margin-top: 15px" nzTitle="Observações" nzBorderless>
   <app-observacao
     label="Observação do Solicitante"
@@ -14,12 +16,12 @@
     #observacaoComponentPrimeiraValidacao
   ></app-observacao>
   <app-observacao
+    [hidden]="caminhoSolicitacao != 'gestor' && caminhoSolicitacao != 'bp'"
     label="Observação do BP"
     #observacaoComponentBp
   ></app-observacao>
   <app-observacao
-    [hidden]="caminhoValidacao != 'csc' && caminhoValidacao != 'rh'"
-    [label]="tituloObservacaoSegundaValidacao"
-    #observacaoComponentSegundaValidacao
+    label="Observação do CSC Desligamento"
+    #observacaoComponentCsc
   ></app-observacao>
 </nz-card>

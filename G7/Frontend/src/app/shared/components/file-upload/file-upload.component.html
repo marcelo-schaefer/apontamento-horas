@@ -24,7 +24,7 @@
     <button
       nz-button
       nzType="link"
-      *ngIf="attachments[0]?.isExclude"
+      *ngIf="attachments[0]?.isExclude && !desabilitar"
       (click)="remove(attachments[0])"
     >
       <span nz-icon nzType="delete" nzTheme="outline"></span>

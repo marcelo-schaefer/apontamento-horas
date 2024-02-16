@@ -54,6 +54,9 @@ export class DadosColaboradorComponent implements OnInit {
       DDataTermino: { value: '', disabled: true },
       AEhGestor: { value: '', disabled: true },
       AEhRhu: { value: '', disabled: true },
+      AUsuarioGestor: { value: '', disabled: true },
+      APapelRhu: { value: '', disabled: true },
+      AEhAtacadao: { value: '', disabled: true },
     });
   }
 
@@ -79,6 +82,10 @@ export class DadosColaboradorComponent implements OnInit {
     });
   }
 
+  preencherFormulario(colaborador: Colaborador): void {
+    this.buscaColaboradoresComponent.preencherColaborador(colaborador);
+  }
+
   preencherSolicitante(solicitante: Colaborador): void {
     this.buscaColaboradoresComponent.preencherSolicitante(solicitante);
   }
@@ -100,7 +107,7 @@ export class DadosColaboradorComponent implements OnInit {
   }
 
   desabilitarForm(): void {
-    this.formDadosColaborador.disable();
+    this.buscaColaboradoresComponent.desabilitarForm();
   }
 
   definirCausaDemissao(causa: number): void {

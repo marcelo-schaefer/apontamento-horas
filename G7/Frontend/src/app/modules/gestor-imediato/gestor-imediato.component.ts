@@ -1,4 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import {
+  WfFormData,
+  WfProcessStep,
+} from 'src/app/core/service/workflow/workflow-cockpit/dist/workflow-cockpit';
 import { WorkflowService } from 'src/app/core/service/workflow/workflow.service';
 import { Colaborador } from 'src/app/services/colaborador/models/colaboradores.model';
 import { DadosColaboradorComponent } from 'src/app/shared/components/dados-colaborador/dados-colaborador.component';
@@ -9,11 +13,11 @@ import { ColaboradorDesligado } from 'src/app/shared/model/colaborador-desligado
 import { DadoDesligamento } from 'src/app/shared/model/dado-desligamento';
 
 @Component({
-  selector: 'app-detalhes',
-  templateUrl: './detalhes.component.html',
-  styleUrls: ['./detalhes.component.scss'],
+  selector: 'app-gestor-imediato',
+  templateUrl: './gestor-imediato.component.html',
+  styleUrls: ['./gestor-imediato.component.scss'],
 })
-export class DetalhesComponent implements OnInit {
+export class GestorImediatoComponent implements OnInit {
   @ViewChild(DadosSolicitanteComponent, { static: true })
   dadosSolicitanteComponent: DadosSolicitanteComponent;
 
@@ -26,16 +30,15 @@ export class DetalhesComponent implements OnInit {
   @ViewChild('observacaoComponentSolicitante', { static: true })
   observacaoComponentSolicitante: ObservacaoComponent;
 
-  @ViewChild('observacaoComponentPrimeiraValidacao', { static: true })
-  observacaoComponentPrimeiraValidacao: ObservacaoComponent;
+  @ViewChild('observacaoComponentGestor', { static: true })
+  observacaoComponentGestor: ObservacaoComponent;
 
   @ViewChild('observacaoComponentBp', { static: true })
   observacaoComponentBp: ObservacaoComponent;
 
-  @ViewChild('observacaoComponentSegundaValidacao', { static: true })
-  observacaoComponentSegundaValidacao: ObservacaoComponent;
-
-  constructor(private wfService: WorkflowService) {}
+  constructor(private wfService: WorkflowService) {
+    this.wfService.onSubmit(this.submit.bind(this));
+  }
 
   solicitante: Colaborador;
   colaboradorDesligado: ColaboradorDesligado;
@@ -43,7 +46,6 @@ export class DetalhesComponent implements OnInit {
   solicitacaoPorColaborador: boolean;
 
   tituloObservacaoPrimeiraValidacao: string;
-  tituloObservacaoSegundaValidacao: string;
   caminhoSolicitacao: string;
   caminhoValidacao: string;
 
@@ -73,6 +75,9 @@ export class DetalhesComponent implements OnInit {
       this.dadosDesligamentoComponent.apresentarComoValidador();
       this.dadosDesligamentoComponent.desabilitarForm();
 
+      if (value.tipoDemissao == 'Por parte do colaborador')
+        this.dadosDesligamentoComponent.habilitarAvisoPrevio();
+
       if (!this.solicitacaoPorColaborador) {
         this.dadosColaboradorComponent.preencherFormulario(
           this.colaboradorDesligado
@@ -85,44 +90,64 @@ export class DetalhesComponent implements OnInit {
       );
       this.observacaoComponentSolicitante.desabilitar();
 
-      if (this.caminhoSolicitacao == 'gestor') {
-        this.tituloObservacaoPrimeiraValidacao =
-          'Observação do Gestor Imediato';
-        this.observacaoComponentPrimeiraValidacao.preencherDados(
-          value?.observacaoGestorImediato || ''
-        );
-        this.observacaoComponentPrimeiraValidacao.desabilitar();
-      } else if (this.caminhoSolicitacao == 'rhu') {
-        this.tituloObservacaoPrimeiraValidacao = 'Observação do RHU';
-        this.observacaoComponentPrimeiraValidacao.preencherDados(
-          value?.observacaoRhu || ''
-        );
-        this.observacaoComponentPrimeiraValidacao.desabilitar();
-      }
+      this.observacaoComponentGestor.preencherDados(
+        value?.observacaoGestorImediato || ''
+      );
 
-      if (this.colaboradorDesligado.AEhAtacadao == 'S') {
-        this.observacaoComponentBp.apresentarAvisoPrevio();
-        this.observacaoComponentBp.preencherAvisoPrevio(
-          value?.aprovarAvisoPrevio
-        );
-      }
-      this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
-      this.observacaoComponentBp.desabilitar();
-
-      if (this.caminhoValidacao == 'csc') {
-        this.tituloObservacaoSegundaValidacao =
-          'Observação do CSC Desligamento';
-        this.observacaoComponentSegundaValidacao.preencherDados(
-          value?.observacaoCsc || ''
-        );
-        this.observacaoComponentSegundaValidacao.desabilitar();
-      } else if (this.caminhoValidacao == 'rh') {
-        this.tituloObservacaoSegundaValidacao = 'Observação do RH Operações';
-        this.observacaoComponentSegundaValidacao.preencherDados(
-          value?.observacaoRh || ''
-        );
-        this.observacaoComponentSegundaValidacao.desabilitar();
+      if (this.caminhoValidacao == 'bp' || this.caminhoSolicitacao == 'bp') {
+        if (this.colaboradorDesligado.AEhAtacadao == 'S')
+          this.observacaoComponentBp.apresentarAvisoPrevio();
+        this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
+        this.observacaoComponentBp.desabilitar();
       }
     });
+  }
+
+  verificaProxiamEtapa(): string {
+    return this.colaboradorDesligado.AEhAtacadao == 'S' &&
+      (this.dadosDesligamentoComponent.value.aLiberacaoAvisoPrevio == 'S' ||
+        (this.dadosDesligamentoComponent.value.nCausaDemissao == 4 &&
+          !!this.colaboradorDesligado.AEstabilidade))
+      ? 'bp'
+      : this.colaboradorDesligado.AEhAtacadao == 'S'
+      ? 'rh'
+      : 'csc';
+  }
+
+  validarEnvio(): boolean {
+    return (
+      this.dadosDesligamentoComponent.validarForm() &&
+      this.observacaoComponentGestor.formularioValido()
+    );
+  }
+
+  submit(step: WfProcessStep): WfFormData {
+    if (step.nextAction.name != 'Aprovar')
+      this.observacaoComponentGestor.tornarObrigatorio();
+    else this.observacaoComponentGestor.tornarOpcional();
+
+    if (this.validarEnvio()) {
+      return {
+        formData: {
+          ...this.dadosDesligamentoComponent.value,
+          dadosDesligamento: JSON.stringify(
+            this.dadosDesligamentoComponent.value
+          ),
+          statusSolicitacao:
+            step.nextAction.name == 'Aprovar'
+              ? 'Aprovado'
+              : step.nextAction.name == 'Reprovar'
+              ? 'Reprovado'
+              : 'Em andamento',
+          observacaoGestorImediato:
+            this.observacaoComponentGestor.value.observacao,
+          caminhoValidacao:
+            step.nextAction.name == 'Revisar'
+              ? 'gestor'
+              : this.verificaProxiamEtapa(),
+        },
+      };
+    }
+    this.wfService.abortSubmit();
   }
 }

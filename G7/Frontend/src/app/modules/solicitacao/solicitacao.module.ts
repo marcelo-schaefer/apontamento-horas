@@ -5,7 +5,6 @@ import { SolicitacaoRoutingModule } from './solicitacao-routing.module';
 
 @NgModule({
   declarations: [SolicitacaoComponent],
-
   imports: [SolicitacaoRoutingModule, SharedModule],
 })
 export class SolicitacaoModule {}

@@ -19,6 +19,7 @@ export class Colaborador {
   AEhRhu: string;
   AUsuarioGestor: string;
   APapelRhu: string;
+  AEhAtacadao: string;
   ARetorno: string;
 }
 

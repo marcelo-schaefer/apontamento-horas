@@ -34,6 +34,8 @@ export class FileUploadComponent implements ControlValueAccessor {
   public attachments: DocumentModel[] = [];
   public files: NzUploadFile[] = [];
 
+  desabilitar = false;
+
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   onChange = (attachments: DocumentModel[]): void => {};
   onTouched = (): void => {};
@@ -166,5 +168,9 @@ export class FileUploadComponent implements ControlValueAccessor {
     this.onTouched();
 
     return errorInUpload;
+  }
+
+  desabilitarForm(): void {
+    this.desabilitar = true;
   }
 }

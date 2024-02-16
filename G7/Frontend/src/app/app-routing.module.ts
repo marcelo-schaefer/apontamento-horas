@@ -16,6 +16,44 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: 'revisao',
+    loadChildren: () =>
+      import('./modules/revisao/revisao.module').then((m) => m.RevisaoModule),
+    pathMatch: 'full',
+  },
+  {
+    path: 'gestorImediato',
+    loadChildren: () =>
+      import('./modules/gestor-imediato/gestor-imediato.module').then(
+        (m) => m.GestorImediatoModule
+      ),
+    pathMatch: 'full',
+  },
+  {
+    path: 'rhu',
+    loadChildren: () =>
+      import('./modules/rhu/rhu.module').then((m) => m.RhuModule),
+    pathMatch: 'full',
+  },
+  {
+    path: 'bp',
+    loadChildren: () =>
+      import('./modules/bp/bp.module').then((m) => m.BpModule),
+    pathMatch: 'full',
+  },
+  {
+    path: 'csc',
+    loadChildren: () =>
+      import('./modules/csc/csc.module').then((m) => m.CscModule),
+    pathMatch: 'full',
+  },
+  {
+    path: 'rhOperacoes',
+    loadChildren: () =>
+      import('./modules/rh/rh.module').then((m) => m.RhModule),
+    pathMatch: 'full',
+  },
+  {
     path: 'detalhes',
     loadChildren: () =>
       import('./modules/detalhes/detalhes.module').then(

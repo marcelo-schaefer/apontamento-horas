@@ -9,17 +9,12 @@
     #observacaoComponentSolicitante
   ></app-observacao>
   <app-observacao
-    [hidden]="caminhoSolicitacao != 'rhu' && caminhoSolicitacao != 'gestor'"
-    [label]="tituloObservacaoPrimeiraValidacao"
-    #observacaoComponentPrimeiraValidacao
+    label="Observação do Gestor Imediato"
+    #observacaoComponentGestor
   ></app-observacao>
   <app-observacao
+    [hidden]="caminhoValidacao != 'bp' && caminhoSolicitacao != 'bp'"
     label="Observação do BP"
     #observacaoComponentBp
-  ></app-observacao>
-  <app-observacao
-    [hidden]="caminhoValidacao != 'csc' && caminhoValidacao != 'rh'"
-    [label]="tituloObservacaoSegundaValidacao"
-    #observacaoComponentSegundaValidacao
   ></app-observacao>
 </nz-card>

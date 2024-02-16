@@ -1,4 +1,8 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import {
+  WfFormData,
+  WfProcessStep,
+} from 'src/app/core/service/workflow/workflow-cockpit/dist/workflow-cockpit';
 import { WorkflowService } from 'src/app/core/service/workflow/workflow.service';
 import { Colaborador } from 'src/app/services/colaborador/models/colaboradores.model';
 import { DadosColaboradorComponent } from 'src/app/shared/components/dados-colaborador/dados-colaborador.component';
@@ -9,11 +13,11 @@ import { ColaboradorDesligado } from 'src/app/shared/model/colaborador-desligado
 import { DadoDesligamento } from 'src/app/shared/model/dado-desligamento';
 
 @Component({
-  selector: 'app-detalhes',
-  templateUrl: './detalhes.component.html',
-  styleUrls: ['./detalhes.component.scss'],
+  selector: 'app-bp',
+  templateUrl: './bp.component.html',
+  styleUrls: ['./bp.component.scss'],
 })
-export class DetalhesComponent implements OnInit {
+export class BpComponent implements OnInit {
   @ViewChild(DadosSolicitanteComponent, { static: true })
   dadosSolicitanteComponent: DadosSolicitanteComponent;
 
@@ -32,20 +36,15 @@ export class DetalhesComponent implements OnInit {
   @ViewChild('observacaoComponentBp', { static: true })
   observacaoComponentBp: ObservacaoComponent;
 
-  @ViewChild('observacaoComponentSegundaValidacao', { static: true })
-  observacaoComponentSegundaValidacao: ObservacaoComponent;
-
-  constructor(private wfService: WorkflowService) {}
+  constructor(private wfService: WorkflowService) {
+    this.wfService.onSubmit(this.submit.bind(this));
+  }
 
   solicitante: Colaborador;
   colaboradorDesligado: ColaboradorDesligado;
-
   solicitacaoPorColaborador: boolean;
-
   tituloObservacaoPrimeiraValidacao: string;
-  tituloObservacaoSegundaValidacao: string;
   caminhoSolicitacao: string;
-  caminhoValidacao: string;
 
   ngOnInit(): void {
     void this.getProcessVariables();
@@ -58,7 +57,6 @@ export class DetalhesComponent implements OnInit {
         this.solicitante.AEhGestor != 'S' && this.solicitante.AEhRhu != 'S';
 
       this.caminhoSolicitacao = value.caminhoSolicitacao;
-      this.caminhoValidacao = value.caminhoValidacao;
       const dadosDesligamento = JSON.parse(
         value.dadosDesligamento
       ) as DadoDesligamento;
@@ -91,38 +89,49 @@ export class DetalhesComponent implements OnInit {
         this.observacaoComponentPrimeiraValidacao.preencherDados(
           value?.observacaoGestorImediato || ''
         );
-        this.observacaoComponentPrimeiraValidacao.desabilitar();
       } else if (this.caminhoSolicitacao == 'rhu') {
         this.tituloObservacaoPrimeiraValidacao = 'Observação do RHU';
         this.observacaoComponentPrimeiraValidacao.preencherDados(
           value?.observacaoRhu || ''
         );
-        this.observacaoComponentPrimeiraValidacao.desabilitar();
       }
 
-      if (this.colaboradorDesligado.AEhAtacadao == 'S') {
+      if (this.colaboradorDesligado.AEhAtacadao == 'S')
         this.observacaoComponentBp.apresentarAvisoPrevio();
-        this.observacaoComponentBp.preencherAvisoPrevio(
-          value?.aprovarAvisoPrevio
-        );
-      }
       this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
-      this.observacaoComponentBp.desabilitar();
-
-      if (this.caminhoValidacao == 'csc') {
-        this.tituloObservacaoSegundaValidacao =
-          'Observação do CSC Desligamento';
-        this.observacaoComponentSegundaValidacao.preencherDados(
-          value?.observacaoCsc || ''
-        );
-        this.observacaoComponentSegundaValidacao.desabilitar();
-      } else if (this.caminhoValidacao == 'rh') {
-        this.tituloObservacaoSegundaValidacao = 'Observação do RH Operações';
-        this.observacaoComponentSegundaValidacao.preencherDados(
-          value?.observacaoRh || ''
-        );
-        this.observacaoComponentSegundaValidacao.desabilitar();
-      }
     });
+  }
+
+  verificaProxiamEtapa(): string {
+    return this.caminhoSolicitacao == 'gestor' &&
+      this.colaboradorDesligado.AEhAtacadao == 'S' &&
+      this.dadosDesligamentoComponent.value.aLiberacaoAvisoPrevio == 'S'
+      ? 'gestor'
+      : this.colaboradorDesligado.AEhAtacadao == 'S'
+      ? 'rh'
+      : 'csc';
+  }
+
+  validarEnvio(): boolean {
+    return this.observacaoComponentBp.formularioValido();
+  }
+
+  submit(step: WfProcessStep): WfFormData {
+    if (step.nextAction.name == 'Reprovar')
+      this.observacaoComponentBp.tornarObrigatorio();
+    else this.observacaoComponentBp.tornarOpcional();
+
+    if (this.validarEnvio()) {
+      return {
+        formData: {
+          statusSolicitacao:
+            step.nextAction.name == 'Reprovar' ? 'Reprovado' : 'Em andamento',
+          observacaoBp: this.observacaoComponentBp.value.observacao,
+          aprovarAvisoPrevio: this.observacaoComponentBp.valueAvisoPrevio,
+          caminhoValidacao: this.verificaProxiamEtapa(),
+        },
+      };
+    }
+    this.wfService.abortSubmit();
   }
 }
