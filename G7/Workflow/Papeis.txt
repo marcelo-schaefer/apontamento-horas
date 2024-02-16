@@ -1,0 +1,5 @@
+BP;
+CSC Desligamento;
+RH Operações;
+
+Variável de processo "papelRhu" envia para um papel na etapa RHU;

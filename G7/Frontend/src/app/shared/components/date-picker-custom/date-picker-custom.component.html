@@ -1,0 +1,28 @@
+<div>
+  <nz-date-picker
+    id="datePicker"
+    #datePicker
+    [nzOpen]="this.openDatePicker"
+    class="date-picker-custom"
+    [(ngModel)]="dateDate"
+    [disabled]="isDisabled"
+    [nzDisabledDate]="disabledDate"
+  ></nz-date-picker>
+  <nz-input-group [nzSuffix]="CalendarIcon">
+    <input
+      [dropSpecialCharacters]="false"
+      mask="00/00/0000"
+      id="inputDate"
+      #inputDate
+      placeholder="Selecione uma data"
+      (focus)="toggleDatePickerOpen()"
+      (blur)="toggleDatePickerCloseOnBlur($event)"
+      [(ngModel)]="dateString"
+      [disabled]="isDisabled"
+      dis
+      nz-input
+      autocomplete="off"
+    />
+  </nz-input-group>
+  <ng-template #CalendarIcon><i nz-icon nzType="calendar"></i></ng-template>
+</div>

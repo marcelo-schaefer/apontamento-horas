@@ -1,0 +1,97 @@
+{
+  "general": {
+    "errors": {
+      "validation.required": "Este campo é obrigatório",
+      "validation.credit_card": "Número de cartão de crédito inválido",
+      "validation.email": "E-mail inválido",
+      "validation.password": "Password inválido. O password deve ter pelo 6 caracteres e conter ao menos um número",
+      "validation.maxlength": "O Campo deve conter até {{requiredLength}} caracteres",
+      "validation.field-maxlength": "O Campo {{campo}} deve conter até no máximo {{requiredLength}} caracteres",
+      "validation.minlength": "O Campo deve conter ao menos {{requiredLength}} caracteres",
+      "validation.phone_number": "Telefone inválido",
+      "validation.cpf": "CPF inválido",
+      "validation.cnpj": "CNPJ inválido",
+      "validation.max": "Deve ser menor ou igual a {{max}}",
+      "validation.min": "Deve ser maior ou igual a {{min}}",
+      "validation.must_match": "Os Campos informados não conferem",
+      "validation.invalid_time": "Informe uma hora válida",
+      "validation.invalid_time_option": "Informe uma hora válida",
+      "validation.invalid_time_period": "A data deve estar entre {{min}} e {{max}}",
+      "validation.empty": ""
+    },
+    "buttons": {
+      "ok": "OK",
+      "cancel": "Cancelar",
+      "save": "Salvar",
+      "edit": "Editar",
+      "delete": "Excluir",
+      "clear": "Limpar",
+      "search": "Filtrar",
+      "add": "Adicionar registro",
+      "copy": "Copiar",
+      "close": "Fechar",
+      "back": "Voltar",
+      "send": "Enviar",
+      "advance": "Avançar",
+      "change_password": "Redefinir senha",
+      "upload": "Carregar",
+      "export": "Exportar",
+      "export.CSV": "CSV",
+      "export.HTML": "HTML",
+      "export.PDF": "PDF",
+      "export.XLSX": "Excel",
+      "export.XML": "Arquivo XML",
+      "export.ODS": "Planilha ODS",
+      "export.XLS": "Excel (xls)",
+      "finalize": "Finalizar",
+      "adicionar": "Adicionar",
+      "verificar": "Verificar"
+    },
+    "labels": {
+      "actions": "Ações",
+      "edit": "Editar",
+      "add": "Incluir",
+      "view": "Visualizar",
+      "filter": "Filtros Avançados",
+      "new_user": "Novo Usuário",
+      "all": "Todos",
+      "select": "Selecione",
+      "true": "Sim",
+      "false": "Não",
+      "remaining_chars": "{{max}} caracteres restantes."
+    },
+    "messages": {
+      "updated_record": "Registro atualizado com sucesso",
+      "inserted_record": "Registro incluído com sucesso",
+      "cant_be_undone": "Isto não poderá ser desfeito.",
+      "confirm_record_delete": "Deseja excluir o registro?",
+      "deleted_record": "Registro excluído com sucesso",
+      "changed_password": "Senha alterada com sucesso",
+      "loading": "Carregando..."
+    },
+    "formats": {
+      "date": "dd/MM/yyyy",
+      "date_time": "dd/MM/yyyy HH:mm",
+      "decimal_separator": ",",
+      "thousand_separator": "."
+    }
+  },
+  "get-started": {
+    "labels": {
+      "title": "Get Started",
+      "criar-componente": "Para iniciar, crie um novo componente",
+      "criar-modulo": "Após, crie o módulo e o router",
+      "obter-informacao-usuario": "Obter informações de um usuário da plataforma",
+      "username": "Usuário",
+      "fullname": "Nome completo",
+      "email": "E-mail",
+      "codigo-empresa": "Código empresa",
+      "tipo-colaborador": "Tipo colaborador",
+      "numero-cadastro": "Número cadastro",
+      "nome-colaborador": "Nome colaborador",
+      "data-admissao": "Data admissão",
+      "user-platform-info": "Informações do usuário da plataforma",
+      "collaborator-info": "Informações do colaborador vinculado ao usuário"
+    }
+  }
+}

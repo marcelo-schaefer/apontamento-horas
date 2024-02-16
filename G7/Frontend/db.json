@@ -1,0 +1,135 @@
+{
+  "dadosSolicitante": {
+    "outputData": {
+      "NMatricula": 12345,
+      "ANome": "João Silva",
+      "NTipoColaborador": 1,
+      "NCodigoEmpresa": 5678,
+      "ADescricaoEmpresa": "Empresa XYZ",
+      "NCodigoFilial": "FILIAL001",
+      "ADescricaoFilial": "Filial Principal",
+      "ACodigoPosto": "POSTO001",
+      "ADescricaoPosto": "Posto A",
+      "ACodigoCenrtoCusto": "CC001",
+      "ADescricaoCenrtoCusto": "Centro de Custo A",
+      "DDataAdmissao": "15/01/2023",
+      "AColaboradorPcd": "S",
+      "AColaboradorPom": "N",
+      "AEstabilidade": "Término 31/03/2024 - 01 - Menbro Sindicato",
+      "DDataTermino": "31/12/2024",
+      "AEhGestor": "S",
+      "AEhRhu": "N",
+      "APapelRhu": "Matriz RHU",
+      "AUsuarioGestor": "senior.mfilho",
+      "AEhAtacadao": "N",
+      "ARetorno": "OK"
+    }
+  },
+
+  "retornaColaboradores": {
+    "outputData": {
+      "colaboradores": [
+        {
+          "NMatricula": 67890,
+          "ANome": "Maria Oliveira",
+          "NTipoColaborador": 1,
+          "NCodigoEmpresa": 1,
+          "ADescricaoEmpresa": "Empresa ABC",
+          "NCodigoFilial": "FILIAL002",
+          "ADescricaoFilial": "Filial Secundária",
+          "ACodigoPosto": "POSTO002",
+          "ADescricaoPosto": "Posto B",
+          "ACodigoCenrtoCusto": "CC002",
+          "ADescricaoCenrtoCusto": "Centro de Custo B",
+          "DDataAdmissao": "01/03/2022",
+          "AColaboradorPcd": "N",
+          "AColaboradorPom": "S",
+          "AEstabilidade": "Indeterminado",
+          "DDataTermino": "15/07/2024",
+          "AEhGestor": "N",
+          "AEhRhu": "S",
+          "APapelRhu": "Matriz RHU",
+          "AUsuarioGestor": "senior.mfilho",
+          "AEhAtacadao": "N"
+        },
+        {
+          "NMatricula": 98765,
+          "ANome": "Carlos Santos",
+          "NTipoColaborador": 1,
+          "NCodigoEmpresa": 1,
+          "ADescricaoEmpresa": "Empresa QWERTY",
+          "NCodigoFilial": "FILIAL003",
+          "ADescricaoFilial": "Filial Terciária",
+          "ACodigoPosto": "POSTO003",
+          "ADescricaoPosto": "Posto C",
+          "ACodigoCenrtoCusto": "CC003",
+          "ADescricaoCenrtoCusto": "Centro de Custo C",
+          "DDataAdmissao": "10/05/2021",
+          "AColaboradorPcd": "S",
+          "AColaboradorPom": "N",
+          "AEstabilidade": "Término 30/06/2023 - 02 - Falta Grave",
+          "DDataTermino": "30/06/2023",
+          "AEhGestor": "N",
+          "AEhRhu": "N",
+          "APapelRhu": "Matriz RHU",
+          "AUsuarioGestor": "senior.mfilho",
+          "AEhAtacadao": "S"
+        },
+        {
+          "NMatricula": 45678,
+          "ANome": "Ana Oliveira",
+          "NTipoColaborador": 1,
+          "NCodigoEmpresa": 1,
+          "ADescricaoEmpresa": "Empresa ABCD",
+          "NCodigoFilial": "FILIAL004",
+          "ADescricaoFilial": "Filial Quaternária",
+          "ACodigoPosto": "POSTO004",
+          "ADescricaoPosto": "Posto D",
+          "ACodigoCenrtoCusto": "CC004",
+          "ADescricaoCenrtoCusto": "Centro de Custo D",
+          "DDataAdmissao": "20/07/2023",
+          "AColaboradorPcd": "N",
+          "AColaboradorPom": "S",
+          "AEstabilidade": "Indeterminado",
+          "DDataTermino": "10/03/2025",
+          "AEhGestor": "S",
+          "AEhRhu": "S",
+          "APapelRhu": "Matriz RHU",
+          "AUsuarioGestor": "senior.mfilho",
+          "AEhAtacadao": "N"
+        }
+      ],
+      "ARetorno": "OK"
+    }
+  },
+
+  "retornaMotivosDesligamento": {
+    "outputData": {
+      "causaDemissao": [
+        { "NCodigo": 1, "ADescricao": "Abandono de Emprego" },
+        { "NCodigo": 2, "ADescricao": "Aposentadoria" },
+        { "NCodigo": 3, "ADescricao": "Falecimento do Colaborador" },
+        { "NCodigo": 4, "ADescricao": "Fim de Contrato Temporário" },
+        { "NCodigo": 5, "ADescricao": "Mútuo Acordo" },
+        { "NCodigo": 6, "ADescricao": "Pedido de Demissão" },
+        { "NCodigo": 7, "ADescricao": "Pré-Aposentadoria" },
+        { "NCodigo": 8, "ADescricao": "Rescisão por Justa Causa" },
+        { "NCodigo": 9, "ADescricao": "Rescisão por Perda de Qualificação" },
+        { "NCodigo": 10, "ADescricao": "Rescisão por Período de Experiência" }
+      ],
+      "motivoDesligamento": [
+        { "NCodigo": 1, "ADescricao": "Baixo Desempenho" },
+        { "NCodigo": 2, "ADescricao": "Conflitos Interpessoais" },
+        { "NCodigo": 3, "ADescricao": "Desacordo com a Cultura da Empresa" },
+        { "NCodigo": 4, "ADescricao": "Fim de Projeto" },
+        { "NCodigo": 5, "ADescricao": "Fusão ou Aquisição da Empresa" },
+        { "NCodigo": 6, "ADescricao": "Incompatibilidade de Valores" },
+        { "NCodigo": 7, "ADescricao": "Reestruturação Organizacional" },
+        { "NCodigo": 8, "ADescricao": "Redução de Quadro de Funcionários" },
+        { "NCodigo": 9, "ADescricao": "Transferência de Localidade" },
+        { "NCodigo": 10, "ADescricao": "Outros" }
+      ],
+      "ARetorno": "OK"
+    }
+  }
+}

@@ -1,0 +1,25 @@
+<app-dados-solicitante></app-dados-solicitante>
+<app-dados-colaborador
+  [hidden]="solicitacaoPorColaborador"
+></app-dados-colaborador>
+<app-dados-desligamento></app-dados-desligamento>
+<nz-card style="margin-top: 15px" nzTitle="Observações" nzBorderless>
+  <app-observacao
+    label="Observação do Solicitante"
+    #observacaoComponentSolicitante
+  ></app-observacao>
+  <app-observacao
+    [hidden]="caminhoSolicitacao != 'rhu' && caminhoSolicitacao != 'gestor'"
+    [label]="tituloObservacaoPrimeiraValidacao"
+    #observacaoComponentPrimeiraValidacao
+  ></app-observacao>
+  <app-observacao
+    label="Observação do BP"
+    #observacaoComponentBp
+  ></app-observacao>
+  <app-observacao
+    [hidden]="caminhoValidacao != 'csc' && caminhoValidacao != 'rh'"
+    [label]="tituloObservacaoSegundaValidacao"
+    #observacaoComponentSegundaValidacao
+  ></app-observacao>
+</nz-card>
