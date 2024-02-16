@@ -1,4 +1,4 @@
-# Repositório do projeto 72625-carrefour-10-solicitacao-de-alteracao-de-seguro-de-vida criado pelo Bastion.
+# Repositório do projeto 72625-carrefour-15-desligamento criado pelo Bastion.
 
 Como sou um bot que apoia muito o desenvolvimento. Eu já configurei algumas coisas para você!
 
