@@ -1,0 +1,22 @@
+SELECT 
+CASE WHEN ds.numeroSolicitacao IS NULL THEN '' ELSE ds.numeroSolicitacao END as "Numero solicitação",
+CASE WHEN ds.nomeProcesso IS NULL THEN '' ELSE ds.nomeProcesso END as "Nome do processo",
+CASE WHEN ds.dataSolicitacao IS NULL THEN '' ELSE ds.dataSolicitacao END as "Data solicitação",
+CASE WHEN ds.matriculaSolicitante IS NULL THEN '' ELSE ds.matriculaSolicitante END as "Matrícula Solicitante",
+CASE WHEN ds.nomeSolicitante IS NULL THEN '' ELSE ds.nomeSolicitante END as "Nome Solicitante",
+CASE WHEN ds.empresaSolicitante IS NULL THEN '' ELSE ds.empresaSolicitante END as "Empresa Solicitante",
+CASE WHEN ds.filialSolicitante IS NULL THEN '' ELSE ds.filialSolicitante END as "Filail Solicitante",    
+CASE WHEN ds.postoSolicitante IS NULL THEN '' ELSE ds.postoSolicitante END as "Posto de Trabalho Solicitante",
+CASE WHEN ds.matriculaColaborador IS NULL THEN '' ELSE ds.matriculaColaborador END as "Matrícula Colaborador Desligado",
+CASE WHEN ds.nomeColaborador IS NULL THEN '' ELSE ds.nomeColaborador END as "Nome Colaborador Desligado",  
+CASE WHEN ds.postoColaborador IS NULL THEN '' ELSE ds.postoColaborador END as "Posto de Trabalho Colaborador Desligado",
+CASE WHEN ds.centroCustoColaborador IS NULL THEN '' ELSE ds.centroCustoColaborador END as "Centro de Custo Colaborador Desligado",
+CASE WHEN ds.dataAdmissaoColaborador IS NULL THEN '' ELSE ds.dataAdmissaoColaborador END as "Data de Admissão Colaborador Desligado",
+CASE WHEN ds.tipoDemissao IS NULL THEN '' ELSE ds.tipoDemissao END as "Tipo de demissão",  
+CASE WHEN ds.dDataDemissao IS NULL THEN '' ELSE ds.dDataDemissao END as "Data de demissão",
+CASE WHEN ds.motivoDesligamento IS NULL THEN '' ELSE ds.motivoDesligamento END as "Motivo do desligamento",
+CASE WHEN ds.causaDemissao IS NULL THEN '' ELSE ds.causaDemissao END as "Causa da demissão",
+CASE WHEN ds.status = 4 THEN 'Cancelado' WHEN ds.statusSolicitacao IS NULL THEN '' ELSE ds.statusSolicitacao END as "Status"
+FROM "platform-workflow"."bpm_desligamento" ds 
+WHERE ds.start_date >= ${"platform-workflow"."bpm_desligamento"."start_date":  Data_inicial}
+AND ds.start_date <= ${"platform-workflow"."bpm_desligamento"."start_date":  Data_final}
