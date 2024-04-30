@@ -22,7 +22,7 @@ export class TokenInterceptor implements HttpInterceptor {
 
     if (
       req.url.startsWith(environment.domains.platform) ||
-      req.url.startsWith(environment.webService.baseUrl)
+      req.url.startsWith(environment.webServices.server)
     ) {
       req = req.clone({
         headers: req.headers

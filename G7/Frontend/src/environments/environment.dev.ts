@@ -27,14 +27,11 @@ export const environment = {
     invoke: 'http://localhost:3000/',
   },
 
-  webService: {
-    baseUrl: 'https://webcarrefourhml.seniorcloud.com.br:8181/',
+  webServices: {
+    server: 'https://webcarrefourdev.seniorcloud.com.br/',
     id: 'f2200c3b-c7df-4040-9613-34f697b75889',
-    configurationId: 'a3dd0dfa-4fca-4a55-b545-676a2f3b9a55',
-    module: 'rubi',
-    service: 'com.senior.automacao.hcm.geral',
-    encryption: '3',
   },
+
   domains: {
     platform: 'https://platform.senior.com.br',
   },
