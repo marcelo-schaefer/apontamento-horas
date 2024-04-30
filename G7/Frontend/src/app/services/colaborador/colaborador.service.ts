@@ -48,16 +48,15 @@ export class ColaboradorService {
       return this.http.get<RetornoColaborador>(this.url + this.getSolicitante);
 
     const body = {
-      id: environment.webService.id,
-      configurationId: environment.webService.configurationId,
+      id: environment.webServices.id,
       inputData: {
-        server: environment.webService.baseUrl,
-        module: environment.webService.module,
+        server: environment.webServices.server,
+        module: 'rubi',
         port: this.getSolicitante,
-        service: environment.webService.service,
+        service: 'com.senior.automacao.hcm.desligamento',
         user: '',
         password: '',
-        encryption: environment.webService.encryption,
+        encryption: 1,
         aUsuarioSolicitante: usuarioSolicitante,
       },
     };
@@ -71,16 +70,15 @@ export class ColaboradorService {
       );
 
     const body = {
-      id: environment.webService.id,
-      configurationId: environment.webService.configurationId,
+      id: environment.webServices.id,
       inputData: {
-        server: environment.webService.baseUrl,
-        module: environment.webService.module,
+        server: environment.webServices.server,
+        module: 'rubi',
         port: this.getColaboradores,
-        service: environment.webService.service,
+        service: 'com.senior.automacao.hcm.desligamento',
         user: '',
         password: '',
-        encryption: environment.webService.encryption,
+        encryption: 1,
         ...dados,
       },
     };

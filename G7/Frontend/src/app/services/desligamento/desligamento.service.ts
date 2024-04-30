@@ -25,16 +25,15 @@ export class DesligamentoService {
       );
 
     const body = {
-      id: environment.webService.id,
-      configurationId: environment.webService.configurationId,
+      id: environment.webServices.id,
       inputData: {
-        server: environment.webService.baseUrl,
-        module: environment.webService.module,
+        server: environment.webServices.server,
+        module: 'rubi',
         port: this.getMotivos,
-        service: environment.webService.service,
+        service: 'com.senior.automacao.hcm.desligamento',
         user: '',
         password: '',
-        encryption: environment.webService.encryption,
+        encryption: 1,
       },
     };
     return this.http.post<RetornoMotivoDesligamento>(this.url, body);
@@ -49,16 +48,15 @@ export class DesligamentoService {
       );
 
     const body = {
-      id: environment.webService.id,
-      configurationId: environment.webService.configurationId,
+      id: environment.webServices.id,
       inputData: {
-        server: environment.webService.baseUrl,
-        module: environment.webService.module,
+        server: environment.webServices.server,
+        module: 'rubi',
         port: this.postSolicitacao,
-        service: environment.webService.service,
+        service: 'com.senior.automacao.hcm.desligamento',
         user: '',
         password: '',
-        encryption: environment.webService.encryption,
+        encryption: 1,
         ...dados,
       },
     };

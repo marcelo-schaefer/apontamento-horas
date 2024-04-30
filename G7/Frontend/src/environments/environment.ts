@@ -29,14 +29,11 @@ export const environment = {
       'https://platform.senior.com.br/t/senior.com.br/bridge/1.0/rest/platform/conector/actions/invoke',
   },
 
-  webService: {
-    baseUrl: 'https://webpaschoalottohml.seniorcloud.com.br:30001/',
+  webServices: {
+    server: 'https://webcarrefourdev.seniorcloud.com.br/',
     id: 'f2200c3b-c7df-4040-9613-34f697b75889',
-    configurationId: 'a3dd0dfa-4fca-4a55-b545-676a2f3b9a55',
-    module: 'rubi',
-    service: 'com.senior.automacao.bpm.combateIncendio',
-    encryption: '3',
   },
+
   domains: {
     platform: 'https://platform.senior.com.br',
   },
