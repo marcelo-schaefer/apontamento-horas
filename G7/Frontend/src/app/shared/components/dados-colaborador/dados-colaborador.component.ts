@@ -45,8 +45,8 @@ export class DadosColaboradorComponent implements OnInit {
       ADescricaoFilial: { value: '', disabled: true },
       ACodigoPosto: { value: '', disabled: true },
       ADescricaoPosto: { value: '', disabled: true },
-      ACodigoCenrtoCusto: { value: '', disabled: true },
-      ADescricaoCenrtoCusto: { value: '', disabled: true },
+      ACodigoCentroCusto: { value: '', disabled: true },
+      ADescricaoCentroCusto: { value: '', disabled: true },
       DDataAdmissao: { value: '', disabled: true },
       AColaboradorPcd: { value: '', disabled: true },
       AColaboradorPom: { value: '', disabled: true },
@@ -54,7 +54,7 @@ export class DadosColaboradorComponent implements OnInit {
       DDataTermino: { value: '', disabled: true },
       AEhGestor: { value: '', disabled: true },
       AEhRhu: { value: '', disabled: true },
-      AUsuarioGestor: { value: '', disabled: true },
+      AGestorImediato: { value: '', disabled: true },
       APapelRhu: { value: '', disabled: true },
       AEhAtacadao: { value: '', disabled: true },
     });
@@ -71,9 +71,9 @@ export class DadosColaboradorComponent implements OnInit {
       postoColaborador:
         colaborador.ACodigoPosto + ' - ' + colaborador.ADescricaoPosto,
       centroCustoColaborador:
-        colaborador.ACodigoCenrtoCusto +
+        colaborador.ACodigoCentroCusto +
         ' - ' +
-        colaborador.ADescricaoCenrtoCusto,
+        colaborador.ADescricaoCentroCusto,
       dataAdmissaoColaborador: colaborador.DDataAdmissao,
       colaboradorDesligadoPcd:
         colaborador.AColaboradorPcd == 'S' ? 'Sim' : 'Não',

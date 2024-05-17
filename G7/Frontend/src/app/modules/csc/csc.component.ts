@@ -134,7 +134,7 @@ export class CscComponent implements OnInit {
       this.dadosColaboradorComponent.definirCausaDemissao(causa);
   }
 
-  async buscaMotivosDesligamento(): Promise<void> {
+  async persistirSolicitacao(): Promise<void> {
     await this.desligamentoService
       .persisitirSolicitacao(this.montaCorpoEnvio())
       .toPromise()
@@ -159,11 +159,21 @@ export class CscComponent implements OnInit {
   }
 
   montaCorpoEnvio(): PersisiteSolicitacao {
+    const dadosDesligamento = new DadoDesligamentoG5(
+      this.dadosDesligamentoComponent.value
+    );
+
     return {
-      ...new DadoDesligamentoG5(this.dadosDesligamentoComponent.value),
-      nEmpresa: this.colaboradorDesligado.NCodigoEmpresa,
-      nTipoColaborador: this.colaboradorDesligado.NTipoColaborador,
-      nMatricula: this.colaboradorDesligado.NMatricula,
+      nEmpresa: Number(this.colaboradorDesligado.NCodigoEmpresa),
+      nTipoColaborador: Number(this.colaboradorDesligado.NTipoColaborador),
+      nMatricula: Number(this.colaboradorDesligado.NMatricula),
+      nCausaDemissao: Number(dadosDesligamento.nCausaDemissao),
+      nMotivoDesligamento: Number(dadosDesligamento.nMotivoDesligamento),
+      dDataDemissao: dadosDesligamento.dDataDemissao,
+      dDataPagamento: dadosDesligamento.dDataPagamento,
+      nAvisoPrevio: Number(dadosDesligamento.nAvisoPrevio),
+      dDataAvisoPrevio: dadosDesligamento.dDataAvisoPrevio,
+      aLiberacaoAvisoPrevio: dadosDesligamento.aLiberacaoAvisoPrevio,
     };
   }
 
@@ -180,8 +190,7 @@ export class CscComponent implements OnInit {
     else this.observacaoComponentCsc.tornarOpcional();
 
     if (this.validarEnvio()) {
-      if (step.nextAction.name == 'Aprovar')
-        await this.buscaMotivosDesligamento();
+      if (step.nextAction.name == 'Aprovar') await this.persistirSolicitacao();
 
       return {
         formData: {

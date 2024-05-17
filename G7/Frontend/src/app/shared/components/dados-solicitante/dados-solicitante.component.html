@@ -65,7 +65,7 @@
       <div
         nz-row
         [nzGutter]="24"
-        *ngIf="solicitante?.AEhGestor != 'S' && solicitante?.AEhRhu != 'S'"
+        *ngIf="(solicitante?.AEhGestor || solicitante?.AEhRhu) && (solicitante?.AEhGestor != 'S' && solicitante?.AEhRhu != 'S')"
       >
         <div nz-col [nzSpan]="6">
           <nz-form-item>

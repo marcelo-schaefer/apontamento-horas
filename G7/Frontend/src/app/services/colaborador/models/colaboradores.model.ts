@@ -8,8 +8,8 @@ export class Colaborador {
   ADescricaoFilial: string;
   ACodigoPosto: string;
   ADescricaoPosto: string;
-  ACodigoCenrtoCusto: string;
-  ADescricaoCenrtoCusto: string;
+  ACodigoCentroCusto: string;
+  ADescricaoCentroCusto: string;
   DDataAdmissao: string;
   AColaboradorPcd: string;
   AColaboradorPom: string;
@@ -17,7 +17,7 @@ export class Colaborador {
   DDataTermino: string;
   AEhGestor: string;
   AEhRhu: string;
-  AUsuarioGestor: string;
+  AGestorImediato: string;
   APapelRhu: string;
   AEhAtacadao: string;
   ARetorno: string;

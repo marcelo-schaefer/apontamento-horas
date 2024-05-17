@@ -48,7 +48,7 @@ export class DadosSolicitanteComponent implements OnInit {
       DDataTermino: { value: '', disabled: true },
       AEhGestor: { value: '', disabled: true },
       AEhRhu: { value: '', disabled: true },
-      AUsuarioGestor: { value: '', disabled: true },
+      AGestorImediato: { value: '', disabled: true },
       APapelRhu: { value: '', disabled: true },
       AEhAtacadao: { value: '', disabled: true },
     });
@@ -71,9 +71,9 @@ export class DadosSolicitanteComponent implements OnInit {
       postoSolicitante:
         solicitante.ACodigoPosto + ' - ' + solicitante.ADescricaoPosto,
       centroCustoSolicitante:
-        solicitante.ACodigoCenrtoCusto +
+        solicitante.ACodigoCentroCusto +
         ' - ' +
-        solicitante.ADescricaoCenrtoCusto,
+        solicitante.ADescricaoCentroCusto,
       solicitantePcd: solicitante.AColaboradorPcd == 'S' ? 'Sim' : 'Não',
     });
   }

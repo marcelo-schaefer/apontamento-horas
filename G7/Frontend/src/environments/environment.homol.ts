@@ -29,7 +29,7 @@ export const environment = {
   },
 
   webServices: {
-    server: 'https://webcarrefourdev.seniorcloud.com.br/',
+    server: 'https://webcarrefourhml.seniorcloud.com.br:8181/',
     id: 'f2200c3b-c7df-4040-9613-34f697b75889',
   },
 
