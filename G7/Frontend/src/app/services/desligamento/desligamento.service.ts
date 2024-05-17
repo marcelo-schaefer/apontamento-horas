@@ -13,7 +13,7 @@ import {
 })
 export class DesligamentoService {
   private getMotivos = 'retornaMotivosDesligamento';
-  private postSolicitacao = 'persisitirSolicitacao';
+  private postSolicitacao = 'persisteSolicitacao';
   private url = environment.plugin.invoke;
 
   constructor(private http: HttpClient) {}

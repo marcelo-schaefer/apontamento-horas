@@ -15,11 +15,11 @@ export class DadoDesligamentoG5 {
     return {
       nCausaDemissao: dados.nCausaDemissao,
       nMotivoDesligamento: dados.nMotivoDesligamento,
-      nAvisoPrevio: dados.nAvisoPrevio,
-      aLiberacaoAvisoPrevio: dados.aLiberacaoAvisoPrevio,
       dDataDemissao: dados.dDataDemissao,
       dDataPagamento: dados.dDataPagamento,
+      nAvisoPrevio: dados.nAvisoPrevio,
       dDataAvisoPrevio: dados.dDataAvisoPrevio,
+      aLiberacaoAvisoPrevio: dados.aLiberacaoAvisoPrevio,
     };
   }
 }

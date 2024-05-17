@@ -77,6 +77,7 @@ export class SolicitacaoComponent implements OnInit {
 
   async buscaSolicitante(): Promise<void> {
     this.dadosSolicitanteComponent.loadingForm(true);
+    this.dadosColaboradorComponent.loadingForm(true);
 
     await this.colaboradorService
       .buscaSolicitante(this.usernameSolicitante)
@@ -99,7 +100,9 @@ export class SolicitacaoComponent implements OnInit {
           );
         }
       );
+
     this.dadosSolicitanteComponent.loadingForm(false);
+    this.dadosColaboradorComponent.loadingForm(false);
   }
 
   async buscaMotivosDesligamento(): Promise<void> {
@@ -189,7 +192,7 @@ export class SolicitacaoComponent implements OnInit {
             : 'Por parte da empresa',
           observacaoSolicitante: this.observacaoComponent.value.observacao,
           caminhoSolicitacao: this.verificaProxiamEtapa(colaboradorDesligado),
-          usuarioGestorImediato: colaboradorDesligado.AUsuarioGestor,
+          usuarioGestorImediato: colaboradorDesligado.AGestorImediato,
           papelRhu: colaboradorDesligado.APapelRhu,
           statusSolicitacao: 'Em andamento',
         },

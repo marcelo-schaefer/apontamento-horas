@@ -34,6 +34,7 @@ export class DadosDesligamentoComponent implements OnInit {
   formDadosDesligamento: FormGroup;
 
   solicitante: Colaborador;
+  today = new Date();
   motivosDesligamento: MotivoDesligamento;
   listaAvisoPrevio: Motivo[];
   isLoading = false;
