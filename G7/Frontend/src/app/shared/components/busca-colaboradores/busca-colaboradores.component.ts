@@ -131,9 +131,9 @@ export class BuscaColaboradoresComponent implements OnInit {
 
     if (!this.isEndColaborador) {
       const search = {
-        top: this.top,
-        skip: this.skip,
-        query: texto || codigo.toString(),
+        nTop: this.top,
+        nSkip: this.skip,
+        aQuery: texto || codigo.toString(),
         aUsuarioSolicitante: this.wfService.getUser().username,
         aEhGestor: this.solicitante.AEhGestor,
       };

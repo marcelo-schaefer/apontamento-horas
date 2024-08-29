@@ -1,9 +1,9 @@
 export class Search {
   nomeUsuario?: string;
-  top?: number;
-  skip?: number;
-  query?: string;
-  ehPapel?: string;
+  nTop?: number;
+  nSkip?: number;
+  aQuery?: string;
+  aEhGestor?: string;
   empresa?: number;
 }
 
