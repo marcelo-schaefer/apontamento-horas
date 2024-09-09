@@ -36,8 +36,11 @@ export class RhComponent implements OnInit {
   @ViewChild('observacaoComponentSolicitante', { static: true })
   observacaoComponentSolicitante: ObservacaoComponent;
 
-  @ViewChild('observacaoComponentPrimeiraValidacao', { static: true })
-  observacaoComponentPrimeiraValidacao: ObservacaoComponent;
+  @ViewChild('observacaoComponentGestor', { static: true })
+  observacaoComponentGestor: ObservacaoComponent;
+
+  @ViewChild('observacaoComponentRhu', { static: true })
+  observacaoComponentRhu: ObservacaoComponent;
 
   @ViewChild('observacaoComponentBp', { static: true })
   observacaoComponentBp: ObservacaoComponent;
@@ -56,8 +59,10 @@ export class RhComponent implements OnInit {
   solicitante: Colaborador;
   colaboradorDesligado: ColaboradorDesligado;
   solicitacaoPorColaborador: boolean;
+  apresentarObservacaoBP = false;
   tituloObservacaoPrimeiraValidacao: string;
   caminhoSolicitacao: string;
+  aprovarAvisoPrevio: string;
 
   ngOnInit(): void {
     void this.getProcessVariables();
@@ -70,6 +75,7 @@ export class RhComponent implements OnInit {
         this.solicitante.AEhGestor != 'S' && this.solicitante.AEhRhu != 'S';
 
       this.caminhoSolicitacao = value.caminhoSolicitacao;
+      this.aprovarAvisoPrevio = value?.aprovarAvisoPrevio;
       const dadosDesligamento = JSON.parse(
         value.dadosDesligamento
       ) as DadoDesligamento;
@@ -96,31 +102,30 @@ export class RhComponent implements OnInit {
       );
       this.observacaoComponentSolicitante.desabilitar();
 
-      if (this.caminhoSolicitacao == 'gestor') {
-        this.tituloObservacaoPrimeiraValidacao =
-          'Observação do Gestor Imediato';
-        this.observacaoComponentPrimeiraValidacao.preencherDados(
+      if (this.solicitante.AEhGestor != 'S') {
+        this.observacaoComponentGestor.preencherDados(
           value?.observacaoGestorImediato || ''
         );
-        this.observacaoComponentPrimeiraValidacao.desabilitar();
-      } else if (this.caminhoSolicitacao == 'rhu') {
-        this.tituloObservacaoPrimeiraValidacao = 'Observação do RHU';
-        this.observacaoComponentPrimeiraValidacao.preencherDados(
-          value?.observacaoRhu || ''
-        );
-        this.observacaoComponentPrimeiraValidacao.desabilitar();
+        this.observacaoComponentGestor.desabilitar();
+      }
+
+      if (this.solicitante.AEhRhu != 'S') {
+        this.observacaoComponentRhu.preencherDados(value?.observacaoRhu || '');
+        this.observacaoComponentRhu.desabilitar();
       }
 
       if (
-        this.caminhoSolicitacao == 'gestor' ||
-        this.caminhoSolicitacao == 'bp'
+        this.aprovarAvisoPrevio ||
+        (dadosDesligamento.aLiberacaoAvisoPrevio == 'S' &&
+          this.colaboradorDesligado.AEhAtacadao == 'S' &&
+          dadosDesligamento.nCausaDemissao == 2 &&
+          this.colaboradorDesligado.ATemEstabilidade == 'S')
       ) {
-        if (this.colaboradorDesligado.AEhAtacadao == 'S') {
-          this.observacaoComponentBp.apresentarAvisoPrevio();
-          this.observacaoComponentBp.preencherAvisoPrevio(
-            value?.aprovarAvisoPrevio
-          );
-        }
+        this.apresentarObservacaoBP = true;
+        this.observacaoComponentBp.apresentarAvisoPrevio();
+        this.observacaoComponentBp.preencherAvisoPrevio(
+          value?.aprovarAvisoPrevio
+        );
         this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
         this.observacaoComponentBp.desabilitar();
       }
@@ -134,7 +139,7 @@ export class RhComponent implements OnInit {
       this.dadosColaboradorComponent.definirCausaDemissao(causa);
   }
 
-  async buscaMotivosDesligamento(): Promise<void> {
+  async persistirSolicitacao(): Promise<void> {
     await this.desligamentoService
       .persisitirSolicitacao(this.montaCorpoEnvio())
       .toPromise()
@@ -164,6 +169,9 @@ export class RhComponent implements OnInit {
       nEmpresa: this.colaboradorDesligado.NCodigoEmpresa,
       nTipoColaborador: this.colaboradorDesligado.NTipoColaborador,
       nMatricula: this.colaboradorDesligado.NMatricula,
+      aLiberacaoAvisoPrevio:
+        this.aprovarAvisoPrevio ||
+        this.dadosDesligamentoComponent.value.aLiberacaoAvisoPrevio,
     };
   }
 
@@ -180,8 +188,7 @@ export class RhComponent implements OnInit {
     else this.observacaoComponentRh.tornarOpcional();
 
     if (this.validarEnvio()) {
-      if (step.nextAction.name == 'Aprovar')
-        await this.buscaMotivosDesligamento();
+      if (step.nextAction.name == 'Aprovar') await this.persistirSolicitacao();
 
       return {
         formData: {

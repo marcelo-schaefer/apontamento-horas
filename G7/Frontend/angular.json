@@ -85,7 +85,7 @@
               "fileReplacements": [
                 {
                   "replace": "src/environments/environment.ts",
-                  "with": "src/environments/environment.dev.ts"
+                  "with": "src/environments/environment.homol.ts"
                 }
               ],
               "optimization": false,

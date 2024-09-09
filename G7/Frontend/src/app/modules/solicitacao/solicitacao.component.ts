@@ -38,7 +38,7 @@ export class SolicitacaoComponent implements OnInit {
   usernameSolicitante: string;
   solicitante: Colaborador;
   motivosDesligamento: MotivoDesligamento;
-  solicitacaoPorColaborador: boolean;
+  solicitacaoPorColaborador = true;
 
   constructor(
     private wfService: WorkflowService,
@@ -51,9 +51,11 @@ export class SolicitacaoComponent implements OnInit {
 
   async ngOnInit(): Promise<void> {
     this.usernameSolicitante = this.wfService.getUser().username;
+    this.loadingForm(true);
     await this.buscaSolicitante();
     await this.buscaMotivosDesligamento();
     this.preencherFormularios();
+    this.loadingForm(false);
   }
 
   preencherFormularios(): void {
@@ -68,6 +70,12 @@ export class SolicitacaoComponent implements OnInit {
     );
   }
 
+  loadingForm(loading: boolean): void {
+    this.dadosSolicitanteComponent.loadingForm(loading);
+    this.dadosColaboradorComponent.loadingForm(loading);
+    this.dadosDesligamentoComponent.loadingForm(loading);
+  }
+
   //Metodo que cria notificações de erro na tela
   criaNotificacao(msg: string): void {
     this.notification.create('error', 'Atenção', msg, {
@@ -76,9 +84,6 @@ export class SolicitacaoComponent implements OnInit {
   }
 
   async buscaSolicitante(): Promise<void> {
-    this.dadosSolicitanteComponent.loadingForm(true);
-    this.dadosColaboradorComponent.loadingForm(true);
-
     await this.colaboradorService
       .buscaSolicitante(this.usernameSolicitante)
       .toPromise()
@@ -100,9 +105,6 @@ export class SolicitacaoComponent implements OnInit {
           );
         }
       );
-
-    this.dadosSolicitanteComponent.loadingForm(false);
-    this.dadosColaboradorComponent.loadingForm(false);
   }
 
   async buscaMotivosDesligamento(): Promise<void> {
@@ -152,9 +154,19 @@ export class SolicitacaoComponent implements OnInit {
     return this.solicitacaoPorColaborador ||
       (this.solicitante.AEhRhu == 'S' && this.solicitante.AEhGestor == 'N')
       ? 'gestor'
-      : this.dadosDesligamentoComponent.value.aLiberacaoAvisoPrevio == 'S' &&
-        colaborador.AEhAtacadao == 'S' // Colaborador for do Atacadão
+      : this.solicitante.AEhGestor == 'S' &&
+        this.solicitante.AEhRhu == 'S' &&
+        this.dadosDesligamentoComponent.value.aLiberacaoAvisoPrevio == 'S' &&
+        colaborador.AEhAtacadao == 'S' && // Colaborador for do Atacadão
+        Number(this.dadosDesligamentoComponent.value.nCausaDemissao) == 2 && // sem justa causa
+        colaborador.ATemEstabilidade == 'S' // sem justa causa
       ? 'bp'
+      : this.solicitante.AEhGestor == 'S' &&
+        this.solicitante.AEhRhu == 'S' &&
+        colaborador.AEhAtacadao == 'S'
+      ? 'rh'
+      : this.solicitante.AEhGestor == 'S' && this.solicitante.AEhRhu == 'S'
+      ? 'csc'
       : 'rhu';
   }
 

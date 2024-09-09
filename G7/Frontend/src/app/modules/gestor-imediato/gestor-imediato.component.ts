@@ -33,9 +33,6 @@ export class GestorImediatoComponent implements OnInit {
   @ViewChild('observacaoComponentGestor', { static: true })
   observacaoComponentGestor: ObservacaoComponent;
 
-  @ViewChild('observacaoComponentBp', { static: true })
-  observacaoComponentBp: ObservacaoComponent;
-
   constructor(private wfService: WorkflowService) {
     this.wfService.onSubmit(this.submit.bind(this));
   }
@@ -93,21 +90,16 @@ export class GestorImediatoComponent implements OnInit {
       this.observacaoComponentGestor.preencherDados(
         value?.observacaoGestorImediato || ''
       );
-
-      if (this.caminhoValidacao == 'bp' || this.caminhoSolicitacao == 'bp') {
-        if (this.colaboradorDesligado.AEhAtacadao == 'S')
-          this.observacaoComponentBp.apresentarAvisoPrevio();
-        this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
-        this.observacaoComponentBp.desabilitar();
-      }
     });
   }
 
   verificaProxiamEtapa(): string {
-    return this.colaboradorDesligado.AEhAtacadao == 'S' &&
-      (this.dadosDesligamentoComponent.value.aLiberacaoAvisoPrevio == 'S' ||
-        (this.dadosDesligamentoComponent.value.nCausaDemissao == 4 &&
-          !!this.colaboradorDesligado.AEstabilidade))
+    return this.solicitante.AEhRhu == 'N'
+      ? 'rhu'
+      : this.dadosDesligamentoComponent.value.aLiberacaoAvisoPrevio == 'S' &&
+        this.colaboradorDesligado.AEhAtacadao == 'S' && // Colaborador for do Atacadão
+        Number(this.dadosDesligamentoComponent.value.nCausaDemissao) == 2 && // sem justa causa
+        this.colaboradorDesligado.ATemEstabilidade == 'S' // sem justa causa
       ? 'bp'
       : this.colaboradorDesligado.AEhAtacadao == 'S'
       ? 'rh'

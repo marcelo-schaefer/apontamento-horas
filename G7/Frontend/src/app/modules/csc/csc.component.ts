@@ -36,8 +36,11 @@ export class CscComponent implements OnInit {
   @ViewChild('observacaoComponentSolicitante', { static: true })
   observacaoComponentSolicitante: ObservacaoComponent;
 
-  @ViewChild('observacaoComponentPrimeiraValidacao', { static: true })
-  observacaoComponentPrimeiraValidacao: ObservacaoComponent;
+  @ViewChild('observacaoComponentGestor', { static: true })
+  observacaoComponentGestor: ObservacaoComponent;
+
+  @ViewChild('observacaoComponentRhu', { static: true })
+  observacaoComponentRhu: ObservacaoComponent;
 
   @ViewChild('observacaoComponentBp', { static: true })
   observacaoComponentBp: ObservacaoComponent;
@@ -56,6 +59,7 @@ export class CscComponent implements OnInit {
   solicitante: Colaborador;
   colaboradorDesligado: ColaboradorDesligado;
   solicitacaoPorColaborador: boolean;
+  apresentarObservacaoBP = false;
   tituloObservacaoPrimeiraValidacao: string;
   caminhoSolicitacao: string;
 
@@ -96,31 +100,29 @@ export class CscComponent implements OnInit {
       );
       this.observacaoComponentSolicitante.desabilitar();
 
-      if (this.caminhoSolicitacao == 'gestor') {
-        this.tituloObservacaoPrimeiraValidacao =
-          'Observação do Gestor Imediato';
-        this.observacaoComponentPrimeiraValidacao.preencherDados(
+      if (this.solicitante.AEhGestor != 'S') {
+        this.observacaoComponentGestor.preencherDados(
           value?.observacaoGestorImediato || ''
         );
-        this.observacaoComponentPrimeiraValidacao.desabilitar();
-      } else if (this.caminhoSolicitacao == 'rhu') {
-        this.tituloObservacaoPrimeiraValidacao = 'Observação do RHU';
-        this.observacaoComponentPrimeiraValidacao.preencherDados(
-          value?.observacaoRhu || ''
-        );
-        this.observacaoComponentPrimeiraValidacao.desabilitar();
+        this.observacaoComponentGestor.desabilitar();
+      }
+
+      if (this.solicitante.AEhRhu != 'S') {
+        this.observacaoComponentRhu.preencherDados(value?.observacaoRhu || '');
+        this.observacaoComponentRhu.desabilitar();
       }
 
       if (
-        this.caminhoSolicitacao == 'gestor' ||
-        this.caminhoSolicitacao == 'bp'
+        dadosDesligamento.aLiberacaoAvisoPrevio == 'S' &&
+        this.colaboradorDesligado.AEhAtacadao == 'S' &&
+        dadosDesligamento.nCausaDemissao == 2 &&
+        this.colaboradorDesligado.ATemEstabilidade == 'S'
       ) {
-        if (this.colaboradorDesligado.AEhAtacadao == 'S') {
-          this.observacaoComponentBp.apresentarAvisoPrevio();
-          this.observacaoComponentBp.preencherAvisoPrevio(
-            value?.aprovarAvisoPrevio
-          );
-        }
+        this.apresentarObservacaoBP = true;
+        this.observacaoComponentBp.apresentarAvisoPrevio();
+        this.observacaoComponentBp.preencherAvisoPrevio(
+          value?.aprovarAvisoPrevio
+        );
         this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
         this.observacaoComponentBp.desabilitar();
       }

@@ -11,11 +11,19 @@
     #observacaoComponentSolicitante
   ></app-observacao>
   <app-observacao
-    [hidden]="caminhoSolicitacao != 'rhu' && caminhoSolicitacao != 'gestor'"
-    [label]="tituloObservacaoPrimeiraValidacao"
-    #observacaoComponentPrimeiraValidacao
+    [hidden]="solicitante?.AEhGestor == 'S'"
+    label="Observação do Gestor Imediato"
+    #observacaoComponentGestor
   ></app-observacao>
+
   <app-observacao
+    [hidden]="solicitante?.AEhRhu == 'S'"
+    label="Observação do RHU"
+    #observacaoComponentRhu
+  ></app-observacao>
+
+  <app-observacao
+    [hidden]="!apresentarObservacaoBP"
     label="Observação do BP"
     #observacaoComponentBp
   ></app-observacao>

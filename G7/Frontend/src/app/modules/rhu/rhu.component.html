@@ -9,12 +9,12 @@
     #observacaoComponentSolicitante
   ></app-observacao>
   <app-observacao
-    label="Observação do RHU"
-    #observacaoComponentRhu
+    [hidden]="this.solicitante?.AEhGestor == 'S'"
+    label="Observação do Gestor Imediato"
+    #observacaoComponentGestor
   ></app-observacao>
   <app-observacao
-    [hidden]="caminhoValidacao != 'bp' && caminhoSolicitacao != 'bp'"
-    label="Observação do BP"
-    #observacaoComponentBp
+    label="Observação do RHU"
+    #observacaoComponentRhu
   ></app-observacao>
 </nz-card>

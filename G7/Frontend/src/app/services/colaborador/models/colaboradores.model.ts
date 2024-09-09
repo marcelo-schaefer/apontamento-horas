@@ -20,6 +20,7 @@ export class Colaborador {
   AGestorImediato: string;
   APapelRhu: string;
   AEhAtacadao: string;
+  ATemEstabilidade: string;
   ARetorno: string;
 }
 

@@ -28,8 +28,11 @@ export class RevisaoComponent implements OnInit {
   @ViewChild('observacaoComponentSolicitante', { static: true })
   observacaoComponentSolicitante: ObservacaoComponent;
 
-  @ViewChild('observacaoComponentPrimeiraValidacao', { static: true })
-  observacaoComponentPrimeiraValidacao: ObservacaoComponent;
+  @ViewChild('observacaoComponentGestor', { static: true })
+  observacaoComponentGestor: ObservacaoComponent;
+
+  @ViewChild('observacaoComponentRhu', { static: true })
+  observacaoComponentRhu: ObservacaoComponent;
 
   @ViewChild('observacaoComponentBp', { static: true })
   observacaoComponentBp: ObservacaoComponent;
@@ -45,6 +48,7 @@ export class RevisaoComponent implements OnInit {
   colaboradorDesligado: ColaboradorDesligado;
 
   solicitacaoPorColaborador: boolean;
+  apresentarObservacaoBP = false;
 
   tituloObservacaoPrimeiraValidacao: string;
   tituloObservacaoSegundaValidacao: string;
@@ -87,29 +91,32 @@ export class RevisaoComponent implements OnInit {
         value?.observacaoSolicitante || ''
       );
 
-      if (this.caminhoSolicitacao == 'gestor') {
-        this.tituloObservacaoPrimeiraValidacao =
-          'Observação do Gestor Imediato';
-        this.observacaoComponentPrimeiraValidacao.preencherDados(
+      if (this.solicitante.AEhGestor != 'S') {
+        this.observacaoComponentGestor.preencherDados(
           value?.observacaoGestorImediato || ''
         );
-        this.observacaoComponentPrimeiraValidacao.desabilitar();
-      } else if (this.caminhoSolicitacao == 'rhu') {
-        this.tituloObservacaoPrimeiraValidacao = 'Observação do RHU';
-        this.observacaoComponentPrimeiraValidacao.preencherDados(
-          value?.observacaoRhu || ''
-        );
-        this.observacaoComponentPrimeiraValidacao.desabilitar();
+        this.observacaoComponentGestor.desabilitar();
       }
 
-      if (this.colaboradorDesligado.AEhAtacadao == 'S') {
+      if (this.solicitante.AEhRhu != 'S') {
+        this.observacaoComponentRhu.preencherDados(value?.observacaoRhu || '');
+        this.observacaoComponentRhu.desabilitar();
+      }
+
+      if (
+        dadosDesligamento.aLiberacaoAvisoPrevio == 'S' &&
+        this.colaboradorDesligado.AEhAtacadao == 'S' &&
+        dadosDesligamento.nCausaDemissao == 2 &&
+        this.colaboradorDesligado.ATemEstabilidade == 'S'
+      ) {
+        this.apresentarObservacaoBP = true;
         this.observacaoComponentBp.apresentarAvisoPrevio();
         this.observacaoComponentBp.preencherAvisoPrevio(
           value?.aprovarAvisoPrevio
         );
+        this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
+        this.observacaoComponentBp.desabilitar();
       }
-      this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
-      this.observacaoComponentBp.desabilitar();
 
       if (this.caminhoValidacao == 'csc') {
         this.tituloObservacaoSegundaValidacao =

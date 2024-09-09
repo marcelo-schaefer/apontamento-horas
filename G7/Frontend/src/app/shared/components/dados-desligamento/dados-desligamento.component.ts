@@ -88,6 +88,7 @@ export class DadosDesligamentoComponent implements OnInit {
 
   preencheMotivosDesligamento(motivosDesligamento: MotivoDesligamento): void {
     this.motivosDesligamento = motivosDesligamento;
+    this.filtrarCausasParaColaborador();
     this.preencheListaAvisoPrevio();
   }
 
@@ -190,6 +191,14 @@ export class DadosDesligamentoComponent implements OnInit {
 
   desabilitarAvisoPrevio(): void {
     this.formDadosDesligamento.get('aLiberacaoAvisoPrevio').disable();
+  }
+
+  filtrarCausasParaColaborador(): void {
+    if (this.solicitante.AEhGestor != 'S' && this.solicitante.AEhRhu != 'S')
+      this.motivosDesligamento.causaDemissao =
+        this.motivosDesligamento.causaDemissao.filter(
+          (f) => f.NCodigo == 4 || f.NCodigo == 14 || f.NCodigo == 29
+        );
   }
 
   preencheListaAvisoPrevio(): void {
