@@ -206,6 +206,7 @@ export class SolicitacaoComponent implements OnInit {
           caminhoSolicitacao: this.verificaProxiamEtapa(colaboradorDesligado),
           usuarioGestorImediato: colaboradorDesligado.AGestorImediato,
           papelRhu: colaboradorDesligado.APapelRhu,
+          papelBp: colaboradorDesligado.APapelBp,
           statusSolicitacao: 'Em andamento',
         },
       };

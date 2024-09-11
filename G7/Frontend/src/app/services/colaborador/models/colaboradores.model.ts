@@ -21,6 +21,7 @@ export class Colaborador {
   APapelRhu: string;
   AEhAtacadao: string;
   ATemEstabilidade: string;
+  APapelBp: string;
   ARetorno: string;
 }
 

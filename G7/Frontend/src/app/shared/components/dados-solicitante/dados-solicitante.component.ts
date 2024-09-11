@@ -50,6 +50,7 @@ export class DadosSolicitanteComponent implements OnInit {
       AEhRhu: { value: '', disabled: true },
       AGestorImediato: { value: '', disabled: true },
       APapelRhu: { value: '', disabled: true },
+      APapelBp: { value: '', disabled: true },
       AEhAtacadao: { value: '', disabled: true },
       ATemEstabilidade: { value: '', disabled: true },
     });
