@@ -13,6 +13,7 @@ export class DadosSolicitanteComponent implements OnInit {
   solicitante: Colaborador;
 
   isLoading = false;
+  causaDesligamento = 0;
 
   constructor(private fb: FormBuilder) {}
 
@@ -28,8 +29,10 @@ export class DadosSolicitanteComponent implements OnInit {
       empresaSolicitante: { value: '', disabled: true },
       filialSolicitante: { value: '', disabled: true },
       postoSolicitante: { value: '', disabled: true },
+      cargoSolicitante: { value: '', disabled: true },
       centroCustoSolicitante: { value: '', disabled: true },
       solicitantePcd: { value: '', disabled: true },
+      solicitantePom: { value: '', disabled: true },
       NMatricula: { value: '', disabled: true },
       ANome: { value: '', disabled: true },
       NTipoColaborador: { value: '', disabled: true },
@@ -39,6 +42,8 @@ export class DadosSolicitanteComponent implements OnInit {
       ADescricaoFilial: { value: '', disabled: true },
       ACodigoPosto: { value: '', disabled: true },
       ADescricaoPosto: { value: '', disabled: true },
+      ACodigoCargo: { value: '', disabled: true },
+      ADescricaoCargo: { value: '', disabled: true },
       ACodigoCenrtoCusto: { value: '', disabled: true },
       ADescricaoCenrtoCusto: { value: '', disabled: true },
       DDataAdmissao: { value: '', disabled: true },
@@ -70,6 +75,8 @@ export class DadosSolicitanteComponent implements OnInit {
         solicitante.ADescricaoEmpresa,
       filialSolicitante:
         solicitante.NCodigoFilial + ' - ' + solicitante.ADescricaoFilial,
+      cargoSolicitante:
+        solicitante.ACodigoCargo + ' - ' + solicitante.ADescricaoCargo,
       postoSolicitante:
         solicitante.ACodigoPosto + ' - ' + solicitante.ADescricaoPosto,
       centroCustoSolicitante:
@@ -77,6 +84,7 @@ export class DadosSolicitanteComponent implements OnInit {
         ' - ' +
         solicitante.ADescricaoCentroCusto,
       solicitantePcd: solicitante.AColaboradorPcd == 'S' ? 'Sim' : 'Não',
+      solicitantePom: solicitante.AColaboradorPom == 'S' ? 'Sim' : 'Não',
     });
   }
 
@@ -90,5 +98,9 @@ export class DadosSolicitanteComponent implements OnInit {
 
   desabilitarForm(): void {
     this.formDadosSolicitante.disable();
+  }
+
+  preencherCausaDesligamento(causa: number): void {
+    this.causaDesligamento = causa;
   }
 }

@@ -115,6 +115,72 @@
             </nz-form-control>
           </nz-form-item>
         </div>
+
+        <div nz-col [nzSpan]="6">
+          <nz-form-item>
+            <nz-form-label nzFor="cargoSolicitante">Cargo:</nz-form-label>
+
+            <nz-form-control>
+              <input
+                nz-input
+                formControlName="cargoSolicitante"
+                id="cargoSolicitante"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div
+          nz-col
+          [nzSpan]="6"
+          *ngIf="causaDesligamento >= 12 && this.causaDesligamento <= 14"
+        >
+          <nz-form-item>
+            <nz-form-label nzFor="DDataTermino"
+              >Data Término Contrato:</nz-form-label
+            >
+
+            <nz-form-control>
+              <input
+                nz-input
+                formControlName="DDataTermino"
+                id="DDataTermino"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="6">
+          <nz-form-item>
+            <nz-form-label nzFor="solicitantePom"
+              >Colaborador POM:</nz-form-label
+            >
+
+            <nz-form-control>
+              <input
+                nz-input
+                lab
+                formControlName="solicitantePom"
+                id="solicitantePom"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="12">
+          <nz-form-item>
+            <nz-form-label nzFor="AEstabilidade">Estabilidade:</nz-form-label>
+
+            <nz-form-control>
+              <input
+                nz-input
+                lab
+                formControlName="AEstabilidade"
+                id="AEstabilidade"
+              />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
       </div>
     </form> </nz-spin
 ></nz-card>

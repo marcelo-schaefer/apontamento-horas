@@ -1,5 +1,11 @@
 import { FormGroup, FormBuilder } from '@angular/forms';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  OnInit,
+  Output,
+  ViewChild,
+} from '@angular/core';
 import { Colaborador } from 'src/app/services/colaborador/models/colaboradores.model';
 import { BuscaColaboradoresComponent } from '../busca-colaboradores/busca-colaboradores.component';
 import { ColaboradorDesligado } from '../../model/colaborador-desligado';
@@ -13,10 +19,15 @@ export class DadosColaboradorComponent implements OnInit {
   @ViewChild(BuscaColaboradoresComponent, { static: true })
   buscaColaboradoresComponent: BuscaColaboradoresComponent;
 
+  @Output()
+  colaboradorSelecionadoEmitter: EventEmitter<Colaborador> = new EventEmitter<Colaborador>();
+
   formDadosColaborador: FormGroup;
 
   colaboradorSelecionado: Colaborador;
   isLoading = false;
+  comErro = false;
+  mensagemErro = '';
 
   cousaDemissao: number;
 
@@ -31,7 +42,10 @@ export class DadosColaboradorComponent implements OnInit {
       colaboradorSelecionado: { value: '', disabled: true },
       matriculaColaborador: { value: '', disabled: true },
       nomeColaborador: { value: '', disabled: true },
+      empresaColaborador: { value: '', disabled: true },
+      filialColaborador: { value: '', disabled: true },
       postoColaborador: { value: '', disabled: true },
+      cargoColaborador: { value: '', disabled: true },
       centroCustoColaborador: { value: '', disabled: true },
       dataAdmissaoColaborador: { value: '', disabled: true },
       colaboradorDesligadoPcd: { value: '', disabled: true },
@@ -45,6 +59,8 @@ export class DadosColaboradorComponent implements OnInit {
       ADescricaoFilial: { value: '', disabled: true },
       ACodigoPosto: { value: '', disabled: true },
       ADescricaoPosto: { value: '', disabled: true },
+      ACodigoCargo: { value: '', disabled: true },
+      ADescricaoCargo: { value: '', disabled: true },
       ACodigoCentroCusto: { value: '', disabled: true },
       ADescricaoCentroCusto: { value: '', disabled: true },
       DDataAdmissao: { value: '', disabled: true },
@@ -59,7 +75,15 @@ export class DadosColaboradorComponent implements OnInit {
       APapelBp: { value: '', disabled: true },
       AEhAtacadao: { value: '', disabled: true },
       ATemEstabilidade: { value: '', disabled: true },
+      DDataInicioBase: { value: '', disabled: true },
+      DDataFimBase: { value: '', disabled: true },
+      NDiasAcrescidos: { value: '', disabled: true },
     });
+  }
+
+  emitirColaborador(colaborador: Colaborador): void {
+    this.preencherColaboradorSelecionado(colaborador);
+    this.colaboradorSelecionadoEmitter.emit(colaborador);
   }
 
   preencherColaboradorSelecionado(colaborador: Colaborador): void {
@@ -70,12 +94,20 @@ export class DadosColaboradorComponent implements OnInit {
         colaborador.NMatricula.toString() + ' - ' + colaborador.ANome,
       matriculaColaborador: colaborador.NMatricula,
       nomeColaborador: colaborador.ANome,
+      empresaColaborador:
+        colaborador.NCodigoEmpresa.toString() +
+        ' - ' +
+        colaborador.ADescricaoEmpresa,
+      filialColaborador:
+        colaborador.NCodigoFilial + ' - ' + colaborador.ADescricaoFilial,
       postoColaborador:
         colaborador.ACodigoPosto + ' - ' + colaborador.ADescricaoPosto,
       centroCustoColaborador:
         colaborador.ACodigoCentroCusto +
         ' - ' +
         colaborador.ADescricaoCentroCusto,
+      cargoColaborador:
+        colaborador.ACodigoCargo + ' - ' + colaborador.ADescricaoCargo,
       dataAdmissaoColaborador: colaborador.DDataAdmissao,
       colaboradorDesligadoPcd:
         colaborador.AColaboradorPcd == 'S' ? 'Sim' : 'Não',
@@ -114,5 +146,14 @@ export class DadosColaboradorComponent implements OnInit {
 
   definirCausaDemissao(causa: number): void {
     this.cousaDemissao = causa;
+  }
+
+  validarEstabilidade(): void {
+    this.comErro =
+      [1, 2, 13, 27].includes(Number(this.cousaDemissao)) &&
+      this.colaboradorSelecionado.ATemEstabilidade == 'S';
+    if (this.comErro)
+      this.mensagemErro =
+        'Prezado! O colaborador selecionado possui estabilidade e essa solicitação não poderá seguir';
   }
 }

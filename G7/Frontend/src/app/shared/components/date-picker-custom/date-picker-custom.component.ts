@@ -23,6 +23,7 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 })
 export class DatePickerCustomComponent implements ControlValueAccessor {
   private dateDateFormat: Date | null = null;
+  private dataLimite: Date | null = null;
   private dateStringFormat: string | null = '';
   public openDatePicker: boolean;
   private disabledFields: boolean;
@@ -100,7 +101,10 @@ export class DatePickerCustomComponent implements ControlValueAccessor {
   disabledDate = (current: Date): boolean => {
     const currentDate = new Date();
     currentDate.setHours(0, 0, 0, 0);
-    return current < currentDate;
+    return (
+      current < currentDate ||
+      (this.dataLimite >= currentDate ? current > this.dataLimite : false)
+    );
   };
 
   writeValue(date: Date): void {
@@ -122,5 +126,9 @@ export class DatePickerCustomComponent implements ControlValueAccessor {
 
   setDisabledState(isDisabled: boolean): void {
     this.disabledFields = isDisabled;
+  }
+
+  setDataLimite(data: Date): void {
+    this.dataLimite = data;
   }
 }

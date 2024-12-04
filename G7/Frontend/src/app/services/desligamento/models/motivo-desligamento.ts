@@ -4,6 +4,7 @@ export class MotivoDesligamento {
   causaDemissao: Motivo[];
   motivoDesligamento: Motivo[];
   ARetorno: string;
+  message: string;
 }
 
 export class RetornoMotivoDesligamento {

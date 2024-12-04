@@ -1,6 +1,7 @@
 <app-dados-solicitante></app-dados-solicitante>
 <app-dados-colaborador
   [hidden]="solicitacaoPorColaborador"
+  (colaboradorSelecionadoEmitter)="colaboradorSelecionado($event)"
 ></app-dados-colaborador>
 <app-dados-desligamento
   (causaDemissaoSelecionada)="transportarCausaDemissao($event)"

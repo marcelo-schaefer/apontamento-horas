@@ -90,9 +90,11 @@ export class SolicitacaoComponent implements OnInit {
       .then(
         (data) => {
           this.solicitante = data.outputData;
-          if (this.solicitante.ARetorno != 'OK') {
+          this.solicitante.DDataTermino = '25/12/2024';
+          if (this.solicitante.ARetorno != 'OK' || this.solicitante?.message) {
             this.criaNotificacao(
-              'Erro ao identificar solicitante, ' + this.solicitante.ARetorno
+              'Erro ao identificar solicitante, ' +
+                (this.solicitante?.message || this.solicitante.ARetorno)
             );
           } else
             this.dadosSolicitanteComponent.preencherFormulario(
@@ -113,10 +115,10 @@ export class SolicitacaoComponent implements OnInit {
       .toPromise()
       .then(
         (data) => {
-          if (this.solicitante.ARetorno != 'OK') {
+          if (data.outputData.ARetorno != 'OK' || data.outputData.message) {
             this.criaNotificacao(
               'Erro ao buscar motivos do desligamento, ' +
-                data.outputData.ARetorno
+                (data.outputData.message || data.outputData.ARetorno)
             );
           } else this.motivosDesligamento = data.outputData;
         },
@@ -131,6 +133,14 @@ export class SolicitacaoComponent implements OnInit {
   transportarCausaDemissao(causa: number): void {
     if (!this.solicitacaoPorColaborador)
       this.dadosColaboradorComponent.definirCausaDemissao(causa);
+    else this.dadosSolicitanteComponent.preencherCausaDesligamento(causa);
+  }
+
+  colaboradorSelecionado(colaborador: Colaborador): void {
+    if (colaborador)
+      this.dadosDesligamentoComponent.preencheColaboradorSelecionado(
+        colaborador
+      );
   }
 
   converteSolicitanteParaColaboradorDesligado(

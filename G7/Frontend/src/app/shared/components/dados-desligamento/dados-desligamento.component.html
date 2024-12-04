@@ -30,7 +30,26 @@
           </nz-form-item>
         </div>
 
-        <div nz-col [nzSpan]="6">
+        <div nz-col [nzSpan]="4" *ngIf="valueForm?.nCausaDemissao == '1' ">
+          <nz-form-item>
+            <nz-form-label nzFor="validacaoJuridico"
+              >Validação Juridico</nz-form-label
+            >
+
+            <nz-form-control nzErrorTip="Campo obrigatorio">
+              <nz-select
+                formControlName="validacaoJuridico"
+                id="validacaoJuridico"
+                nzShowSearch
+                nzPlaceHolder="Sim/Não"
+              >
+                <nz-option nzValue="S" nzLabel="Sim"></nz-option>
+                <nz-option nzValue="N" nzLabel="Não"></nz-option> </nz-select
+            ></nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="8">
           <nz-form-item>
             <nz-form-label nzFor="nMotivoDesligamento"
               >Motivo do Desligamento:</nz-form-label
@@ -51,37 +70,6 @@
             ></nz-form-control>
           </nz-form-item>
         </div>
-
-        <div nz-col [nzSpan]="5">
-          <nz-form-item>
-            <nz-form-label nzFor="dataDemissao"
-              >Data de Demissão:</nz-form-label
-            >
-
-            <nz-form-control nzErrorTip="Campo obrigatorio">
-              <app-date-picker-custom
-                formControlName="dataDemissao"
-                nzFormat="dd/MM/yyyy"
-                (ngModelChange)="dataDemissaoPreenchida($event)"
-              ></app-date-picker-custom>
-            </nz-form-control>
-          </nz-form-item>
-        </div>
-
-        <div nz-col [nzSpan]="5">
-          <nz-form-item>
-            <nz-form-label nzFor="dataPagamento"
-              >Data do Pagamento:</nz-form-label
-            >
-
-            <nz-form-control nzErrorTip="Campo obrigatorio">
-              <app-date-picker-custom
-                formControlName="dataPagamento"
-                nzFormat="dd/MM/yyyy"
-              ></app-date-picker-custom>
-            </nz-form-control>
-          </nz-form-item>
-        </div>
       </div>
 
       <div nz-row [nzGutter]="24">
@@ -95,6 +83,7 @@
                 id="nAvisoPrevio"
                 nzShowSearch
                 nzPlaceHolder="Selecione um motivo para o desligamento"
+                (ngModelChange)="obrigatoriedadeDataDesligamento()"
               >
                 <nz-option
                   *ngFor="let o of listaAvisoPrevio"
@@ -105,7 +94,11 @@
           </nz-form-item>
         </div>
 
-        <div nz-col [nzSpan]="5">
+        <div
+          nz-col
+          [nzSpan]="6"
+          *ngIf="['2', '4', '27', '28'].includes(valueForm?.nCausaDemissao)"
+        >
           <nz-form-item>
             <nz-form-label nzFor="dataAvisoPrevio"
               >Data do Aviso Prévio:</nz-form-label
@@ -114,6 +107,7 @@
               <app-date-picker-custom
                 formControlName="dataAvisoPrevio"
                 nzFormat="dd/MM/yyyy"
+                (ngModelChange)="obrigatoriedadeDataDesligamento()"
               ></app-date-picker-custom>
 
               <ng-template #avisoPrevioErrorTpl let-control>
@@ -130,29 +124,48 @@
             </nz-form-control>
           </nz-form-item>
         </div>
-      </div>
 
-      <div
-        nz-row
-        [nzGutter]="24"
-        *ngIf="solicitante?.AEhGestor == 'S' || solicitante?.AEhRhu == 'S'"
-      >
-        <div nz-col [nzSpan]="4">
+        <div nz-col [nzSpan]="6">
           <nz-form-item>
-            <nz-form-label nzFor="aLiberacaoAvisoPrevio"
-              >Liberação Aviso Prévio</nz-form-label
+            <nz-form-label nzFor="dataDemissao"
+              >Data de Demissão:</nz-form-label
             >
 
             <nz-form-control nzErrorTip="Campo obrigatorio">
-              <nz-select
-                formControlName="aLiberacaoAvisoPrevio"
-                id="aLiberacaoAvisoPrevio"
-                nzShowSearch
-                nzPlaceHolder="Sim/Não"
-              >
-                <nz-option nzValue="S" nzLabel="Sim"></nz-option>
-                <nz-option nzValue="N" nzLabel="Não"></nz-option> </nz-select
-            ></nz-form-control>
+              <app-date-picker-custom
+                #dataDesligamentoComponent
+                formControlName="dataDemissao"
+                nzFormat="dd/MM/yyyy"
+                (ngModelChange)="dataDemissaoPreenchida()"
+              ></app-date-picker-custom>
+
+              <ng-template #avisoPrevioErrorTpl let-control>
+                <ng-container *ngIf="control.hasError('required')">
+                  Campo obrigatório
+                </ng-container>
+
+                <ng-container *ngIf="control.hasError('dataBaseAntesDemissao')">
+                  Prezado! Essa solicitação não poderá seguir pois o
+                  desligamento está no período que antecede a data base do
+                  sindicato do colaborador
+                </ng-container>
+              </ng-template>
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
+        <div nz-col [nzSpan]="6">
+          <nz-form-item>
+            <nz-form-label nzFor="dataPagamento"
+              >Data do Pagamento:</nz-form-label
+            >
+
+            <nz-form-control nzErrorTip="Campo obrigatorio">
+              <app-date-picker-custom
+                formControlName="dataPagamento"
+                nzFormat="dd/MM/yyyy"
+              ></app-date-picker-custom>
+            </nz-form-control>
           </nz-form-item>
         </div>
       </div>
@@ -171,15 +184,16 @@
         </div>
       </div>
 
-      <div
-        nz-row
-        [nzGutter]="24"
-        *ngIf="solicitante?.AEhGestor != 'S' && solicitante?.AEhRhu != 'S'"
-      >
-        <div nz-col [nzSpan]="5">
-          <a href="" target="_blank"> Entrevista de desligamento</a>
-        </div>
-      </div>
-    </form>
-  </nz-spin></nz-card
->
+      <nz-alert
+        *ngIf="comErroDataBase"
+        nzType="error"
+        nzMessage="Atenção"
+        nzDescription="Prezado! Essa solicitação não
+        poderá seguir pois o desligamento
+        está no período que antecede a
+        data base do sindicato do
+        colaborador"
+        nzShowIcon
+      ></nz-alert>
+    </form> </nz-spin
+></nz-card>

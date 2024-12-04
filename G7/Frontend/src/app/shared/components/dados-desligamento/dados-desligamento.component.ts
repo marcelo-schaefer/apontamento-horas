@@ -18,6 +18,7 @@ import { isValid, format } from 'date-fns';
 import { DadoDesligamento } from '../../model/dado-desligamento';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
+import { DatePickerCustomComponent } from '../date-picker-custom/date-picker-custom.component';
 
 @Component({
   selector: 'app-dados-desligamento',
@@ -25,6 +26,9 @@ import { NzNotificationService } from 'ng-zorro-antd/notification';
   styleUrls: ['./dados-desligamento.component.scss'],
 })
 export class DadosDesligamentoComponent implements OnInit {
+  @ViewChild('dataDesligamentoComponent', { static: true })
+  dataDesligamentoComponent: DatePickerCustomComponent;
+
   @ViewChild(FileUploadComponent, { static: true })
   fileUploadComponent: FileUploadComponent;
 
@@ -34,10 +38,13 @@ export class DadosDesligamentoComponent implements OnInit {
   formDadosDesligamento: FormGroup;
 
   solicitante: Colaborador;
+  colaboradorSelecionado: Colaborador;
   today = new Date();
   motivosDesligamento: MotivoDesligamento;
   listaAvisoPrevio: Motivo[];
+  listaMotivosGestorRhu = [1, 2, 4, 8, 9, 10, 11, 12, 13, 14, 26, 27, 28];
   isLoading = false;
+  comErroDataBase = false;
 
   constructor(
     private fb: FormBuilder,
@@ -55,8 +62,9 @@ export class DadosDesligamentoComponent implements OnInit {
         { value: '', disabled: false },
         Validators.required,
       ],
-      dataDemissao: [{ value: null, disabled: false }, Validators.required],
+      dataDemissao: [{ value: null, disabled: true }, Validators.required],
       dataPagamento: { value: null, disabled: true },
+      validacaoJuridico: [{ value: '', disabled: false }, Validators.required],
       nAvisoPrevio: [{ value: '', disabled: false }, Validators.required],
       dataAvisoPrevio: [
         { value: null, disabled: false },
@@ -81,6 +89,12 @@ export class DadosDesligamentoComponent implements OnInit {
     this.solicitante = JSON.parse(JSON.stringify(solicitante)) as Colaborador;
   }
 
+  preencheColaboradorSelecionado(colaboradorSelecionado: Colaborador): void {
+    this.colaboradorSelecionado = JSON.parse(
+      JSON.stringify(colaboradorSelecionado)
+    ) as Colaborador;
+  }
+
   apresentarComoValidador(): void {
     this.solicitante.AEhGestor = 'S';
     this.solicitante.AEhRhu = 'S';
@@ -89,29 +103,33 @@ export class DadosDesligamentoComponent implements OnInit {
   preencheMotivosDesligamento(motivosDesligamento: MotivoDesligamento): void {
     this.motivosDesligamento = motivosDesligamento;
     this.filtrarCausasParaColaborador();
+    this.filtrarCausasParaGestorRhu();
     this.preencheListaAvisoPrevio();
   }
 
-  dataDemissaoPreenchida(data: Date): void {
-    this.validarDataAvisoPrevio();
-    this.preencherDataPagamento(data);
+  dataDemissaoPreenchida(): void {
+    if (
+      this.valueForm.nCausaDemissao &&
+      this.valueForm.nAvisoPrevio &&
+      this.valueForm.dataDemissao
+    )
+      this.preencherDataPagamento();
+
+    this.comErroDataBase = this.dataDemissaoAntesDaDataDeSolicitacao();
   }
 
-  preencherDataPagamento(data: Date): void {
-    data = new Date(data);
+  preencherDataPagamento(): void {
+    let data: Date;
+    if (
+      [2, 4, 27, 28].includes(Number(this.valueForm.nCausaDemissao)) &&
+      this.valueForm.nAvisoPrevio == 1
+    )
+      data = new Date(this.valueForm.dataAvisoPrevio);
+    else data = new Date(this.valueForm.dataDemissao);
     if (isValid(data))
       this.formDadosDesligamento
         .get('dataPagamento')
-        .setValue(data.setDate(data.getDate() + 10));
-  }
-
-  validarDataAvisoPrevio(): void {
-    if (this.valueForm.dataAvisoPrevio) {
-      this.formDadosDesligamento.get('dataAvisoPrevio').markAsDirty();
-      this.formDadosDesligamento
-        .get('dataAvisoPrevio')
-        .updateValueAndValidity();
-    }
+        .setValue(data.setDate(data.getDate() + 9));
   }
 
   get valueForm(): DadoDesligamento {
@@ -194,10 +212,20 @@ export class DadosDesligamentoComponent implements OnInit {
   }
 
   filtrarCausasParaColaborador(): void {
-    if (this.solicitante.AEhGestor != 'S' && this.solicitante.AEhRhu != 'S')
+    if (this.solicitante?.AEhGestor != 'S' && this.solicitante?.AEhRhu != 'S')
       this.motivosDesligamento.causaDemissao =
-        this.motivosDesligamento.causaDemissao.filter(
-          (f) => f.NCodigo == 4 || f.NCodigo == 14 || f.NCodigo == 29
+        this.motivosDesligamento.causaDemissao.filter((f) =>
+          this.solicitante.NCodVinculo == '56'
+            ? f.NCodigo == 26
+            : f.NCodigo == 4 || f.NCodigo == 12 || f.NCodigo == 14
+        );
+  }
+
+  filtrarCausasParaGestorRhu(): void {
+    if (this.solicitante?.AEhGestor == 'S' || this.solicitante?.AEhRhu == 'S')
+      this.motivosDesligamento.causaDemissao =
+        this.motivosDesligamento.causaDemissao.filter((f) =>
+          this.listaMotivosGestorRhu.includes(Number(f.NCodigo))
         );
   }
 
@@ -205,23 +233,11 @@ export class DadosDesligamentoComponent implements OnInit {
     this.listaAvisoPrevio = [
       { NCodigo: 1, ADescricao: 'Trabalhado' } as Motivo,
       { NCodigo: 2, ADescricao: 'Indenizado' } as Motivo,
-      { NCodigo: 3, ADescricao: 'Ausência/Dispensa' } as Motivo,
     ];
 
     if (this.solicitante.AEhGestor == 'S' || this.solicitante.AEhRhu == 'S')
       this.listaAvisoPrevio = this.listaAvisoPrevio.concat([
-        {
-          NCodigo: 4,
-          ADescricao: 'Trabalhado Parcial (Novo Emprego)',
-        } as Motivo,
-        {
-          NCodigo: 5,
-          ADescricao: 'Trabalhado Parcial (Iniciativa Empregador',
-        } as Motivo,
-        {
-          NCodigo: 6,
-          ADescricao: 'Outras Hipóteses de Cumprimento Parcial',
-        } as Motivo,
+        { NCodigo: 3, ADescricao: 'Ausência/Dispensa' } as Motivo,
       ]);
   }
 
@@ -240,12 +256,140 @@ export class DadosDesligamentoComponent implements OnInit {
     return null;
   };
 
+  dataDemissaoAntesDaDataDeSolicitacao(): boolean {
+    if (
+      !this.valueForm.dataAvisoPrevio ||
+      !this.valueForm.nCausaDemissao ||
+      !this.colaboradorSelecionado
+    )
+      return false;
+
+    const causa = Number(this.valueForm?.nCausaDemissao);
+    if (causa == 2 || causa == 27) {
+      const data = (
+        new Date(
+          this.valueForm.dataAvisoPrevio.setDate(
+            this.valueForm.dataAvisoPrevio.getDate() +
+              (Number(this.colaboradorSelecionado.NDiasAcrescidos) + 29)
+          )
+        ) as unknown as Date
+      ).getTime();
+      return (
+        data >=
+          this.stringParaData(
+            this.colaboradorSelecionado?.DDataInicioBase
+          ).getTime() &&
+        data <=
+          this.stringParaData(
+            this.colaboradorSelecionado?.DDataFimBase
+          ).getTime()
+      );
+    }
+    return false;
+  }
+
   emitirCausaDemissao(causa: number): void {
     this.causaDemissaoSelecionada.emit(causa);
+    this.obrigatoriedadeDataAvisoPrevioPelaCausa(causa);
+    this.obrigatoriedadeDataDesligamento();
+  }
+
+  obrigatoriedadeDataAvisoPrevioPelaCausa(causa: number): void {
+    if (causa == 4)
+      this.formDadosDesligamento
+        .get('dataAvisoPrevio')
+        .setValidators(Validators.required);
+    else this.formDadosDesligamento.get('dataAvisoPrevio').clearValidators();
+  }
+
+  obrigatoriedadeDataDesligamento(): void {
+    const causa = Number(this.valueForm?.nCausaDemissao);
+    this.validacaoJuridicoCausa1();
+    if ([2, 4, 27, 28].includes(causa))
+      this.dataDesligamentoCausaComAvisoPrevio();
+    else if (causa == 12) this.dataDesligamentoCausaFimContrato();
+    else if (causa == 26) this.dataDesligamentoCausa26();
+    else if ([13, 14].includes(causa))
+      this.dataDesligamentoCausaFimContratoEstagio();
+    else if ([1, 8, 9, 10, 11].includes(causa)) this.dataDesligamentoAberto();
+    this.dataDemissaoPreenchida();
+  }
+
+  dataDesligamentoCausaComAvisoPrevio(): void {
+    this.formDadosDesligamento.get('dataDemissao').disable();
+
+    if (
+      (this.valueForm?.nAvisoPrevio == 2 ||
+        this.valueForm?.nAvisoPrevio == 3) &&
+      this.valueForm?.dataAvisoPrevio
+    ) {
+      this.formDadosDesligamento
+        .get('dataDemissao')
+        .setValue(this.valueForm?.dataAvisoPrevio);
+    } else if (
+      this.valueForm?.nAvisoPrevio == 1 &&
+      this.valueForm?.dataAvisoPrevio
+    ) {
+      const data = new Date(this.valueForm?.dataAvisoPrevio);
+      if (isValid(data))
+        this.formDadosDesligamento
+          .get('dataDemissao')
+          .setValue(data.setDate(data.getDate() + 29));
+    }
+  }
+
+  dataDesligamentoCausaFimContrato(): void {
+    this.formDadosDesligamento.get('dataDemissao').disable();
+    this.formDadosDesligamento
+      .get('dataDemissao')
+      .setValue(this.stringParaData(this.solicitante?.DDataTermino));
+  }
+
+  dataDesligamentoCausa26(): void {
+    if (this.solicitante?.AEhGestor != 'S' && this.solicitante?.AEhRhu != 'S')
+      this.dataDesligamentoCausaFimContratoEstagio();
+    else this.dataDesligamentoAberto();
+  }
+
+  dataDesligamentoCausaFimContratoEstagio(): void {
+    if (
+      this.valueForm?.dataDemissao >
+        this.stringParaData(this.solicitante?.DDataTermino) ||
+      this.valueForm?.dataDemissao < new Date()
+    )
+      this.formDadosDesligamento.get('dataDemissao').setValue(null);
+    this.formDadosDesligamento.get('dataDemissao').enable();
+    this.dataDesligamentoComponent.clearValue();
+    this.dataDesligamentoComponent.setDataLimite(
+      this.stringParaData(this.solicitante?.DDataTermino)
+    );
+  }
+
+  dataDesligamentoAberto(): void {
+    this.formDadosDesligamento.get('dataDemissao').enable();
+    this.dataDesligamentoComponent.setDataLimite(null);
+  }
+
+  validacaoJuridicoCausa1(): void {
+    if (this.valueForm?.nCausaDemissao == 1)
+      this.formDadosDesligamento
+        .get('validacaoJuridico')
+        .setValidators(Validators.required);
+    else this.formDadosDesligamento.get('validacaoJuridico').clearValidators();
   }
 
   formataData(data: Date): string {
     return format(data, 'dd/MM/yyyy');
+  }
+
+  stringParaData(data: string): Date {
+    return new Date(
+      data.split('/', 3)[1] +
+        '-' +
+        data.split('/', 3)[0] +
+        '-' +
+        data.split('/', 3)[2]
+    );
   }
 
   dataHorasZeradas(data: Date): Date {

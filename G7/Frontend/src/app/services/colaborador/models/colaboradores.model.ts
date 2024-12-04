@@ -6,6 +6,8 @@ export class Colaborador {
   ADescricaoEmpresa: string;
   NCodigoFilial: string;
   ADescricaoFilial: string;
+  ACodigoCargo: string;
+  ADescricaoCargo: string;
   ACodigoPosto: string;
   ADescricaoPosto: string;
   ACodigoCentroCusto: string;
@@ -14,6 +16,7 @@ export class Colaborador {
   AColaboradorPcd: string;
   AColaboradorPom: string;
   AEstabilidade: string;
+  NCodVinculo: string;
   DDataTermino: string;
   AEhGestor: string;
   AEhRhu: string;
@@ -22,7 +25,11 @@ export class Colaborador {
   AEhAtacadao: string;
   ATemEstabilidade: string;
   APapelBp: string;
+  DDataInicioBase: string;
+  DDataFimBase: string;
+  NDiasAcrescidos: string;
   ARetorno: string;
+  message: string;
 }
 
 export class RetornoColaborador {
