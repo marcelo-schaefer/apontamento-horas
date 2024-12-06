@@ -9,6 +9,7 @@ import { DadosColaboradorComponent } from 'src/app/shared/components/dados-colab
 import { DadosDesligamentoComponent } from 'src/app/shared/components/dados-desligamento/dados-desligamento.component';
 import { DadosSolicitanteComponent } from 'src/app/shared/components/dados-solicitante/dados-solicitante.component';
 import { ObservacaoComponent } from 'src/app/shared/components/observacao/observacao.component';
+import { CaminhoAprovacao } from 'src/app/shared/model/caminho-aprovacao.enum';
 import { ColaboradorDesligado } from 'src/app/shared/model/colaborador-desligado';
 import { DadoDesligamento } from 'src/app/shared/model/dado-desligamento';
 
@@ -46,7 +47,7 @@ export class BpComponent implements OnInit {
   solicitante: Colaborador;
   colaboradorDesligado: ColaboradorDesligado;
   solicitacaoPorColaborador: boolean;
-  tituloObservacaoPrimeiraValidacao: string;
+  causaDesligamento: number;
   caminhoSolicitacao: string;
 
   ngOnInit(): void {
@@ -67,6 +68,7 @@ export class BpComponent implements OnInit {
         value.colaborador
       ) as ColaboradorDesligado;
 
+      this.causaDesligamento = Number(dadosDesligamento.nCausaDemissao);
       this.dadosSolicitanteComponent.preencherFormulario(this.solicitante);
 
       this.dadosDesligamentoComponent.preencheSolicitante(this.solicitante);
@@ -87,8 +89,7 @@ export class BpComponent implements OnInit {
       this.observacaoComponentSolicitante.desabilitar();
 
       if (this.solicitante.AEhRhu != 'S')
-        this.observacaoComponentBp.apresentarAvisoPrevio();
-      this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
+        this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
 
       if (this.solicitante.AEhGestor != 'S') {
         this.observacaoComponentGestor.preencherDados(
@@ -104,32 +105,29 @@ export class BpComponent implements OnInit {
     });
   }
 
-  verificaProxiamEtapa(): string {
-    return this.colaboradorDesligado.AEhAtacadao == 'S' ? 'rh' : 'csc';
-  }
-
   validarEnvio(): boolean {
     return this.observacaoComponentBp.formularioValido();
   }
 
   submit(step: WfProcessStep): WfFormData {
-    if (step.nextAction.name == 'Reprovar')
+    if (step.nextAction.name != 'Aprovar')
       this.observacaoComponentBp.tornarObrigatorio();
     else this.observacaoComponentBp.tornarOpcional();
 
     if (this.validarEnvio()) {
-      const dadosDesligamento = this.dadosDesligamentoComponent.value;
-      if (this.observacaoComponentBp.valueAvisoPrevio == 'N')
-        dadosDesligamento.aLiberacaoAvisoPrevio =
-          this.observacaoComponentBp.valueAvisoPrevio;
       return {
         formData: {
           statusSolicitacao:
-            step.nextAction.name == 'Reprovar' ? 'Reprovado' : 'Em andamento',
+            step.nextAction.name == 'Aprovar'
+              ? 'Aprovado'
+              : step.nextAction.name == 'Reprovar'
+              ? 'Reprovado'
+              : 'Em andamento',
+          caminhoValidacao:
+            step.nextAction.name == 'Revisar'
+              ? CaminhoAprovacao.RHU
+              : CaminhoAprovacao.GERENCIA_REGIONAL,
           observacaoBp: this.observacaoComponentBp.value.observacao,
-          aprovarAvisoPrevio: this.observacaoComponentBp.valueAvisoPrevio,
-          caminhoValidacao: this.verificaProxiamEtapa(),
-          dadosDesligamento: JSON.stringify(dadosDesligamento),
         },
       };
     }

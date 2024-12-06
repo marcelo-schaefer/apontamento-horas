@@ -28,6 +28,7 @@ export class Colaborador {
   DDataInicioBase: string;
   DDataFimBase: string;
   NDiasAcrescidos: string;
+  AUsuarioGestorRegional: string;
   ARetorno: string;
   message: string;
 }

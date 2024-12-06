@@ -182,5 +182,13 @@
           </nz-form-item>
         </div>
       </div>
+
+      <nz-alert
+        *ngIf="comErro"
+        nzType="error"
+        nzMessage="Atenção"
+        nzDescription="Prezado! Não foi encontrato um gerente regional para o colaborador e essa solicitação não poderá seguir"
+        nzShowIcon
+      ></nz-alert>
     </form> </nz-spin
 ></nz-card>

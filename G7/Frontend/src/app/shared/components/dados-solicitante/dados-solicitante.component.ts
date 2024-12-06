@@ -13,6 +13,7 @@ export class DadosSolicitanteComponent implements OnInit {
   solicitante: Colaborador;
 
   isLoading = false;
+  comErro = false;
   causaDesligamento = 0;
 
   constructor(private fb: FormBuilder) {}
@@ -86,6 +87,7 @@ export class DadosSolicitanteComponent implements OnInit {
       solicitantePcd: solicitante.AColaboradorPcd == 'S' ? 'Sim' : 'Não',
       solicitantePom: solicitante.AColaboradorPom == 'S' ? 'Sim' : 'Não',
     });
+    this.validarGerenteRegional();
   }
 
   get value(): Solicitante {
@@ -102,5 +104,9 @@ export class DadosSolicitanteComponent implements OnInit {
 
   preencherCausaDesligamento(causa: number): void {
     this.causaDesligamento = causa;
+  }
+
+  validarGerenteRegional(): void {
+    this.comErro = !this.solicitante.AUsuarioGestorRegional;
   }
 }

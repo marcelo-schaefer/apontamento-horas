@@ -66,10 +66,7 @@ export class DadosDesligamentoComponent implements OnInit {
       dataPagamento: { value: null, disabled: true },
       validacaoJuridico: [{ value: '', disabled: false }, Validators.required],
       nAvisoPrevio: [{ value: '', disabled: false }, Validators.required],
-      dataAvisoPrevio: [
-        { value: null, disabled: false },
-        [Validators.required, this.avisoPrevioAntesDemissao],
-      ],
+      dataAvisoPrevio: [{ value: null, disabled: false }],
       aLiberacaoAvisoPrevio: { value: '', disabled: false },
       anexoDocumento: [[]],
     });
@@ -112,10 +109,11 @@ export class DadosDesligamentoComponent implements OnInit {
       this.valueForm.nCausaDemissao &&
       this.valueForm.nAvisoPrevio &&
       this.valueForm.dataDemissao
-    )
+    ) {
       this.preencherDataPagamento();
 
-    this.comErroDataBase = this.dataDemissaoAntesDaDataDeSolicitacao();
+      this.comErroDataBase = this.dataDemissaoAntesDaDataDeSolicitacao();
+    }
   }
 
   preencherDataPagamento(): void {
@@ -156,7 +154,7 @@ export class DadosDesligamentoComponent implements OnInit {
         this.motivosDesligamento.motivoDesligamento.find(
           (f) => f.NCodigo == form.nMotivoDesligamento
         ).ADescricao,
-      liberarAvisoPrevio: form.aLiberacaoAvisoPrevio == 'S' ? 'Sim' : 'Não',
+      validacaoJuridico: form.validacaoJuridico == 'S' ? 'Sim' : 'Não',
       avisoPrevio:
         form.nAvisoPrevio.toString() +
         ' - ' +
@@ -168,11 +166,6 @@ export class DadosDesligamentoComponent implements OnInit {
   }
 
   validarForm(): boolean {
-    if (this.solicitante.AEhGestor == 'S' || this.solicitante.AEhRhu == 'S')
-      this.formDadosDesligamento
-        .get('aLiberacaoAvisoPrevio')
-        .setValidators(Validators.required);
-
     for (const i of Object.keys(this.formDadosDesligamento.controls)) {
       this.formDadosDesligamento.controls[i].markAsDirty();
       this.formDadosDesligamento.controls[i].updateValueAndValidity();
@@ -257,19 +250,15 @@ export class DadosDesligamentoComponent implements OnInit {
   };
 
   dataDemissaoAntesDaDataDeSolicitacao(): boolean {
-    if (
-      !this.valueForm.dataAvisoPrevio ||
-      !this.valueForm.nCausaDemissao ||
-      !this.colaboradorSelecionado
-    )
-      return false;
+    if (!this.colaboradorSelecionado) return false;
 
     const causa = Number(this.valueForm?.nCausaDemissao);
     if (causa == 2 || causa == 27) {
-      const data = (
+      let data: number | Date = new Date(this.valueForm.dataAvisoPrevio);
+      data = (
         new Date(
-          this.valueForm.dataAvisoPrevio.setDate(
-            this.valueForm.dataAvisoPrevio.getDate() +
+          data.setDate(
+            data.getDate() +
               (Number(this.colaboradorSelecionado.NDiasAcrescidos) + 29)
           )
         ) as unknown as Date
@@ -295,10 +284,11 @@ export class DadosDesligamentoComponent implements OnInit {
   }
 
   obrigatoriedadeDataAvisoPrevioPelaCausa(causa: number): void {
-    if (causa == 4)
+    causa = Number(causa);
+    if ([2, 4, 27, 28].includes(causa))
       this.formDadosDesligamento
         .get('dataAvisoPrevio')
-        .setValidators(Validators.required);
+        .setValidators([Validators.required, this.avisoPrevioAntesDemissao]);
     else this.formDadosDesligamento.get('dataAvisoPrevio').clearValidators();
   }
 
@@ -334,7 +324,7 @@ export class DadosDesligamentoComponent implements OnInit {
       if (isValid(data))
         this.formDadosDesligamento
           .get('dataDemissao')
-          .setValue(data.setDate(data.getDate() + 29));
+          .setValue(new Date(data.setDate(data.getDate() + 29)));
     }
   }
 
@@ -379,7 +369,7 @@ export class DadosDesligamentoComponent implements OnInit {
   }
 
   formataData(data: Date): string {
-    return format(data, 'dd/MM/yyyy');
+    return data ? format(data, 'dd/MM/yyyy') : '';
   }
 
   stringParaData(data: string): Date {

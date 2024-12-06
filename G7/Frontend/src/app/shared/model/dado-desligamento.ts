@@ -31,7 +31,7 @@ export class DadoDesligamento extends DadoDesligamentoG5 {
   anexoDocumento: DocumentModel;
   causaDemissao: string;
   motivoDesligamento: string;
-  liberarAvisoPrevio: string;
+  validacaoJuridico: string;
   tipoDemissao: string;
   avisoPrevio: string;
   motivosDesligamento: MotivoDesligamento;

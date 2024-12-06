@@ -138,18 +138,6 @@
                 nzFormat="dd/MM/yyyy"
                 (ngModelChange)="dataDemissaoPreenchida()"
               ></app-date-picker-custom>
-
-              <ng-template #avisoPrevioErrorTpl let-control>
-                <ng-container *ngIf="control.hasError('required')">
-                  Campo obrigatório
-                </ng-container>
-
-                <ng-container *ngIf="control.hasError('dataBaseAntesDemissao')">
-                  Prezado! Essa solicitação não poderá seguir pois o
-                  desligamento está no período que antecede a data base do
-                  sindicato do colaborador
-                </ng-container>
-              </ng-template>
             </nz-form-control>
           </nz-form-item>
         </div>
@@ -188,11 +176,7 @@
         *ngIf="comErroDataBase"
         nzType="error"
         nzMessage="Atenção"
-        nzDescription="Prezado! Essa solicitação não
-        poderá seguir pois o desligamento
-        está no período que antecede a
-        data base do sindicato do
-        colaborador"
+        nzDescription="Prezado! Essa solicitação não poderá seguir pois o desligamento está no período que antecede a data base do sindicato docolaborador"
         nzShowIcon
       ></nz-alert>
     </form> </nz-spin

@@ -114,6 +114,7 @@ export class DadosColaboradorComponent implements OnInit {
       colaboradorDesligadoPom:
         colaborador.AColaboradorPom == 'S' ? 'Sim' : 'Não',
     });
+    this.validarGerenteRegional();
   }
 
   preencherFormulario(colaborador: Colaborador): void {
@@ -133,7 +134,7 @@ export class DadosColaboradorComponent implements OnInit {
   }
 
   validarForm(): boolean {
-    return this.buscaColaboradoresComponent.validarForm();
+    return this.buscaColaboradoresComponent.validarForm() && !this.comErro;
   }
 
   loadingForm(loading: boolean): void {
@@ -155,5 +156,12 @@ export class DadosColaboradorComponent implements OnInit {
     if (this.comErro)
       this.mensagemErro =
         'Prezado! O colaborador selecionado possui estabilidade e essa solicitação não poderá seguir';
+  }
+
+  validarGerenteRegional(): void {
+    this.comErro = !this.colaboradorSelecionado.AUsuarioGestorRegional;
+    if (this.comErro)
+      this.mensagemErro =
+        'Prezado! Não foi encontrato um gerente regional para o colaborador e essa solicitação não poderá seguir';
   }
 }

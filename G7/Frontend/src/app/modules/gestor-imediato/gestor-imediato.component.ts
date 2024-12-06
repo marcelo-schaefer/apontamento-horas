@@ -9,6 +9,7 @@ import { DadosColaboradorComponent } from 'src/app/shared/components/dados-colab
 import { DadosDesligamentoComponent } from 'src/app/shared/components/dados-desligamento/dados-desligamento.component';
 import { DadosSolicitanteComponent } from 'src/app/shared/components/dados-solicitante/dados-solicitante.component';
 import { ObservacaoComponent } from 'src/app/shared/components/observacao/observacao.component';
+import { CaminhoAprovacao } from 'src/app/shared/model/caminho-aprovacao.enum';
 import { ColaboradorDesligado } from 'src/app/shared/model/colaborador-desligado';
 import { DadoDesligamento } from 'src/app/shared/model/dado-desligamento';
 
@@ -94,16 +95,9 @@ export class GestorImediatoComponent implements OnInit {
   }
 
   verificaProxiamEtapa(): string {
-    return this.solicitante.AEhRhu == 'N'
-      ? 'rhu'
-      : this.dadosDesligamentoComponent.value.aLiberacaoAvisoPrevio == 'S' &&
-        this.colaboradorDesligado.AEhAtacadao == 'S' && // Colaborador for do Atacadão
-        Number(this.dadosDesligamentoComponent.value.nCausaDemissao) == 2 && // sem justa causa
-        this.colaboradorDesligado.ATemEstabilidade == 'S' // sem justa causa
-      ? 'bp'
-      : this.colaboradorDesligado.AEhAtacadao == 'S'
-      ? 'rh'
-      : 'csc';
+    return this.colaboradorDesligado.colaboradorDesligadoPcd == 'S'
+      ? CaminhoAprovacao.BP
+      : CaminhoAprovacao.FINALIZAR;
   }
 
   validarEnvio(): boolean {
@@ -121,10 +115,6 @@ export class GestorImediatoComponent implements OnInit {
     if (this.validarEnvio()) {
       return {
         formData: {
-          ...this.dadosDesligamentoComponent.value,
-          dadosDesligamento: JSON.stringify(
-            this.dadosDesligamentoComponent.value
-          ),
           statusSolicitacao:
             step.nextAction.name == 'Aprovar'
               ? 'Aprovado'
@@ -135,7 +125,7 @@ export class GestorImediatoComponent implements OnInit {
             this.observacaoComponentGestor.value.observacao,
           caminhoValidacao:
             step.nextAction.name == 'Revisar'
-              ? 'gestor'
+              ? CaminhoAprovacao.SOLICITANTE
               : this.verificaProxiamEtapa(),
         },
       };

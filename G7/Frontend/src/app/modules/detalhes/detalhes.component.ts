@@ -107,10 +107,6 @@ export class DetalhesComponent implements OnInit {
         this.colaboradorDesligado.ATemEstabilidade == 'S'
       ) {
         this.apresentarObservacaoBP = true;
-        this.observacaoComponentBp.apresentarAvisoPrevio();
-        this.observacaoComponentBp.preencherAvisoPrevio(
-          value?.aprovarAvisoPrevio
-        );
         this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
         this.observacaoComponentBp.desabilitar();
       }

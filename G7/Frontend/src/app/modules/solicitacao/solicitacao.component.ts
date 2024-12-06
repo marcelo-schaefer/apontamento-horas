@@ -16,6 +16,7 @@ import { DadosDesligamentoComponent } from 'src/app/shared/components/dados-desl
 import { ObservacaoComponent } from 'src/app/shared/components/observacao/observacao.component';
 import { ColaboradorDesligado } from 'src/app/shared/model/colaborador-desligado';
 import { Solicitante } from 'src/app/shared/model/solicitante';
+import { CaminhoAprovacao } from 'src/app/shared/model/caminho-aprovacao.enum';
 
 @Component({
   selector: 'app-solicitacao',
@@ -38,6 +39,7 @@ export class SolicitacaoComponent implements OnInit {
   usernameSolicitante: string;
   solicitante: Colaborador;
   motivosDesligamento: MotivoDesligamento;
+  causaSelecionada: number;
   solicitacaoPorColaborador = true;
 
   constructor(
@@ -90,7 +92,6 @@ export class SolicitacaoComponent implements OnInit {
       .then(
         (data) => {
           this.solicitante = data.outputData;
-          this.solicitante.DDataTermino = '25/12/2024';
           if (this.solicitante.ARetorno != 'OK' || this.solicitante?.message) {
             this.criaNotificacao(
               'Erro ao identificar solicitante, ' +
@@ -131,6 +132,7 @@ export class SolicitacaoComponent implements OnInit {
   }
 
   transportarCausaDemissao(causa: number): void {
+    this.causaSelecionada = Number(causa);
     if (!this.solicitacaoPorColaborador)
       this.dadosColaboradorComponent.definirCausaDemissao(causa);
     else this.dadosSolicitanteComponent.preencherCausaDesligamento(causa);
@@ -161,31 +163,20 @@ export class SolicitacaoComponent implements OnInit {
   }
 
   verificaProxiamEtapa(colaborador: ColaboradorDesligado): string {
-    return this.solicitacaoPorColaborador ||
-      (this.solicitante.AEhRhu == 'S' && this.solicitante.AEhGestor == 'N')
-      ? 'gestor'
-      : this.solicitante.AEhGestor == 'S' &&
-        this.solicitante.AEhRhu == 'S' &&
-        this.dadosDesligamentoComponent.value.aLiberacaoAvisoPrevio == 'S' &&
-        colaborador.AEhAtacadao == 'S' && // Colaborador for do Atacadão
-        Number(this.dadosDesligamentoComponent.value.nCausaDemissao) == 2 && // sem justa causa
-        colaborador.ATemEstabilidade == 'S' // sem justa causa
-      ? 'bp'
-      : this.solicitante.AEhGestor == 'S' &&
-        this.solicitante.AEhRhu == 'S' &&
-        colaborador.AEhAtacadao == 'S'
-      ? 'rh'
-      : this.solicitante.AEhGestor == 'S' && this.solicitante.AEhRhu == 'S'
-      ? 'csc'
-      : 'rhu';
+    return this.solicitante.AEhRhu == 'S'
+      ? [4, 12, 14, 26].includes(this.causaSelecionada)
+        ? colaborador.AColaboradorPcd == 'S'
+          ? CaminhoAprovacao.BP
+          : CaminhoAprovacao.FINALIZAR
+        : CaminhoAprovacao.GESTOR
+      : CaminhoAprovacao.RHU;
   }
 
   validarEnvio(): boolean {
     return (
       this.dadosDesligamentoComponent.validarForm() &&
-      (!this.solicitacaoPorColaborador
-        ? this.dadosColaboradorComponent.validarForm()
-        : true)
+      (this.solicitacaoPorColaborador ||
+        this.dadosColaboradorComponent.validarForm())
     );
   }
 

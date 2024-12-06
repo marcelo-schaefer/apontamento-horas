@@ -9,6 +9,7 @@ import { DadosColaboradorComponent } from 'src/app/shared/components/dados-colab
 import { DadosDesligamentoComponent } from 'src/app/shared/components/dados-desligamento/dados-desligamento.component';
 import { DadosSolicitanteComponent } from 'src/app/shared/components/dados-solicitante/dados-solicitante.component';
 import { ObservacaoComponent } from 'src/app/shared/components/observacao/observacao.component';
+import { CaminhoAprovacao } from 'src/app/shared/model/caminho-aprovacao.enum';
 import { ColaboradorDesligado } from 'src/app/shared/model/colaborador-desligado';
 import { DadoDesligamento } from 'src/app/shared/model/dado-desligamento';
 
@@ -29,9 +30,6 @@ export class RhuComponent implements OnInit {
 
   @ViewChild('observacaoComponentSolicitante', { static: true })
   observacaoComponentSolicitante: ObservacaoComponent;
-
-  @ViewChild('observacaoComponentGestor', { static: true })
-  observacaoComponentGestor: ObservacaoComponent;
 
   @ViewChild('observacaoComponentRhu', { static: true })
   observacaoComponentRhu: ObservacaoComponent;
@@ -89,25 +87,13 @@ export class RhuComponent implements OnInit {
       this.observacaoComponentSolicitante.desabilitar();
 
       this.observacaoComponentRhu.preencherDados(value?.observacaoRhu || '');
-
-      if (this.solicitante.AEhGestor != 'S') {
-        this.observacaoComponentGestor.preencherDados(
-          value?.observacaoGestorImediato || ''
-        );
-        this.observacaoComponentGestor.desabilitar();
-      }
     });
   }
 
   verificaProxiamEtapa(): string {
-    return this.dadosDesligamentoComponent.value.aLiberacaoAvisoPrevio == 'S' &&
-      this.colaboradorDesligado.AEhAtacadao == 'S' && // Colaborador for do Atacadão
-      Number(this.dadosDesligamentoComponent.value.nCausaDemissao) == 2 && // sem justa causa
-      this.colaboradorDesligado.ATemEstabilidade == 'S' // sem justa causa
-      ? 'bp'
-      : this.colaboradorDesligado.AEhAtacadao == 'S'
-      ? 'rh'
-      : 'csc';
+    return this.colaboradorDesligado.colaboradorDesligadoPcd == 'S'
+      ? CaminhoAprovacao.BP
+      : CaminhoAprovacao.FINALIZAR;
   }
 
   validarEnvio(): boolean {
@@ -125,10 +111,6 @@ export class RhuComponent implements OnInit {
     if (this.validarEnvio()) {
       return {
         formData: {
-          ...this.dadosDesligamentoComponent.value,
-          dadosDesligamento: JSON.stringify(
-            this.dadosDesligamentoComponent.value
-          ),
           statusSolicitacao:
             step.nextAction.name == 'Aprovar'
               ? 'Aprovado'
@@ -138,7 +120,7 @@ export class RhuComponent implements OnInit {
           observacaoRhu: this.observacaoComponentRhu.value.observacao,
           caminhoValidacao:
             step.nextAction.name == 'Revisar'
-              ? 'rhu'
+              ? CaminhoAprovacao.SOLICITANTE
               : this.verificaProxiamEtapa(),
         },
       };
