@@ -7,5 +7,5 @@ export class PersisiteSolicitacao extends DadoDesligamentoG5 {
 }
 
 export class RetornoPersisiteSolicitacao {
-  outputData: { ARetorno: string };
+  outputData: { ARetorno: string; message: string };
 }

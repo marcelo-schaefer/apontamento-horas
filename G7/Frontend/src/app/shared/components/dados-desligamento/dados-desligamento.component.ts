@@ -19,6 +19,7 @@ import { DadoDesligamento } from '../../model/dado-desligamento';
 import { FileUploadComponent } from '../file-upload/file-upload.component';
 import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { DatePickerCustomComponent } from '../date-picker-custom/date-picker-custom.component';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-dados-desligamento',
@@ -160,6 +161,7 @@ export class DadosDesligamentoComponent implements OnInit {
         ' - ' +
         this.listaAvisoPrevio.find((f) => f.NCodigo == form.nAvisoPrevio)
           .ADescricao,
+      dataDemissaoRelatorio: this.formataDataRelatorio(form.dataDemissao),
       motivosDesligamento: this.motivosDesligamento,
       listaAvisoPrevio: this.listaAvisoPrevio,
     } as DadoDesligamento;
@@ -343,13 +345,15 @@ export class DadosDesligamentoComponent implements OnInit {
 
   dataDesligamentoCausaFimContratoEstagio(): void {
     if (
-      this.valueForm?.dataDemissao >
+      this.valueForm?.dataDemissao &&
+      (this.valueForm?.dataDemissao >
         this.stringParaData(this.solicitante?.DDataTermino) ||
-      this.valueForm?.dataDemissao < new Date()
-    )
+        this.valueForm?.dataDemissao < new Date())
+    ) {
       this.formDadosDesligamento.get('dataDemissao').setValue(null);
+      this.dataDesligamentoComponent.clearValue();
+    }
     this.formDadosDesligamento.get('dataDemissao').enable();
-    this.dataDesligamentoComponent.clearValue();
     this.dataDesligamentoComponent.setDataLimite(
       this.stringParaData(this.solicitante?.DDataTermino)
     );
@@ -370,6 +374,10 @@ export class DadosDesligamentoComponent implements OnInit {
 
   formataData(data: Date): string {
     return data ? format(data, 'dd/MM/yyyy') : '';
+  }
+
+  formataDataRelatorio(data: Date): string {
+    return data ? moment(data).format('YYYY-MM-DD') : '';
   }
 
   stringParaData(data: string): Date {

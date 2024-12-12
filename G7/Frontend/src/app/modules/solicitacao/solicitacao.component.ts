@@ -17,6 +17,9 @@ import { ObservacaoComponent } from 'src/app/shared/components/observacao/observ
 import { ColaboradorDesligado } from 'src/app/shared/model/colaborador-desligado';
 import { Solicitante } from 'src/app/shared/model/solicitante';
 import { CaminhoAprovacao } from 'src/app/shared/model/caminho-aprovacao.enum';
+import { PersisiteSolicitacao } from 'src/app/services/desligamento/models/persisite-solicitacao';
+import { DadoDesligamentoG5 } from 'src/app/shared/model/dado-desligamento';
+import { SlaEtapas } from 'src/app/services/desligamento/models/sla-etapas';
 
 @Component({
   selector: 'app-solicitacao',
@@ -39,6 +42,7 @@ export class SolicitacaoComponent implements OnInit {
   usernameSolicitante: string;
   solicitante: Colaborador;
   motivosDesligamento: MotivoDesligamento;
+  slaEtapas: SlaEtapas;
   causaSelecionada: number;
   solicitacaoPorColaborador = true;
 
@@ -56,6 +60,7 @@ export class SolicitacaoComponent implements OnInit {
     this.loadingForm(true);
     await this.buscaSolicitante();
     await this.buscaMotivosDesligamento();
+    await this.buscaSla();
     this.preencherFormularios();
     this.loadingForm(false);
   }
@@ -131,6 +136,57 @@ export class SolicitacaoComponent implements OnInit {
       );
   }
 
+  async buscaSla(): Promise<void> {
+    await this.desligamentoService
+      .buscaSla()
+      .toPromise()
+      .then(
+        (data) => {
+          this.slaEtapas = data.outputData;
+          this.validarSlaEtapas();
+        },
+        () => {
+          this.criaNotificacao(
+            'Erro ao buscar SLA das etapas de aprovação, tente mais tarde ou contate o administrador.'
+          );
+        }
+      );
+  }
+
+  async persistirSolicitacao(): Promise<void> {
+    await this.desligamentoService
+      .persisitirSolicitacao(this.montaCorpoEnvio())
+      .toPromise()
+      .then(
+        (data) => {
+          if (data.outputData.message || data.outputData.ARetorno != 'OK') {
+            this.notification.error(
+              'Atenção',
+              'Erro ao persistir a solicitação, ' +
+                (data.outputData.message || data.outputData.ARetorno)
+            );
+            this.wfService.abortSubmit();
+          }
+        },
+        () => {
+          this.notification.error(
+            'Atenção',
+            'Erro ao persistir a solicitação, tente mais tarde ou contate o administrador.'
+          );
+          this.wfService.abortSubmit();
+        }
+      );
+  }
+
+  montaCorpoEnvio(): PersisiteSolicitacao {
+    return {
+      ...new DadoDesligamentoG5(this.dadosDesligamentoComponent.value),
+      nEmpresa: this.dadosColaboradorComponent.value.NCodigoEmpresa,
+      nTipoColaborador: this.dadosColaboradorComponent.value.NTipoColaborador,
+      nMatricula: this.dadosColaboradorComponent.value.NMatricula,
+    };
+  }
+
   transportarCausaDemissao(causa: number): void {
     this.causaSelecionada = Number(causa);
     if (!this.solicitacaoPorColaborador)
@@ -153,6 +209,7 @@ export class SolicitacaoComponent implements OnInit {
       matriculaColaborador: solicitante.matriculaSolicitante,
       nomeColaborador: solicitante.nomeSolicitante,
       postoColaborador: solicitante.postoSolicitante,
+      cargoColaborador: solicitante.cargoSolicitante,
       centroCustoColaborador: solicitante.centroCustoSolicitante,
       dataAdmissaoColaborador: solicitante.DDataAdmissao,
       colaboradorDesligadoPcd:
@@ -174,23 +231,47 @@ export class SolicitacaoComponent implements OnInit {
 
   validarEnvio(): boolean {
     return (
+      this.validarSlaEtapas() &&
+      //this.dadosSolicitanteComponent.validarForm() &&
       this.dadosDesligamentoComponent.validarForm() &&
       (this.solicitacaoPorColaborador ||
         this.dadosColaboradorComponent.validarForm())
     );
   }
 
-  submit(step: WfProcessStep): WfFormData {
+  validarSlaEtapas(): boolean {
+    if (this.slaEtapas?.message)
+      this.criaNotificacao(
+        'Erro ao buscar o SLA das etapas de aprovação, ' +
+          this.slaEtapas.message
+      );
+    else {
+      this.slaEtapas.NSlaGestor = Number(this.slaEtapas.NSlaGestor);
+      this.slaEtapas.NSlaRhu = Number(this.slaEtapas.NSlaRhu);
+      this.slaEtapas.NSlaBp = Number(this.slaEtapas.NSlaBp);
+      this.slaEtapas.NSlaGerente = Number(this.slaEtapas.NSlaGerente);
+    }
+    return !this.slaEtapas?.message;
+  }
+
+  async submit(step: WfProcessStep): Promise<WfFormData> {
     if (this.validarEnvio()) {
       const colaboradorDesligado = this.solicitacaoPorColaborador
         ? this.converteSolicitanteParaColaboradorDesligado(
             this.dadosSolicitanteComponent.value
           )
         : this.dadosColaboradorComponent.value;
+
+      if (
+        this.verificaProxiamEtapa(colaboradorDesligado) ==
+        CaminhoAprovacao.FINALIZAR
+      )
+        await this.persistirSolicitacao();
       return {
         formData: {
           ...this.dadosSolicitanteComponent.value,
           ...this.dadosDesligamentoComponent.value,
+          ...this.slaEtapas,
           ...colaboradorDesligado,
           numeroSolicitacao: step.processInstanceId,
           dataSolicitacao: format(new Date(), 'dd/MM/yyyy'),
@@ -209,6 +290,7 @@ export class SolicitacaoComponent implements OnInit {
           papelRhu: colaboradorDesligado.APapelRhu,
           papelBp: colaboradorDesligado.APapelBp,
           statusSolicitacao: 'Em andamento',
+          etapaAnterior: CaminhoAprovacao.SOLICITANTE,
         },
       };
     }

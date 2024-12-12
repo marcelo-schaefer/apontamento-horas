@@ -9,25 +9,21 @@
     #observacaoComponentSolicitante
   ></app-observacao>
   <app-observacao
-    [hidden]="solicitante?.AEhGestor == 'S'"
     label="Observação do Gestor Imediato"
     #observacaoComponentGestor
   ></app-observacao>
 
   <app-observacao
-    [hidden]="solicitante?.AEhRhu == 'S'"
     label="Observação do RHU"
     #observacaoComponentRhu
   ></app-observacao>
 
   <app-observacao
-    [hidden]="!apresentarObservacaoBP"
     label="Observação do BP"
     #observacaoComponentBp
   ></app-observacao>
   <app-observacao
-    [hidden]="caminhoValidacao != 'csc' && caminhoValidacao != 'rh'"
-    [label]="tituloObservacaoSegundaValidacao"
-    #observacaoComponentSegundaValidacao
+    label="Observação do Gerencia Regional"
+    #observacaoComponentGerencia
   ></app-observacao>
 </nz-card>

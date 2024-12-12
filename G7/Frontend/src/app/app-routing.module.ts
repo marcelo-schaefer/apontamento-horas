@@ -42,17 +42,14 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'csc',
+    path: 'gerente-regional',
     loadChildren: () =>
-      import('./modules/csc/csc.module').then((m) => m.CscModule),
+      import('./modules/gerencia-regional/gerencia-regional.module').then(
+        (m) => m.GerenciaRegionalModule
+      ),
     pathMatch: 'full',
   },
-  {
-    path: 'rhOperacoes',
-    loadChildren: () =>
-      import('./modules/rh/rh.module').then((m) => m.RhModule),
-    pathMatch: 'full',
-  },
+
   {
     path: 'detalhes',
     loadChildren: () =>

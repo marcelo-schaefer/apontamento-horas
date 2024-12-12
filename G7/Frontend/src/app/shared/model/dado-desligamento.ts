@@ -34,6 +34,7 @@ export class DadoDesligamento extends DadoDesligamentoG5 {
   validacaoJuridico: string;
   tipoDemissao: string;
   avisoPrevio: string;
+  dataDemissaoRelatorio: string;
   motivosDesligamento: MotivoDesligamento;
   listaAvisoPrevio: Motivo[];
 }

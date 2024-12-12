@@ -1,14 +1,20 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import { WfFormData } from 'src/app/core/service/workflow/workflow-cockpit/dist/workflow-cockpit';
 import { WorkflowService } from 'src/app/core/service/workflow/workflow.service';
 import { Colaborador } from 'src/app/services/colaborador/models/colaboradores.model';
+import { DesligamentoService } from 'src/app/services/desligamento/desligamento.service';
+import { PersisiteSolicitacao } from 'src/app/services/desligamento/models/persisite-solicitacao';
 import { DadosColaboradorComponent } from 'src/app/shared/components/dados-colaborador/dados-colaborador.component';
 import { DadosDesligamentoComponent } from 'src/app/shared/components/dados-desligamento/dados-desligamento.component';
 import { DadosSolicitanteComponent } from 'src/app/shared/components/dados-solicitante/dados-solicitante.component';
 import { ObservacaoComponent } from 'src/app/shared/components/observacao/observacao.component';
+import { CaminhoAprovacao } from 'src/app/shared/model/caminho-aprovacao.enum';
 import { ColaboradorDesligado } from 'src/app/shared/model/colaborador-desligado';
-import { DadoDesligamento } from 'src/app/shared/model/dado-desligamento';
-import { Solicitante } from 'src/app/shared/model/solicitante';
+import {
+  DadoDesligamento,
+  DadoDesligamentoG5,
+} from 'src/app/shared/model/dado-desligamento';
 
 @Component({
   selector: 'app-revisao',
@@ -34,13 +40,11 @@ export class RevisaoComponent implements OnInit {
   @ViewChild('observacaoComponentRhu', { static: true })
   observacaoComponentRhu: ObservacaoComponent;
 
-  @ViewChild('observacaoComponentBp', { static: true })
-  observacaoComponentBp: ObservacaoComponent;
-
-  @ViewChild('observacaoComponentSegundaValidacao', { static: true })
-  observacaoComponentSegundaValidacao: ObservacaoComponent;
-
-  constructor(private wfService: WorkflowService) {
+  constructor(
+    private wfService: WorkflowService,
+    private desligamentoService: DesligamentoService,
+    private notification: NzNotificationService
+  ) {
     this.wfService.onSubmit(this.submit.bind(this));
   }
 
@@ -48,11 +52,9 @@ export class RevisaoComponent implements OnInit {
   colaboradorDesligado: ColaboradorDesligado;
 
   solicitacaoPorColaborador: boolean;
-  apresentarObservacaoBP = false;
 
-  tituloObservacaoPrimeiraValidacao: string;
-  tituloObservacaoSegundaValidacao: string;
-  caminhoSolicitacao: string;
+  causaDesligamento: number;
+  causaSelecionada: number;
   caminhoValidacao: string;
 
   ngOnInit(): void {
@@ -65,7 +67,6 @@ export class RevisaoComponent implements OnInit {
       this.solicitacaoPorColaborador =
         this.solicitante.AEhGestor != 'S' && this.solicitante.AEhRhu != 'S';
 
-      this.caminhoSolicitacao = value.caminhoSolicitacao;
       this.caminhoValidacao = value.caminhoValidacao;
       const dadosDesligamento = JSON.parse(
         value.dadosDesligamento
@@ -74,6 +75,8 @@ export class RevisaoComponent implements OnInit {
         value.colaborador
       ) as ColaboradorDesligado;
 
+      this.causaDesligamento = Number(dadosDesligamento.nCausaDemissao);
+      this.causaSelecionada = this.causaDesligamento;
       this.dadosSolicitanteComponent.preencherFormulario(this.solicitante);
 
       this.dadosDesligamentoComponent.preencheSolicitante(this.solicitante);
@@ -85,72 +88,77 @@ export class RevisaoComponent implements OnInit {
           this.colaboradorDesligado
         );
         this.dadosColaboradorComponent.preencherSolicitante(this.solicitante);
-      } else this.dadosDesligamentoComponent.desabilitarAvisoPrevio();
+        this.dadosColaboradorComponent.desabilitarForm();
+      }
 
       this.observacaoComponentSolicitante.preencherDados(
         value?.observacaoSolicitante || ''
       );
 
-      if (this.solicitante.AEhGestor != 'S') {
+      if (
+        this.solicitante?.AEhRhu != 'S' &&
+        ![4, 12, 14, 26].includes(this.causaDesligamento)
+      ) {
         this.observacaoComponentGestor.preencherDados(
           value?.observacaoGestorImediato || ''
         );
         this.observacaoComponentGestor.desabilitar();
       }
 
-      if (this.solicitante.AEhRhu != 'S') {
-        this.observacaoComponentRhu.preencherDados(value?.observacaoRhu || '');
-        this.observacaoComponentRhu.desabilitar();
-      }
-
-      if (
-        dadosDesligamento.aLiberacaoAvisoPrevio == 'S' &&
-        this.colaboradorDesligado.AEhAtacadao == 'S' &&
-        dadosDesligamento.nCausaDemissao == 2 &&
-        this.colaboradorDesligado.ATemEstabilidade == 'S'
-      ) {
-        this.apresentarObservacaoBP = true;
-        this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
-        this.observacaoComponentBp.desabilitar();
-      }
-
-      if (this.caminhoValidacao == 'csc') {
-        this.tituloObservacaoSegundaValidacao =
-          'Observação do CSC Desligamento';
-        this.observacaoComponentSegundaValidacao.preencherDados(
-          value?.observacaoCsc || ''
-        );
-        this.observacaoComponentSegundaValidacao.desabilitar();
-      } else if (this.caminhoValidacao == 'rh') {
-        this.tituloObservacaoSegundaValidacao = 'Observação do RH Operações';
-        this.observacaoComponentSegundaValidacao.preencherDados(
-          value?.observacaoRh || ''
-        );
-        this.observacaoComponentSegundaValidacao.desabilitar();
-      }
+      this.observacaoComponentRhu.preencherDados(value?.observacaoRhu || '');
+      this.observacaoComponentRhu.desabilitar();
     });
   }
 
-  transportarCausaDemissao(causa: number): void {
-    if (!this.solicitacaoPorColaborador)
-      this.dadosColaboradorComponent.definirCausaDemissao(causa);
+  async persistirSolicitacao(): Promise<void> {
+    await this.desligamentoService
+      .persisitirSolicitacao(this.montaCorpoEnvio())
+      .toPromise()
+      .then(
+        (data) => {
+          if (data.outputData.message || data.outputData.ARetorno != 'OK') {
+            this.notification.error(
+              'Atenção',
+              'Erro ao persistir a solicitação, ' +
+                (data.outputData.message || data.outputData.ARetorno)
+            );
+            this.wfService.abortSubmit();
+          }
+        },
+        () => {
+          this.notification.error(
+            'Atenção',
+            'Erro ao persistir a solicitação, tente mais tarde ou contate o administrador.'
+          );
+          this.wfService.abortSubmit();
+        }
+      );
   }
 
-  converteSolicitanteParaColaboradorDesligado(
-    solicitante: Solicitante
-  ): ColaboradorDesligado {
+  montaCorpoEnvio(): PersisiteSolicitacao {
     return {
-      ...solicitante,
-      matriculaColaborador: solicitante.matriculaSolicitante,
-      nomeColaborador: solicitante.nomeSolicitante,
-      postoColaborador: solicitante.postoSolicitante,
-      centroCustoColaborador: solicitante.centroCustoSolicitante,
-      dataAdmissaoColaborador: solicitante.DDataAdmissao,
-      colaboradorDesligadoPcd:
-        solicitante.AColaboradorPcd == 'S' ? 'Sim' : 'Não',
-      colaboradorDesligadoPom:
-        solicitante.AColaboradorPom == 'S' ? 'Sim' : 'Não',
+      ...new DadoDesligamentoG5(this.dadosDesligamentoComponent.value),
+      nEmpresa: this.dadosColaboradorComponent.value.NCodigoEmpresa,
+      nTipoColaborador: this.dadosColaboradorComponent.value.NTipoColaborador,
+      nMatricula: this.dadosColaboradorComponent.value.NMatricula,
     };
+  }
+
+  transportarCausaDemissao(causa: number): void {
+    this.causaSelecionada = Number(causa);
+    if (!this.solicitacaoPorColaborador)
+      this.dadosColaboradorComponent.definirCausaDemissao(causa);
+    else this.dadosSolicitanteComponent.preencherCausaDesligamento(causa);
+  }
+
+  verificaProxiamEtapa(colaborador: ColaboradorDesligado): string {
+    return this.solicitante.AEhRhu == 'S'
+      ? [4, 12, 14, 26].includes(this.causaSelecionada)
+        ? colaborador.AColaboradorPcd == 'S'
+          ? CaminhoAprovacao.BP
+          : CaminhoAprovacao.FINALIZAR
+        : CaminhoAprovacao.GESTOR
+      : CaminhoAprovacao.RHU;
   }
 
   validarEnvio(): boolean {
@@ -162,24 +170,25 @@ export class RevisaoComponent implements OnInit {
     );
   }
 
-  submit(): WfFormData {
+  async submit(): Promise<WfFormData> {
     if (this.validarEnvio()) {
-      const colaboradorDesligado = this.solicitacaoPorColaborador
-        ? this.converteSolicitanteParaColaboradorDesligado(
-            this.dadosSolicitanteComponent.value
-          )
-        : this.dadosColaboradorComponent.value;
+      if (
+        this.verificaProxiamEtapa(this.colaboradorDesligado) ==
+        CaminhoAprovacao.FINALIZAR
+      )
+        await this.persistirSolicitacao();
       return {
         formData: {
           ...this.dadosDesligamentoComponent.value,
-          ...colaboradorDesligado,
-          solicitante: JSON.stringify(this.solicitante),
           dadosDesligamento: JSON.stringify(
             this.dadosDesligamentoComponent.value
           ),
-          colaborador: JSON.stringify(colaboradorDesligado),
           observacaoSolicitante:
             this.observacaoComponentSolicitante.value.observacao,
+          caminhoSolicitacao: this.verificaProxiamEtapa(
+            this.colaboradorDesligado
+          ),
+          etapaAnterior: CaminhoAprovacao.SOLICITANTE,
         },
       };
     }

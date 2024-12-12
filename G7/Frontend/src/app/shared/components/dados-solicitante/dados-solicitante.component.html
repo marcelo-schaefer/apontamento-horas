@@ -187,7 +187,7 @@
         *ngIf="comErro"
         nzType="error"
         nzMessage="Atenção"
-        nzDescription="Prezado! Não foi encontrato um gerente regional para o colaborador e essa solicitação não poderá seguir"
+        [nzDescription]="mensagemErro"
         nzShowIcon
       ></nz-alert>
     </form> </nz-spin

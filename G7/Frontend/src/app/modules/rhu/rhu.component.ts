@@ -1,17 +1,23 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { NzNotificationService } from 'ng-zorro-antd/notification';
 import {
   WfFormData,
   WfProcessStep,
 } from 'src/app/core/service/workflow/workflow-cockpit/dist/workflow-cockpit';
 import { WorkflowService } from 'src/app/core/service/workflow/workflow.service';
 import { Colaborador } from 'src/app/services/colaborador/models/colaboradores.model';
+import { DesligamentoService } from 'src/app/services/desligamento/desligamento.service';
+import { PersisiteSolicitacao } from 'src/app/services/desligamento/models/persisite-solicitacao';
 import { DadosColaboradorComponent } from 'src/app/shared/components/dados-colaborador/dados-colaborador.component';
 import { DadosDesligamentoComponent } from 'src/app/shared/components/dados-desligamento/dados-desligamento.component';
 import { DadosSolicitanteComponent } from 'src/app/shared/components/dados-solicitante/dados-solicitante.component';
 import { ObservacaoComponent } from 'src/app/shared/components/observacao/observacao.component';
 import { CaminhoAprovacao } from 'src/app/shared/model/caminho-aprovacao.enum';
 import { ColaboradorDesligado } from 'src/app/shared/model/colaborador-desligado';
-import { DadoDesligamento } from 'src/app/shared/model/dado-desligamento';
+import {
+  DadoDesligamento,
+  DadoDesligamentoG5,
+} from 'src/app/shared/model/dado-desligamento';
 
 @Component({
   selector: 'app-rhu',
@@ -34,7 +40,17 @@ export class RhuComponent implements OnInit {
   @ViewChild('observacaoComponentRhu', { static: true })
   observacaoComponentRhu: ObservacaoComponent;
 
-  constructor(private wfService: WorkflowService) {
+  @ViewChild('observacaoComponentBp', { static: true })
+  observacaoComponentBp: ObservacaoComponent;
+
+  @ViewChild('observacaoComponentGerencia', { static: true })
+  observacaoComponentGerencia: ObservacaoComponent;
+
+  constructor(
+    private wfService: WorkflowService,
+    private desligamentoService: DesligamentoService,
+    private notification: NzNotificationService
+  ) {
     this.wfService.onSubmit(this.submit.bind(this));
   }
 
@@ -44,8 +60,8 @@ export class RhuComponent implements OnInit {
   solicitacaoPorColaborador: boolean;
 
   tituloObservacaoPrimeiraValidacao: string;
-  caminhoSolicitacao: string;
   caminhoValidacao: string;
+  etapaAnterior: string;
 
   ngOnInit(): void {
     void this.getProcessVariables();
@@ -57,8 +73,8 @@ export class RhuComponent implements OnInit {
       this.solicitacaoPorColaborador =
         this.solicitante.AEhGestor != 'S' && this.solicitante.AEhRhu != 'S';
 
-      this.caminhoSolicitacao = value.caminhoSolicitacao;
       this.caminhoValidacao = value.caminhoValidacao;
+      this.etapaAnterior = value.etapaAnterior;
       const dadosDesligamento = JSON.parse(
         value.dadosDesligamento
       ) as DadoDesligamento;
@@ -87,11 +103,59 @@ export class RhuComponent implements OnInit {
       this.observacaoComponentSolicitante.desabilitar();
 
       this.observacaoComponentRhu.preencherDados(value?.observacaoRhu || '');
+
+      if (this.etapaAnterior == CaminhoAprovacao.BP) {
+        this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
+        this.observacaoComponentBp.desabilitar();
+      }
+      if (this.etapaAnterior == CaminhoAprovacao.GERENCIA_REGIONAL) {
+        this.observacaoComponentGerencia.preencherDados(
+          value?.observacaoGerencia || ''
+        );
+        this.observacaoComponentGerencia.desabilitar();
+      }
     });
   }
 
+  async persistirSolicitacao(): Promise<void> {
+    await this.desligamentoService
+      .persisitirSolicitacao(this.montaCorpoEnvio())
+      .toPromise()
+      .then(
+        (data) => {
+          if (data.outputData.message || data.outputData.ARetorno != 'OK') {
+            this.notification.error(
+              'Atenção',
+              'Erro ao persistir a solicitação, ' +
+                (data.outputData.message || data.outputData.ARetorno)
+            );
+            this.wfService.abortSubmit();
+          }
+        },
+        () => {
+          this.notification.error(
+            'Atenção',
+            'Erro ao persistir a solicitação, tente mais tarde ou contate o administrador.'
+          );
+          this.wfService.abortSubmit();
+        }
+      );
+  }
+
+  montaCorpoEnvio(): PersisiteSolicitacao {
+    return {
+      ...new DadoDesligamentoG5(this.dadosDesligamentoComponent.value),
+      nEmpresa: this.colaboradorDesligado.NCodigoEmpresa,
+      nTipoColaborador: this.colaboradorDesligado.NTipoColaborador,
+      nMatricula: this.colaboradorDesligado.NMatricula,
+    };
+  }
+
   verificaProxiamEtapa(): string {
-    return this.colaboradorDesligado.colaboradorDesligadoPcd == 'S'
+    return this.etapaAnterior == CaminhoAprovacao.BP ||
+      this.etapaAnterior == CaminhoAprovacao.GERENCIA_REGIONAL
+      ? this.etapaAnterior
+      : this.colaboradorDesligado.colaboradorDesligadoPcd == 'S'
       ? CaminhoAprovacao.BP
       : CaminhoAprovacao.FINALIZAR;
   }
@@ -103,12 +167,17 @@ export class RhuComponent implements OnInit {
     );
   }
 
-  submit(step: WfProcessStep): WfFormData {
+  async submit(step: WfProcessStep): Promise<WfFormData> {
     if (step.nextAction.name != 'Aprovar')
       this.observacaoComponentRhu.tornarObrigatorio();
     else this.observacaoComponentRhu.tornarOpcional();
 
     if (this.validarEnvio()) {
+      if (
+        step.nextAction.name == 'Aprovar' &&
+        this.verificaProxiamEtapa() == CaminhoAprovacao.FINALIZAR
+      )
+        await this.persistirSolicitacao();
       return {
         formData: {
           statusSolicitacao:
@@ -122,6 +191,8 @@ export class RhuComponent implements OnInit {
             step.nextAction.name == 'Revisar'
               ? CaminhoAprovacao.SOLICITANTE
               : this.verificaProxiamEtapa(),
+          caminhoSolicitacao: this.verificaProxiamEtapa(),
+          etapaAnterior: CaminhoAprovacao.RHU,
         },
       };
     }

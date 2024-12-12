@@ -29,6 +29,7 @@ export class Colaborador {
   DDataFimBase: string;
   NDiasAcrescidos: string;
   AUsuarioGestorRegional: string;
+  AForaLimiteDesligamento: string;
   ARetorno: string;
   message: string;
 }

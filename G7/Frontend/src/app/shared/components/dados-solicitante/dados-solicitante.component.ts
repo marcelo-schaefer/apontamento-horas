@@ -14,6 +14,7 @@ export class DadosSolicitanteComponent implements OnInit {
 
   isLoading = false;
   comErro = false;
+  mensagemErro = '';
   causaDesligamento = 0;
 
   constructor(private fb: FormBuilder) {}
@@ -87,7 +88,7 @@ export class DadosSolicitanteComponent implements OnInit {
       solicitantePcd: solicitante.AColaboradorPcd == 'S' ? 'Sim' : 'Não',
       solicitantePom: solicitante.AColaboradorPom == 'S' ? 'Sim' : 'Não',
     });
-    this.validarGerenteRegional();
+    this.validacoesDeSolicitacao();
   }
 
   get value(): Solicitante {
@@ -106,7 +107,45 @@ export class DadosSolicitanteComponent implements OnInit {
     this.causaDesligamento = causa;
   }
 
-  validarGerenteRegional(): void {
-    this.comErro = !this.solicitante.AUsuarioGestorRegional;
+  validarForm(): boolean {
+    return !this.comErro;
+  }
+
+  validacoesDeSolicitacao(): void {
+    this.comErro =
+      this.validarGerenteRegional() ||
+      this.validarlimiteDesligamento() ||
+      this.validarEstabilidadeEPom();
+
+    if (this.validarGerenteRegional())
+      this.mensagemErro =
+        'Prezado! Não foi encontrato um gerente regional para o colaborador e essa solicitação não poderá seguir';
+    if (this.validarlimiteDesligamento())
+      this.mensagemErro =
+        'Prezado(a), para prosseguir com a solicitação de desligamento por favor contate o RH de sua unidade';
+    if (this.validarEstabilidadeEPom())
+      this.mensagemErro =
+        'Prezado! Não será possível seguir com essa solicitação, por favor entre em contato com o RH';
+  }
+
+  validarGerenteRegional(): boolean {
+    return (
+      this.solicitante.AEhGestor != 'S' &&
+      this.solicitante.AEhRhu != 'S' &&
+      !this.solicitante.AUsuarioGestorRegional
+    );
+  }
+
+  validarEstabilidadeEPom(): boolean {
+    return (
+      this.solicitante.AEhGestor != 'S' &&
+      this.solicitante.AEhRhu != 'S' &&
+      (this.solicitante.ATemEstabilidade == 'S' ||
+        this.solicitante.AColaboradorPom == 'S')
+    );
+  }
+
+  validarlimiteDesligamento(): boolean {
+    return this.solicitante.AForaLimiteDesligamento == 'S';
   }
 }

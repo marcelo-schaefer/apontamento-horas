@@ -12,6 +12,7 @@ import { DadosColaboradorComponent } from 'src/app/shared/components/dados-colab
 import { DadosDesligamentoComponent } from 'src/app/shared/components/dados-desligamento/dados-desligamento.component';
 import { DadosSolicitanteComponent } from 'src/app/shared/components/dados-solicitante/dados-solicitante.component';
 import { ObservacaoComponent } from 'src/app/shared/components/observacao/observacao.component';
+import { CaminhoAprovacao } from 'src/app/shared/model/caminho-aprovacao.enum';
 import { ColaboradorDesligado } from 'src/app/shared/model/colaborador-desligado';
 import {
   DadoDesligamento,
@@ -19,11 +20,11 @@ import {
 } from 'src/app/shared/model/dado-desligamento';
 
 @Component({
-  selector: 'app-csc',
-  templateUrl: './csc.component.html',
-  styleUrls: ['./csc.component.scss'],
+  selector: 'app-gerencia-regional',
+  templateUrl: './gerencia-regional.component.html',
+  styleUrls: ['./gerencia-regional.component.scss'],
 })
-export class CscComponent implements OnInit {
+export class GerenciaRegionalComponent implements OnInit {
   @ViewChild(DadosSolicitanteComponent, { static: true })
   dadosSolicitanteComponent: DadosSolicitanteComponent;
 
@@ -45,8 +46,8 @@ export class CscComponent implements OnInit {
   @ViewChild('observacaoComponentBp', { static: true })
   observacaoComponentBp: ObservacaoComponent;
 
-  @ViewChild('observacaoComponentCsc', { static: true })
-  observacaoComponentCsc: ObservacaoComponent;
+  @ViewChild('observacaoComponentGerencia', { static: true })
+  observacaoComponentGerencia: ObservacaoComponent;
 
   constructor(
     private wfService: WorkflowService,
@@ -62,6 +63,8 @@ export class CscComponent implements OnInit {
   apresentarObservacaoBP = false;
   tituloObservacaoPrimeiraValidacao: string;
   caminhoSolicitacao: string;
+  aprovarAvisoPrevio: string;
+  causaDesligamento: number;
 
   ngOnInit(): void {
     void this.getProcessVariables();
@@ -74,6 +77,7 @@ export class CscComponent implements OnInit {
         this.solicitante.AEhGestor != 'S' && this.solicitante.AEhRhu != 'S';
 
       this.caminhoSolicitacao = value.caminhoSolicitacao;
+      this.aprovarAvisoPrevio = value?.aprovarAvisoPrevio;
       const dadosDesligamento = JSON.parse(
         value.dadosDesligamento
       ) as DadoDesligamento;
@@ -81,12 +85,13 @@ export class CscComponent implements OnInit {
         value.colaborador
       ) as ColaboradorDesligado;
 
+      this.causaDesligamento = Number(dadosDesligamento.nCausaDemissao);
       this.dadosSolicitanteComponent.preencherFormulario(this.solicitante);
 
       this.dadosDesligamentoComponent.preencheSolicitante(this.solicitante);
       this.dadosDesligamentoComponent.preencherFormulario(dadosDesligamento);
       this.dadosDesligamentoComponent.apresentarComoValidador();
-      this.dadosDesligamentoComponent.habilitarParaValidacoes();
+      this.dadosDesligamentoComponent.desabilitarForm();
 
       if (!this.solicitacaoPorColaborador) {
         this.dadosColaboradorComponent.preencherFormulario(
@@ -100,30 +105,25 @@ export class CscComponent implements OnInit {
       );
       this.observacaoComponentSolicitante.desabilitar();
 
-      if (this.solicitante.AEhGestor != 'S') {
+      if (
+        this.solicitante?.AEhRhu != 'S' &&
+        ![4, 12, 14, 26].includes(this.causaDesligamento)
+      ) {
         this.observacaoComponentGestor.preencherDados(
           value?.observacaoGestorImediato || ''
         );
         this.observacaoComponentGestor.desabilitar();
       }
 
-      if (this.solicitante.AEhRhu != 'S') {
-        this.observacaoComponentRhu.preencherDados(value?.observacaoRhu || '');
-        this.observacaoComponentRhu.desabilitar();
-      }
+      this.observacaoComponentRhu.preencherDados(value?.observacaoRhu || '');
+      this.observacaoComponentRhu.desabilitar();
 
-      if (
-        dadosDesligamento.aLiberacaoAvisoPrevio == 'S' &&
-        this.colaboradorDesligado.AEhAtacadao == 'S' &&
-        dadosDesligamento.nCausaDemissao == 2 &&
-        this.colaboradorDesligado.ATemEstabilidade == 'S'
-      ) {
-        this.apresentarObservacaoBP = true;
-        this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
-        this.observacaoComponentBp.desabilitar();
-      }
+      this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
+      this.observacaoComponentBp.desabilitar();
 
-      this.observacaoComponentCsc.preencherDados(value?.observacaoCsc || '');
+      this.observacaoComponentGerencia.preencherDados(
+        value?.observacaoGerencia || ''
+      );
     });
   }
 
@@ -138,10 +138,11 @@ export class CscComponent implements OnInit {
       .toPromise()
       .then(
         (data) => {
-          if (data.outputData.ARetorno != 'OK') {
+          if (data.outputData.message || data.outputData.ARetorno != 'OK') {
             this.notification.error(
               'Atenção',
-              'Erro ao persistir a solicitação, ' + data.outputData.ARetorno
+              'Erro ao persistir a solicitação, ' +
+                (data.outputData.message || data.outputData.ARetorno)
             );
             this.wfService.abortSubmit();
           }
@@ -157,52 +158,40 @@ export class CscComponent implements OnInit {
   }
 
   montaCorpoEnvio(): PersisiteSolicitacao {
-    const dadosDesligamento = new DadoDesligamentoG5(
-      this.dadosDesligamentoComponent.value
-    );
-
     return {
-      nEmpresa: Number(this.colaboradorDesligado.NCodigoEmpresa),
-      nTipoColaborador: Number(this.colaboradorDesligado.NTipoColaborador),
-      nMatricula: Number(this.colaboradorDesligado.NMatricula),
-      nCausaDemissao: Number(dadosDesligamento.nCausaDemissao),
-      nMotivoDesligamento: Number(dadosDesligamento.nMotivoDesligamento),
-      dDataDemissao: dadosDesligamento.dDataDemissao,
-      dDataPagamento: dadosDesligamento.dDataPagamento,
-      nAvisoPrevio: Number(dadosDesligamento.nAvisoPrevio),
-      dDataAvisoPrevio: dadosDesligamento.dDataAvisoPrevio,
-      aLiberacaoAvisoPrevio: dadosDesligamento.aLiberacaoAvisoPrevio,
+      ...new DadoDesligamentoG5(this.dadosDesligamentoComponent.value),
+      nEmpresa: this.colaboradorDesligado.NCodigoEmpresa,
+      nTipoColaborador: this.colaboradorDesligado.NTipoColaborador,
+      nMatricula: this.colaboradorDesligado.NMatricula,
     };
   }
 
   validarEnvio(): boolean {
-    return (
-      this.dadosDesligamentoComponent.validarForm() &&
-      this.observacaoComponentBp.formularioValido()
-    );
+    return this.observacaoComponentGerencia.formularioValido();
   }
 
   async submit(step: WfProcessStep): Promise<WfFormData> {
     if (step.nextAction.name != 'Aprovar')
-      this.observacaoComponentCsc.tornarObrigatorio();
-    else this.observacaoComponentCsc.tornarOpcional();
+      this.observacaoComponentGerencia.tornarObrigatorio();
+    else this.observacaoComponentGerencia.tornarOpcional();
 
     if (this.validarEnvio()) {
       if (step.nextAction.name == 'Aprovar') await this.persistirSolicitacao();
 
       return {
         formData: {
-          ...this.dadosDesligamentoComponent.value,
-          dadosDesligamento: JSON.stringify(
-            this.dadosDesligamentoComponent.value
-          ),
-          observacaoCsc: this.observacaoComponentCsc.value.observacao,
+          observacaoGerencia: this.observacaoComponentGerencia.value.observacao,
+          caminhoValidacao:
+            step.nextAction.name == 'Aprovar'
+              ? CaminhoAprovacao.FINALIZAR
+              : CaminhoAprovacao.RHU,
           statusSolicitacao:
             step.nextAction.name == 'Aprovar'
               ? 'Aprovado'
               : step.nextAction.name == 'Reprovar'
               ? 'Reprovado'
               : 'Em andamento',
+          etapaAnterior: CaminhoAprovacao.GERENCIA_REGIONAL,
         },
       };
     }

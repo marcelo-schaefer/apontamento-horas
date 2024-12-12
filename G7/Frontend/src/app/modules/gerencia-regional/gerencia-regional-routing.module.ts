@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { CscComponent } from './csc.component';
+import { GerenciaRegionalComponent } from './gerencia-regional.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: CscComponent,
+    component: GerenciaRegionalComponent,
   },
 ];
 
@@ -13,4 +13,4 @@ const routes: Routes = [
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule],
 })
-export class CscRoutingModule {}
+export class GerenciaRegionalRoutingModule {}

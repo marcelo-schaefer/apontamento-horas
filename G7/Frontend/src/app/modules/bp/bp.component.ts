@@ -88,20 +88,20 @@ export class BpComponent implements OnInit {
       );
       this.observacaoComponentSolicitante.desabilitar();
 
-      if (this.solicitante.AEhRhu != 'S')
-        this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
+      this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
 
-      if (this.solicitante.AEhGestor != 'S') {
+      if (
+        this.solicitante?.AEhRhu != 'S' &&
+        ![4, 12, 14, 26].includes(this.causaDesligamento)
+      ) {
         this.observacaoComponentGestor.preencherDados(
           value?.observacaoGestorImediato || ''
         );
         this.observacaoComponentGestor.desabilitar();
       }
 
-      if (this.solicitante.AEhRhu != 'S') {
-        this.observacaoComponentRhu.preencherDados(value?.observacaoRhu || '');
-        this.observacaoComponentRhu.desabilitar();
-      }
+      this.observacaoComponentRhu.preencherDados(value?.observacaoRhu || '');
+      this.observacaoComponentRhu.desabilitar();
     });
   }
 
@@ -118,16 +118,13 @@ export class BpComponent implements OnInit {
       return {
         formData: {
           statusSolicitacao:
-            step.nextAction.name == 'Aprovar'
-              ? 'Aprovado'
-              : step.nextAction.name == 'Reprovar'
-              ? 'Reprovado'
-              : 'Em andamento',
+            step.nextAction.name == 'Reprovar' ? 'Reprovado' : 'Em andamento',
           caminhoValidacao:
             step.nextAction.name == 'Revisar'
               ? CaminhoAprovacao.RHU
               : CaminhoAprovacao.GERENCIA_REGIONAL,
           observacaoBp: this.observacaoComponentBp.value.observacao,
+          etapaAnterior: CaminhoAprovacao.BP,
         },
       };
     }

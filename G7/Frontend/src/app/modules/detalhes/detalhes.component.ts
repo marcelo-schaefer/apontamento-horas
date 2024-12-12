@@ -31,11 +31,12 @@ export class DetalhesComponent implements OnInit {
 
   @ViewChild('observacaoComponentRhu', { static: true })
   observacaoComponentRhu: ObservacaoComponent;
+
   @ViewChild('observacaoComponentBp', { static: true })
   observacaoComponentBp: ObservacaoComponent;
 
-  @ViewChild('observacaoComponentSegundaValidacao', { static: true })
-  observacaoComponentSegundaValidacao: ObservacaoComponent;
+  @ViewChild('observacaoComponentGerencia', { static: true })
+  observacaoComponentGerencia: ObservacaoComponent;
 
   constructor(private wfService: WorkflowService) {}
 
@@ -43,12 +44,6 @@ export class DetalhesComponent implements OnInit {
   colaboradorDesligado: ColaboradorDesligado;
 
   solicitacaoPorColaborador: boolean;
-  apresentarObservacaoBP = false;
-
-  tituloObservacaoPrimeiraValidacao: string;
-  tituloObservacaoSegundaValidacao: string;
-  caminhoSolicitacao: string;
-  caminhoValidacao: string;
 
   ngOnInit(): void {
     void this.getProcessVariables();
@@ -60,8 +55,6 @@ export class DetalhesComponent implements OnInit {
       this.solicitacaoPorColaborador =
         this.solicitante.AEhGestor != 'S' && this.solicitante.AEhRhu != 'S';
 
-      this.caminhoSolicitacao = value.caminhoSolicitacao;
-      this.caminhoValidacao = value.caminhoValidacao;
       const dadosDesligamento = JSON.parse(
         value.dadosDesligamento
       ) as DadoDesligamento;
@@ -88,43 +81,21 @@ export class DetalhesComponent implements OnInit {
       );
       this.observacaoComponentSolicitante.desabilitar();
 
-      if (this.solicitante.AEhGestor != 'S') {
-        this.observacaoComponentGestor.preencherDados(
-          value?.observacaoGestorImediato || ''
-        );
-        this.observacaoComponentGestor.desabilitar();
-      }
+      this.observacaoComponentGestor.preencherDados(
+        value?.observacaoGestorImediato || ''
+      );
+      this.observacaoComponentGestor.desabilitar();
 
-      if (this.solicitante.AEhRhu != 'S') {
-        this.observacaoComponentRhu.preencherDados(value?.observacaoRhu || '');
-        this.observacaoComponentRhu.desabilitar();
-      }
+      this.observacaoComponentRhu.preencherDados(value?.observacaoRhu || '');
+      this.observacaoComponentRhu.desabilitar();
 
-      if (
-        dadosDesligamento.aLiberacaoAvisoPrevio == 'S' &&
-        this.colaboradorDesligado.AEhAtacadao == 'S' &&
-        dadosDesligamento.nCausaDemissao == 2 &&
-        this.colaboradorDesligado.ATemEstabilidade == 'S'
-      ) {
-        this.apresentarObservacaoBP = true;
-        this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
-        this.observacaoComponentBp.desabilitar();
-      }
+      this.observacaoComponentBp.preencherDados(value?.observacaoBp || '');
+      this.observacaoComponentBp.desabilitar();
 
-      if (this.caminhoValidacao == 'csc') {
-        this.tituloObservacaoSegundaValidacao =
-          'Observação do CSC Desligamento';
-        this.observacaoComponentSegundaValidacao.preencherDados(
-          value?.observacaoCsc || ''
-        );
-        this.observacaoComponentSegundaValidacao.desabilitar();
-      } else if (this.caminhoValidacao == 'rh') {
-        this.tituloObservacaoSegundaValidacao = 'Observação do RH Operações';
-        this.observacaoComponentSegundaValidacao.preencherDados(
-          value?.observacaoRh || ''
-        );
-        this.observacaoComponentSegundaValidacao.desabilitar();
-      }
+      this.observacaoComponentGerencia.preencherDados(
+        value?.observacaoGerencia || ''
+      );
+      this.observacaoComponentGerencia.desabilitar();
     });
   }
 }

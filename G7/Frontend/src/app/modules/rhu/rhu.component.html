@@ -12,4 +12,14 @@
     label="Observação do RHU"
     #observacaoComponentRhu
   ></app-observacao>
+  <app-observacao
+    [hidden]="etapaAnterior != 'bp'"
+    label="Observação do BP"
+    #observacaoComponentBp
+  ></app-observacao>
+  <app-observacao
+    [hidden]="etapaAnterior != 'gerencia'"
+    label="Observação da Gerencia Regional"
+    #observacaoComponentGerencia
+  ></app-observacao>
 </nz-card>

@@ -6,6 +6,7 @@ export class Solicitante extends Colaborador {
   empresaSolicitante: string;
   filialSolicitante: string;
   postoSolicitante: string;
+  cargoSolicitante: string;
   centroCustoSolicitante: string;
   solicitantePcd: string;
 }

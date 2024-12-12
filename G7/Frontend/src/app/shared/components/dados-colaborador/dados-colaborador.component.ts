@@ -88,6 +88,8 @@ export class DadosColaboradorComponent implements OnInit {
 
   preencherColaboradorSelecionado(colaborador: Colaborador): void {
     this.colaboradorSelecionado = colaborador;
+    this.validacoesDeSolicitacao();
+
     this.formDadosColaborador.patchValue({
       ...colaborador,
       colaboradorSelecionado:
@@ -114,7 +116,6 @@ export class DadosColaboradorComponent implements OnInit {
       colaboradorDesligadoPom:
         colaborador.AColaboradorPom == 'S' ? 'Sim' : 'Não',
     });
-    this.validarGerenteRegional();
   }
 
   preencherFormulario(colaborador: Colaborador): void {
@@ -147,21 +148,29 @@ export class DadosColaboradorComponent implements OnInit {
 
   definirCausaDemissao(causa: number): void {
     this.cousaDemissao = causa;
+    this.validacoesDeSolicitacao();
   }
 
-  validarEstabilidade(): void {
+  validacoesDeSolicitacao(): void {
     this.comErro =
-      [1, 2, 13, 27].includes(Number(this.cousaDemissao)) &&
-      this.colaboradorSelecionado.ATemEstabilidade == 'S';
-    if (this.comErro)
+      this.validarEstabilidade() || this.validarErroGerenteRegional();
+
+    if (this.validarEstabilidade())
       this.mensagemErro =
         'Prezado! O colaborador selecionado possui estabilidade e essa solicitação não poderá seguir';
-  }
-
-  validarGerenteRegional(): void {
-    this.comErro = !this.colaboradorSelecionado.AUsuarioGestorRegional;
-    if (this.comErro)
+    if (this.validarErroGerenteRegional())
       this.mensagemErro =
         'Prezado! Não foi encontrato um gerente regional para o colaborador e essa solicitação não poderá seguir';
+  }
+
+  validarEstabilidade(): boolean {
+    return (
+      [1, 2, 13, 27].includes(Number(this.cousaDemissao)) &&
+      this.colaboradorSelecionado.ATemEstabilidade == 'S'
+    );
+  }
+
+  validarErroGerenteRegional(): boolean {
+    return !this.colaboradorSelecionado.AUsuarioGestorRegional;
   }
 }
