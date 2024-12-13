@@ -377,7 +377,7 @@ export class DadosDesligamentoComponent implements OnInit {
   }
 
   formataDataRelatorio(data: Date): string {
-    return data ? moment(data).format('YYYY-MM-DD') : '';
+    return data ? moment(data).format('YYYY-MM-DD') : ''; // o format não aceita esse tipo de formatação de data
   }
 
   stringParaData(data: string): Date {
