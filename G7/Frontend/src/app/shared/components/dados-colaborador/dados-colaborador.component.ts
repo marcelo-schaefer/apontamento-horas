@@ -176,6 +176,9 @@ export class DadosColaboradorComponent implements OnInit {
   }
 
   validarErroGerenteRegional(): boolean {
-    return !this.colaboradorSelecionado.AUsuarioGestorRegional;
+    return (
+      this.colaboradorSelecionado?.AColaboradorPcd == 'S' &&
+      !this.colaboradorSelecionado.AUsuarioGestorRegional
+    );
   }
 }

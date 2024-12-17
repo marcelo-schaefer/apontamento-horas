@@ -137,6 +137,7 @@ export class DadosSolicitanteComponent implements OnInit {
     return (
       this.solicitante.AEhGestor != 'S' &&
       this.solicitante.AEhRhu != 'S' &&
+      this.solicitante?.AColaboradorPcd == 'S' &&
       !this.solicitante.AUsuarioGestorRegional
     );
   }
