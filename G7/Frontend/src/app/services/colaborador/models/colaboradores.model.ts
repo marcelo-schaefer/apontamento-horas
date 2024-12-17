@@ -30,6 +30,8 @@ export class Colaborador {
   NDiasAcrescidos: string;
   AUsuarioGestorRegional: string;
   AForaLimiteDesligamento: string;
+  AEmpresaSoc: string;
+  dataAso: string;
   ARetorno: string;
   message: string;
 }

@@ -34,6 +34,10 @@ export const environment = {
     id: 'f2200c3b-c7df-4040-9613-34f697b75889',
   },
 
+  conect: {
+    url: 'https://homolog.seniorconnect.com.br/api/carrefour-servicos.senior-hmg/workflowrest/BPM_Data_ASO_SOC',
+  },
+
   domains: {
     platform: 'https://platform.senior.com.br',
   },

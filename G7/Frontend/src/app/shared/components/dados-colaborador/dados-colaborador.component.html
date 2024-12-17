@@ -170,6 +170,16 @@
           </nz-form-item>
         </div>
 
+        <div nz-col [nzSpan]="6">
+          <nz-form-item>
+            <nz-form-label nzFor="dataAso">Data do Ultimo ASO:</nz-form-label>
+
+            <nz-form-control>
+              <input nz-input lab formControlName="dataAso" id="dataAso" />
+            </nz-form-control>
+          </nz-form-item>
+        </div>
+
         <div nz-col [nzSpan]="12" *ngIf="cousaDemissao == 2">
           <nz-form-item>
             <nz-form-label nzFor="AEstabilidade">Estabilidade:</nz-form-label>

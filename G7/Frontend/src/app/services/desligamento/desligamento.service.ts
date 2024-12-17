@@ -8,6 +8,7 @@ import {
   RetornoPersisiteSolicitacao,
 } from './models/persisite-solicitacao';
 import { RetornoSlaEtapas } from './models/sla-etapas';
+import { RetornoDataASO } from './models/data-ASO';
 
 @Injectable({
   providedIn: 'root',
@@ -58,6 +59,15 @@ export class DesligamentoService {
       },
     };
     return this.http.post<RetornoSlaEtapas>(this.url, body);
+  }
+
+  buscaDataAso(
+    empresaSoc: string,
+    matricula: number
+  ): Observable<RetornoDataASO> {
+    const urlConect =
+      environment.conect.url + `?matricula=${matricula}&empresa=${empresaSoc}`;
+    return this.http.get<RetornoDataASO>(urlConect);
   }
 
   persisitirSolicitacao(

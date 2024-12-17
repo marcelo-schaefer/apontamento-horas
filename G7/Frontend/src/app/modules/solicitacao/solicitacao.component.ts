@@ -61,13 +61,16 @@ export class SolicitacaoComponent implements OnInit {
     await this.buscaSolicitante();
     await this.buscaMotivosDesligamento();
     await this.buscaSla();
-    this.preencherFormularios();
+    await this.preencherFormularios();
     this.loadingForm(false);
   }
 
-  preencherFormularios(): void {
+  async preencherFormularios(): Promise<void> {
     this.solicitacaoPorColaborador =
       this.solicitante.AEhGestor != 'S' && this.solicitante.AEhRhu != 'S';
+    if (this.solicitacaoPorColaborador)
+      await this.buscaDataAso(this.solicitante);
+
     this.dadosColaboradorComponent.preencherSolicitante(this.solicitante);
     this.dadosColaboradorComponent.opcoesIniciais();
 
@@ -153,6 +156,29 @@ export class SolicitacaoComponent implements OnInit {
       );
   }
 
+  async buscaDataAso(colaborador: Colaborador): Promise<void> {
+    await this.desligamentoService
+      .buscaDataAso(colaborador?.AEmpresaSoc || '0', colaborador.NMatricula)
+      .toPromise()
+      .then(
+        (data) => {
+          if (this.solicitacaoPorColaborador)
+            this.dadosSolicitanteComponent.preencherDataASO(
+              data?.dados[data?.dados?.length - 1].Data_Ultimo_ASO
+            );
+          else
+            this.dadosColaboradorComponent.preencherDataASO(
+              data?.dados[data?.dados?.length - 1].Data_Ultimo_ASO
+            );
+        },
+        () => {
+          this.criaNotificacao(
+            'Erro ao buscar data de validade do ASO, tente mais tarde ou contate o administrador.'
+          );
+        }
+      );
+  }
+
   async persistirSolicitacao(): Promise<void> {
     await this.desligamentoService
       .persisitirSolicitacao(this.montaCorpoEnvio())
@@ -194,11 +220,13 @@ export class SolicitacaoComponent implements OnInit {
     else this.dadosSolicitanteComponent.preencherCausaDesligamento(causa);
   }
 
-  colaboradorSelecionado(colaborador: Colaborador): void {
-    if (colaborador)
+  async colaboradorSelecionado(colaborador: Colaborador): Promise<void> {
+    if (colaborador) {
       this.dadosDesligamentoComponent.preencheColaboradorSelecionado(
         colaborador
       );
+      await this.buscaDataAso(colaborador);
+    }
   }
 
   converteSolicitanteParaColaboradorDesligado(
@@ -232,7 +260,7 @@ export class SolicitacaoComponent implements OnInit {
   validarEnvio(): boolean {
     return (
       this.validarSlaEtapas() &&
-      //this.dadosSolicitanteComponent.validarForm() &&
+      this.dadosSolicitanteComponent.validarForm() &&
       this.dadosDesligamentoComponent.validarForm() &&
       (this.solicitacaoPorColaborador ||
         this.dadosColaboradorComponent.validarForm())

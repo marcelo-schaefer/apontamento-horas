@@ -60,6 +60,7 @@ export class DadosSolicitanteComponent implements OnInit {
       APapelBp: { value: '', disabled: true },
       AEhAtacadao: { value: '', disabled: true },
       ATemEstabilidade: { value: '', disabled: true },
+      dataAso: { value: '', disabled: true },
     });
   }
 
@@ -89,6 +90,10 @@ export class DadosSolicitanteComponent implements OnInit {
       solicitantePom: solicitante.AColaboradorPom == 'S' ? 'Sim' : 'Não',
     });
     this.validacoesDeSolicitacao();
+  }
+
+  preencherDataASO(dataAso: string): void {
+    this.formDadosSolicitante.get('dataAso').setValue(dataAso);
   }
 
   get value(): Solicitante {

@@ -78,6 +78,7 @@ export class DadosColaboradorComponent implements OnInit {
       DDataInicioBase: { value: '', disabled: true },
       DDataFimBase: { value: '', disabled: true },
       NDiasAcrescidos: { value: '', disabled: true },
+      dataAso: { value: '', disabled: true },
     });
   }
 
@@ -124,6 +125,10 @@ export class DadosColaboradorComponent implements OnInit {
 
   preencherSolicitante(solicitante: Colaborador): void {
     this.buscaColaboradoresComponent.preencherSolicitante(solicitante);
+  }
+
+  preencherDataASO(dataAso: string): void {
+    this.formDadosColaborador.get('dataAso').setValue(dataAso);
   }
 
   opcoesIniciais(): void {
