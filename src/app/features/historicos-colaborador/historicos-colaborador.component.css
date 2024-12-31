@@ -1,0 +1,16 @@
+* {
+  font-family: "Open Sans", HelveticaNeue, Helvetica, Arial, sans-serif;
+}
+
+:host ::ng-deep .p-card {
+  border-radius: 0;
+}
+
+:host ::ng-deep .p-card-title h2 {
+  color: #26a69a !important;
+  font-weight: 700;
+  font-size: 16px;
+  text-transform: uppercase !important;
+  border-bottom: 1px solid rgb(231, 232, 234);
+  padding-bottom: 10px;
+}

@@ -1,0 +1,5 @@
+<app-loading [loading]="carregandoInformacoes()">
+<p-toast />
+  <app-informacoes-colaborador [informacoesColaborador]="informacoesColaborador()"></app-informacoes-colaborador>
+  <app-apontamento-horas (enviarSolicitacao)="enviarSolicitacao()" ></app-apontamento-horas>
+</app-loading>

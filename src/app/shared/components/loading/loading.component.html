@@ -1,0 +1,13 @@
+<div class="loading-container" appendTo="body">
+  <div class="snippet" data-title="dot-pulse">
+    <div class="stage">
+      @if (loading()) {
+      <div class="dot-pulse"></div>
+      }
+    </div>
+  </div>
+
+  <div [ngClass]="[loading() ? 'loading' : '']">
+    <ng-content></ng-content>
+  </div>
+</div>

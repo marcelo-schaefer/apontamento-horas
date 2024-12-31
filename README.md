@@ -1,60 +1,27 @@
-# 🚀 Carrefour -15 Desligamento
+# TelaWeb
 
-## ❕ Sobre
+This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.12.
 
-Projeto BPM da fábrica de software - Senior Sistemas
-<br>
-**Grupo:** hcm-services-tower.
+## Development server
 
-## 🔌 Links
+Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
 
-- [Jira](https://jira.senior.com.br/browse/FABPRH-2198)
+## Code scaffolding
 
-## 💻 Tecnologias
+Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
 
-- **Front-End:** Angular V11.2 e Typescript
-- **Back-End:** LSP
+## Build
 
-## ✅ Get Started
+Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
 
-- Utilizar a versão 14.20.1 do Node `nvm use 14.20.1`.
-- Executar o comando `npm install` para instalar todas as dependências do projeto;
-- Executar o comando `npm run start` para rodar o projeto.
+## Running unit tests
 
-## 📸 Fluxo
+Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
 
-<p align="center">
-  <img src="./.gitlab/desenho_fluxo.png" alt="Desenho do fluxo" />
-</p>
+## Running end-to-end tests
 
-## 🌐 Web Services
+Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
 
-- com.senior.automacao.hcm.desligamento:
-  - **dadosSolicitante**: Retornar os dados do usuario da plataforma de forma expessifica para o fluxo.
-  - **persisteSolicitacao**: Persiste solicitação de desligamento.
-  - **retornaColaboradores**: Retornar os dados dos colaboradores abaixo do solicitante, ou todos da empresa.
-  - **retornaMotivosDesligamento**: Retornar os motivos de empréstimo.
-  - **retornaSla**: Retorna a o tempo de SLA para cada etapa do fluxo.
+## Further help
 
-## 📅 Tabelas envolvidas
-
-- USU_TSlaDes (Cadastro de parametros de SLA por etapa do fluxo de desligamento - BPM)
-- USU_TCadBp (Tabela de cadastro de BP)
-
-## 📡 Regra e Processo Automatico
-
-**ADM de Pessoal**: 783 - BPM - Finaliza tarefas expiradas Desliga
-
-## 💻 Telas SGI
-
-**Parametrizacao SLA BPM Desligamento**
-**Interface**: I_AP_SLA_Desligamento
-**Formulário**: F_AP_SLA_Desligamento
-
-## 📩 Importador
-
-**ADM de Pessoal**: 12001 - BPM - Cadstro de BP
-
-## 🎥 Repasse
-
-[Link](https://seniorsistemassa-my.sharepoint.com/:v:/g/personal/marcelo_filho_senior_com_br/ERePYMqfEUhOqqpGv9Oe2xQB-CtbCmwjmswMM0QkNPs7Bw?nav=eyJyZWZlcnJhbEluZm8iOnsicmVmZXJyYWxBcHAiOiJTdHJlYW1XZWJBcHAiLCJyZWZlcnJhbFZpZXciOiJTaGFyZURpYWxvZy1MaW5rIiwicmVmZXJyYWxBcHBQbGF0Zm9ybSI6IldlYiIsInJlZmVycmFsTW9kZSI6InZpZXcifX0%3D&email=juan.nicoletti%40senior.com.br&e=To4itw)
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
