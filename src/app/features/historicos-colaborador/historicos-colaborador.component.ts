@@ -58,10 +58,27 @@ export class HistoricosColaboradorComponent implements OnInit {
   async inicializaComponente(): Promise<void> {
      this.carregandoInformacoes.set(true);
     await this.obterInformacoesColaborador();
+    this.tratarDadosSolicitante();
     // this.solicitante = this.criarColaborador();
     this.informacoesColaborador.set(this.solicitante);
     this.apontamentoHorasComponent?.preencherColaborador(this.solicitante)
      this.carregandoInformacoes.set(false);
+  }
+
+  tratarDadosSolicitante(): void {
+    this.solicitante.datasApontamento
+
+    if (!Array.isArray(this.solicitante?.datasApontamento))
+      this.solicitante.datasApontamento = this.solicitante.datasApontamento ? [this.solicitante.datasApontamento] : [];
+
+    if (!Array.isArray(this.solicitante?.projetos))
+      this.solicitante.projetos = this.solicitante.projetos ?  [this.solicitante.projetos] : [];
+
+    this.solicitante.datasApontamento.forEach(data => {
+    if (!Array.isArray(data.apontamentos))
+      data.apontamentos = data.apontamentos ? [data.apontamentos] : [];
+    });
+
   }
 
   notificarErro(mensagem: string) {
@@ -75,7 +92,6 @@ export class HistoricosColaboradorComponent implements OnInit {
     this.carregandoInformacoes.set(true);
     this.apontamentoHorasComponent?.desabilitarForm(true);
     await this.gravarEnvio();
-    this.carregandoInformacoes.set(false);
     this.apontamentoHorasComponent?.desabilitarForm(false);
   }
 
@@ -103,6 +119,8 @@ export class HistoricosColaboradorComponent implements OnInit {
         (data) => {
         if(data.outputData.message || data.outputData.ARetorno != 'OK'){
           this.notificarErro('Erro ao gravar os apontramentos, ' + (data.outputData?.message || data.outputData?.ARetorno));
+          this.carregandoInformacoes.set(false);
+
         } else {
           this.notificarSucesso('Gravado com sucesso!');
           this.inicializaComponente();
@@ -110,6 +128,8 @@ export class HistoricosColaboradorComponent implements OnInit {
         },
         () => {
           this.notificarErro('Erro ao gravar os apontramentos, tente mais tarde ou contate o administrador');
+          this.carregandoInformacoes.set(false);
+
         }
       );
   }

@@ -97,7 +97,13 @@ export class ApontamentoHorasComponent implements OnInit {
     this.messageService.add({ severity: 'error', summary: 'Erro', detail: mensagem});
 }
 
+  limparFormulario(): void {
+    this.data = null;
+    this.listaApontamentosAtual = [];
+  }
+
   preencherColaborador(colaborador: Colaborador): void {
+    this.limparFormulario();
     this.colaborador = colaborador;
 
     if(this.colaborador?.projetos?.length > 0)
@@ -113,7 +119,7 @@ export class ApontamentoHorasComponent implements OnInit {
 selecionarData(data: any ): void {
   this.formApontamento?.get('dataAcerto')?.setValue(data.value);
   this.data = data.value;
-  this.listaApontamentosAtual = JSON.parse(JSON.stringify(this.data.apontamentos));
+  this.listaApontamentosAtual = JSON.parse(JSON.stringify(this.data?.apontamentos || []));
   this.inicializacaoListaApontamentosAtual();
 }
 
@@ -184,7 +190,7 @@ validarTotalHoras(): boolean{
 
   });
 }
-  return totalHoras > Number(this.data?.NQuantidadeHorasPrevistas || 0);
+  return totalHoras > 600;
 }
 
 validarDataAfastado(): boolean{
@@ -205,6 +211,7 @@ validarProjetoRepetido(): boolean{
 }
 
 validarAlterqacaoNoApontamento(): void{
+  if(this.data.apontamentos)
   this.data.apontamentos.forEach((apontamentoAntigo: Apontamento, index: number) => {
    const apontamentoNovo = this.listaApontamentosAtual[index];
    if(!apontamentoNovo.excluido){
