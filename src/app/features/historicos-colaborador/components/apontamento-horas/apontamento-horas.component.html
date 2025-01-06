@@ -11,7 +11,7 @@
       <div class="col-3">
 
         <h5 class="text-xs text-gray-500">Data do Apontamento</h5>
-        <p-dropdown [options]="colaborador?.datasApontamento || []"   optionLabel="DData" (onChange)="selecionarData($event)" placeholder="Selecione uma data" [disabled]="desabilitar"></p-dropdown>
+        <p-dropdown [options]="colaborador?.datasApontamento || []"   optionLabel="DData" (onChange)="selecionarData($event)" placeholder="Selecione uma data" [disabled]="desabilitar" [emptyMessage]="'Nenhum item disponível'"></p-dropdown>
       </div>
 
 
@@ -56,7 +56,7 @@
                     <ng-template pTemplate="input">
                             <p-dropdown [options]="colaborador?.projetos || []" optionLabel="label"  placeholder="Selecione um projeto"
                             [(ngModel)]="apontamento.NCodigoProjeto" optionValue="NCodigoProjeto" [filter]="true" filterBy="ADescricaoProjeto" appendTo="body"
-                            [disabled]="apontamento.excluido || desabilitar">
+                            [disabled]="apontamento.excluido || desabilitar" [emptyMessage]="'Nenhum item disponível'">
                           </p-dropdown>
                     </ng-template>
                     <ng-template pTemplate="output">

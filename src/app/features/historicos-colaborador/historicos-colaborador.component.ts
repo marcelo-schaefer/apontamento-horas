@@ -57,8 +57,8 @@ export class HistoricosColaboradorComponent implements OnInit {
 
   async inicializaComponente(): Promise<void> {
      this.carregandoInformacoes.set(true);
-    //await this.obterInformacoesColaborador();
-    this.solicitante = this.criarColaborador();
+    await this.obterInformacoesColaborador();
+    // this.solicitante = this.criarColaborador();
     this.informacoesColaborador.set(this.solicitante);
     this.apontamentoHorasComponent?.preencherColaborador(this.solicitante)
      this.carregandoInformacoes.set(false);
@@ -73,10 +73,10 @@ export class HistoricosColaboradorComponent implements OnInit {
 
   async enviarSolicitacao(): Promise<void> {
     this.carregandoInformacoes.set(true);
-    this.apontamentoHorasComponent?.desabilitarForm(true)
+    this.apontamentoHorasComponent?.desabilitarForm(true);
     await this.gravarEnvio();
     this.carregandoInformacoes.set(false);
-    this.apontamentoHorasComponent?.desabilitarForm(false)
+    this.apontamentoHorasComponent?.desabilitarForm(false);
   }
 
  async obterInformacoesColaborador(): Promise<void> {
@@ -85,11 +85,13 @@ export class HistoricosColaboradorComponent implements OnInit {
           (data) => {
           if(data.outputData.message || data.outputData.ARetorno != 'OK'){
             this.notificarErro('Erro ao identificar o solicitante, ' + (data.outputData?.message || data.outputData?.ARetorno));
+            this.apontamentoHorasComponent?.desabilitarForm(true);
           } else {
             this.solicitante = data.outputData;
           }
           },
           () => {
+            this.apontamentoHorasComponent?.desabilitarForm(true);
             this.notificarErro('Erro ao identificar o solicitante, tente mais tarde ou contate o administrador');
           }
         );

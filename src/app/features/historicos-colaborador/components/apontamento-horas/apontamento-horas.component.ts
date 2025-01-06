@@ -99,13 +99,15 @@ export class ApontamentoHorasComponent implements OnInit {
 
   preencherColaborador(colaborador: Colaborador): void {
     this.colaborador = colaborador;
+
+    if(this.colaborador?.projetos?.length > 0)
     this.colaborador.projetos.forEach(projeto => {
       projeto.label = `${projeto.NCodigoProjeto} - ${projeto.ADescricaoProjeto}`;
     });
   }
 
    labelProjeto(codigoProjeto: string): string {
-    return this.colaborador.projetos.find((f) => f.NCodigoProjeto == codigoProjeto)?.label || '';
+    return this.colaborador?.projetos?.length > 0 ? this.colaborador?.projetos.find((f) => f.NCodigoProjeto == codigoProjeto)?.label || '' : 'Não existem projetos para serem selecionados';
   }
 
 selecionarData(data: any ): void {
@@ -193,7 +195,7 @@ validarProjetoRepetido(): boolean{
   const vistos: Set<string> = new Set();
 
   for (const apontamento of this.listaApontamentosAtual.filter((f) => !f.excluido)) {
-    if (vistos.has(apontamento.NCodigoProjeto)) {
+    if (apontamento.NCodigoProjeto && vistos.has(apontamento.NCodigoProjeto)) {
       return true;
     }
     vistos.add(apontamento.NCodigoProjeto);
