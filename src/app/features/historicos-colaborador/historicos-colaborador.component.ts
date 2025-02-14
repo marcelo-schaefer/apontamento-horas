@@ -57,8 +57,8 @@ export class HistoricosColaboradorComponent implements OnInit {
 
   async inicializaComponente(): Promise<void> {
      this.carregandoInformacoes.set(true);
-   // await this.obterInformacoesColaborador();
-   this.solicitante = this.criarColaborador();
+   await this.obterInformacoesColaborador();
+   //this.solicitante = this.criarColaborador();
    this.tratarDadosSolicitante();
     this.informacoesColaborador.set(this.solicitante);
     this.apontamentoHorasComponent?.preencherColaborador(this.solicitante)
