@@ -38,6 +38,7 @@
     <p-messages [(value)]="mensagemErroSomatoria" [enableService]="false"  [closable]="false"  *ngIf="validarTotalHoras()"/>
     <p-messages [(value)]="mensagemErroAfastamento" [enableService]="false"  [closable]="false"  *ngIf="validarDataAfastado()"/>
     <p-messages [(value)]="mensagemErroMesmoProjeto" [enableService]="false"  [closable]="false"  *ngIf="validarProjetoRepetido()"/>
+    <p-messages [(value)]="mensagemErroMarcacoesInpares" [enableService]="false"  [closable]="false"  *ngIf="validarmarcacoesImpares()"/>
   </div>
 
 

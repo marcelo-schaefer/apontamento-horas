@@ -41,6 +41,7 @@ export class ApontamentoHorasComponent implements OnInit {
   mensagemErroSomatoria: Message[] = [{ severity: 'error', detail: 'A somatória de apontamentos não pode ultrapassar a quantidade de horas previstas para esse dia.' }];
   mensagemErroAfastamento: Message[] = [{ severity: 'error', detail: 'O colaborador estava afastado nesse dia, por tanto, não poderá apontar nele.' }];
   mensagemErroMesmoProjeto: Message[] = [{ severity: 'error', detail: 'Não é possivel selecionar o mesmo projeto mais de uma vez, remova ou faça a alteração.' }];
+  mensagemErroMarcacoesInpares: Message[] = [{ severity: 'error', detail: 'Marcações impares, favor revisar as marcações de ponto neste dia.' }];
 
 
   constructor(
@@ -89,7 +90,7 @@ export class ApontamentoHorasComponent implements OnInit {
     }
 
 
-    return !this.validarTotalHoras() && !this.validarDataAfastado() && !this.validarProjetoRepetido();
+    return !this.validarTotalHoras() && !this.validarDataAfastado() && !this.validarProjetoRepetido() && !this.validarmarcacoesImpares();
   }
 
 
@@ -195,6 +196,10 @@ validarTotalHoras(): boolean{
 
 validarDataAfastado(): boolean{
   return this.data && this.data?.AAfastado == 'S'
+}
+
+validarmarcacoesImpares(): boolean{
+  return this.data && Number(this.data?.NQuantidadeBatidas)% 2 !== 0;
 }
 
 validarProjetoRepetido(): boolean{

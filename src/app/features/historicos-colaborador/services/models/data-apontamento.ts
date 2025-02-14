@@ -5,5 +5,6 @@ export interface DataApontamento {
   AAfastado: string;
   ABatidasPonto?: string;
   NQuantidadeHorasPrevistas?: string;
+  NQuantidadeBatidas?: string;
   apontamentos: Apontamento[];
 }

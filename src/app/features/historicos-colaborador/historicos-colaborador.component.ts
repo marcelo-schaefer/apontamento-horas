@@ -57,9 +57,9 @@ export class HistoricosColaboradorComponent implements OnInit {
 
   async inicializaComponente(): Promise<void> {
      this.carregandoInformacoes.set(true);
-    await this.obterInformacoesColaborador();
-    this.tratarDadosSolicitante();
-    // this.solicitante = this.criarColaborador();
+   // await this.obterInformacoesColaborador();
+   this.solicitante = this.criarColaborador();
+   this.tratarDadosSolicitante();
     this.informacoesColaborador.set(this.solicitante);
     this.apontamentoHorasComponent?.preencherColaborador(this.solicitante)
      this.carregandoInformacoes.set(false);
@@ -188,6 +188,7 @@ export class HistoricosColaboradorComponent implements OnInit {
             AAfastado: "N",
             ABatidasPonto: "08:00 - 12:00, 13:00 - 17:00",
             NQuantidadeHorasPrevistas: "480",
+            NQuantidadeBatidas: "4",
             apontamentos: [
               {
                 NCodigoProjeto: "1",
@@ -209,8 +210,9 @@ export class HistoricosColaboradorComponent implements OnInit {
           {
             DData: "18/12/2024",
             AAfastado: "N",
-            ABatidasPonto: "07:00 - 12:12, 13:30 - 18:00",
+            ABatidasPonto: "07:00 - 12:12 - 13:30",
             NQuantidadeHorasPrevistas: "480",
+            NQuantidadeBatidas: "3",
             apontamentos: [
               {
                 NCodigoProjeto: "1",
