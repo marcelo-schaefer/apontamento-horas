@@ -3,37 +3,44 @@
     <h2>Informações do colaborador</h2>
   </ng-template>
 
-  <ng-template pTemplate="content">
-    <div class="grid">
-
-      <div class="col-3">
-        <small class="text-xs text-gray-500">Empresa</small>
-        <p class="mb-0 mt-1 text-base">
-          @if (informacoesColaborador()) {
-          {{informacoesColaborador()?.NCodigoEmpresa + ' - ' +
-          informacoesColaborador()?.ANomeEmpresa}}
-          }
-        </p>
-      </div>
-
-      <div class="col-3">
-        <small class="text-xs text-gray-500">Tipo Colaborador</small>
-        <p class="mb-0 mt-1 text-base">
-          @if (informacoesColaborador()) {
-          {{informacoesColaborador()?.NTipoColaborador + ' - ' + informacoesColaborador()?.ADescricaoTipoColaborador}}
-          }
-        </p>
-      </div>
-
-      <div class="col-3">
-        <small class="text-xs text-gray-500">Matrícula/Nome</small>
-        <p class="mb-0 mt-1 text-base">
-          @if (informacoesColaborador()) {
-          {{informacoesColaborador()?.NMatricula + ' - ' + informacoesColaborador()?.ANome}}
-          }
-        </p>
-      </div>
-
+  <div class="grid">
+    <div class="col-3">
+      <small class="text-xs text-gray-500">Empresa</small>
+      <p class="mb-0 mt-1 text-base">
+        @if (informacoesColaborador()) {
+        {{
+          informacoesColaborador()?.NCodigoEmpresa +
+            " - " +
+            informacoesColaborador()?.ANomeEmpresa
+        }}
+        }
+      </p>
     </div>
-  </ng-template>
+
+    <div class="col-3">
+      <small class="text-xs text-gray-500">Tipo Colaborador</small>
+      <p class="mb-0 mt-1 text-base">
+        @if (informacoesColaborador()) {
+        {{
+          informacoesColaborador()?.NTipoColaborador +
+            " - " +
+            informacoesColaborador()?.ADescricaoTipoColaborador
+        }}
+        }
+      </p>
+    </div>
+
+    <div class="col-3">
+      <small class="text-xs text-gray-500">Matrícula/Nome</small>
+      <p class="mb-0 mt-1 text-base">
+        @if (informacoesColaborador()) {
+        {{
+          informacoesColaborador()?.NMatricula +
+            " - " +
+            informacoesColaborador()?.ANome
+        }}
+        }
+      </p>
+    </div>
+  </div>
 </p-card>

@@ -10,5 +10,5 @@ export interface ApontamentosPersistencia {
   nCodigoProjeto: number;
   nQuantidade: number;
   aTipo: string;
+  aObservacao: string;
 }
-
