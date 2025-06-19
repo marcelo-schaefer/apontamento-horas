@@ -94,7 +94,7 @@ export class HistoricosColaboradorComponent implements OnInit {
   notificarSucesso(mensagem: string) {
     this.messageService.add({
       severity: 'success',
-      summary: 'Erro',
+      summary: 'Sucesso',
       detail: mensagem,
     });
   }
