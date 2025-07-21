@@ -138,6 +138,13 @@ export class ApontamentoHorasComponent implements OnInit {
       return false;
     }
 
+    if (this.retornaHorasApontadas() !== this.retornaHorasTrabalhadas()) {
+      this.notificar(
+        'O total de horas apontadas deve ser igual ao total da jornada realizada no dia'
+      );
+      return false;
+    }
+
     return (
       !this.validarTotalHoras() &&
       !this.validarDataAfastado() &&
@@ -311,5 +318,41 @@ export class ApontamentoHorasComponent implements OnInit {
 
   desabilitarForm(habilitar: boolean): void {
     this.desabilitar = habilitar;
+  }
+
+  retornaHorasApontadas(): string {
+    return this.converteMinutosParaString(
+      this.listaApontamentosAtual
+        .filter((f) => !f.excluido)
+        .reduce((total, apontamento) => {
+          return total + Number(apontamento.NQuantidade || 0);
+        }, 0)
+    );
+  }
+
+  retornaHorasTrabalhadas(): string {
+    return this.data?.NQuantidadeBatidas
+      ? this.converteMinutosParaString(
+          this.calcularMinutosMarcacoes(this.data?.ABatidasPonto || '')
+        )
+      : '00:00';
+  }
+
+  calcularMinutosMarcacoes(marcacoes: string): number {
+    if (!marcacoes) return 0;
+    const horas = marcacoes.split('-').map((h) => h.trim());
+    let totalMinutos = 0;
+
+    for (let i = 0; i < horas.length - 1; i += 2) {
+      const [h1, m1] = horas[i].split(':').map(Number);
+      const [h2, m2] = horas[i + 1].split(':').map(Number);
+
+      const inicio = h1 * 60 + m1;
+      const fim = h2 * 60 + m2;
+
+      totalMinutos += fim - inicio;
+    }
+
+    return totalMinutos;
   }
 }
