@@ -138,7 +138,11 @@ export class ApontamentoHorasComponent implements OnInit {
       return false;
     }
 
-    if (this.retornaHorasApontadas() !== "00:00" && this.retornaHorasApontadas() !== this.retornaHorasTrabalhadas()) {
+    if (
+      this.colaborador.AValidaTotalHoras != 'N' &&
+      this.retornaHorasApontadas() !== '00:00' &&
+      this.retornaHorasApontadas() !== this.retornaHorasTrabalhadas()
+    ) {
       this.notificar(
         'O total de horas apontadas deve ser igual ao total da jornada realizada no dia'
       );
@@ -146,7 +150,6 @@ export class ApontamentoHorasComponent implements OnInit {
     }
 
     return (
-      !this.validarTotalHoras() &&
       !this.validarDataAfastado() &&
       !this.validarProjetoRepetido() &&
       !this.validarmarcacoesImpares()
