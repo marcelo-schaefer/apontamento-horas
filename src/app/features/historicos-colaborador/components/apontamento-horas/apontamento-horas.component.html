@@ -73,8 +73,11 @@
   >
     <ng-template pTemplate="header">
       <tr>
-        <th style="width: 25%">Projeto</th>
-        <th style="width: 25%">Quantidade de Horas</th>
+        <th style="width: 16.6%">Projeto</th>
+        <th style="width: 16.6%">Quantidade de Horas</th>
+        <th style="width: 16.6%">Quantidade Total Apontado</th>
+        <th style="width: 16.6%">Saldo de horas disponível</th>
+        <th></th>
         <th style="width: 40%">Observação</th>
         <th style="width: 10%">Excluir</th>
       </tr>
@@ -135,6 +138,31 @@
             </ng-template>
           </p-cellEditor>
         </td>
+        <td>
+          {{
+            retornaTotalHorasProjeto(apontamento?.NCodigoProjeto || "") ||
+              "00:00"
+          }}
+        </td>
+        <td>
+          {{ retornaSaldoHoras(apontamento?.NCodigoProjeto || "") || "00:00" }}
+        </td>
+        <td style="width: 15%">
+          <p-button
+            label="Solicitar horas adicionais"
+            [pTooltip]="
+              retornaMensagemInformandoLimite(apontamento?.NCodigoProjeto || '')
+            "
+            [disabled]="
+              desabilitar &&
+              calculaPorcentaghemHorasApontadas(
+                apontamento?.NCodigoProjeto || ''
+              ) >= retornaMenorPorcentagem()
+            "
+            [text]="true"
+            (click)="abrirSolicitarHorasAdicionais(apontamento.NCodigoProjeto)"
+          />
+        </td>
         <td style="width: 40%">
           <input
             type="text"
@@ -184,4 +212,37 @@
       class="p-button-success"
     ></button>
   </div>
+
+  <p-dialog
+    header="Solicitar Horas Adicionais"
+    [modal]="true"
+    [(visible)]="apresentarFiltroData"
+    [breakpoints]="{ '1199px': '75vw', '575px': '90vw' }"
+    [style]="{ width: '50vw' }"
+    [draggable]="false"
+    [resizable]="false"
+  >
+    <div class="flex align-items-center gap-3 mb-3">
+      <label class="font-semibold white-space-nowrap w-8rem">
+        Horas Adicionais
+      </label>
+
+      <p-calendar
+        inputId="calendar-timeonly"
+        [(ngModel)]="horasAdicionais"
+        [timeOnly]="true"
+        appendTo="body"
+        class="flex-1"
+      />
+    </div>
+
+    <div class="flex justify-content-end gap-2">
+      <p-button
+        label="Cancelar"
+        severity="secondary"
+        (onClick)="apresentarFiltroData = false"
+      />
+      <p-button label="Solicitar" (onClick)="solicitarHorasAdicionais()" />
+    </div>
+  </p-dialog>
 </p-card>

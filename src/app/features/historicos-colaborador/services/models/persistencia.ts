@@ -12,3 +12,11 @@ export interface ApontamentosPersistencia {
   aTipo: string;
   aObservacao: string;
 }
+
+export interface HorasAdicionaisPersistencia {
+  nEmpresa: number;
+  nTipoColaborador: number;
+  nMatricula: number;
+  nCodigoProjeto: number;
+  nQuantidade: number;
+}

@@ -1,11 +1,19 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Observable, retry } from 'rxjs';
 
 import { environment } from '../../../../environments/environment';
-import { Colaborador, RetornoColaborador } from './models/colaborador.model';
+import {
+  BuscaColaborador,
+  Colaborador,
+  RetornoColaborador,
+} from './models/colaborador.model';
 import { RetornoGravacao } from './models/retorno-gravacao';
-import { Persistencia } from './models/persistencia';
+import {
+  HorasAdicionaisPersistencia,
+  Persistencia,
+} from './models/persistencia';
+import { CorpoBusca } from './models/corpo-busca';
 
 @Injectable({
   providedIn: 'root',
@@ -27,12 +35,57 @@ export class InformacoesColaboradorService {
 
   private http = inject(HttpClient);
 
-  public obterInformacoesColaborador(
+  public obterInformacoesColaborador(): Observable<RetornoColaborador> {
+    return this.http.post<RetornoColaborador>(environment.plugin.timeout, {
+      name: 'invoke',
+      payload: {
+        ...this.basePayload,
+        inputData: {
+          ...this.basePayload.inputData,
+        },
+      },
+    });
+  }
+
+  public obterInformacoesColaboradorSelecionado(
+    body: BuscaColaborador
   ): Observable<RetornoColaborador> {
-    return this.http.post<RetornoColaborador>(environment.plugin.invoke, {
+    return this.http.post<RetornoColaborador>(environment.plugin.timeout, {
+      name: 'invoke',
+      payload: {
+        ...this.basePayload,
+        inputData: {
+          ...this.basePayload.inputData,
+          ...body,
+        },
+      },
+    });
+  }
+
+  public obterListaColaboradores(
+    body: CorpoBusca
+  ): Observable<RetornoColaborador> {
+    return this.http
+      .post<RetornoColaborador>(environment.plugin.invoke, {
+        ...this.basePayload,
+        inputData: {
+          ...this.basePayload.inputData,
+          port: 'buscaColaboradores',
+          ...body,
+        },
+      })
+      .pipe(retry(3));
+  }
+
+  public gravarHorasAdicionais(
+    body: HorasAdicionaisPersistencia
+  ): Observable<RetornoGravacao> {
+    return this.http.post<RetornoGravacao>(environment.plugin.invoke, {
       ...this.basePayload,
       inputData: {
         ...this.basePayload.inputData,
+        ...body,
+        port: 'persistirHorasAdicionais',
       },
     });
   }
@@ -43,7 +96,7 @@ export class InformacoesColaboradorService {
       inputData: {
         ...this.basePayload.inputData,
         ...body,
-        port: 'persisitencia'
+        port: 'persisitencia',
       },
     });
   }

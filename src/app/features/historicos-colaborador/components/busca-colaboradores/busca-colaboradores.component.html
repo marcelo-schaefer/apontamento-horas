@@ -1,0 +1,69 @@
+<p-card>
+  <ng-template pTemplate="title">
+    <h2>Busca Colaborador</h2>
+  </ng-template>
+
+  <form [formGroup]="formDadosSolicitacao">
+    <div class="grid">
+      <div class="col-4">
+        <p-dropdown
+          #meuDropdown
+          [options]="colaboradores || []"
+          [style]="{ width: '100%' }"
+          formControlName="colaboradorSelecionado"
+          placeholder="Selecione um Colaborador "
+          [emptyMessage]="'Nenhum colaborador disponível'"
+          [editable]="true"
+          (ngModelChange)="onSearch($event)"
+          (onChange)="selecionaColaborador($event)"
+          (onScrollToBottom)="onScrollToBottom()"
+          [loading]="isLoadingColaboradores$.value || inicializando"
+          [virtualScroll]="true"
+          [virtualScrollItemSize]="30"
+          optionLabel="ANome"
+          [disabled]="desabilitar"
+        >
+          <ng-template pTemplate="item" let-colaboradorItem>
+            <div>
+              {{ colaboradorItem?.NMatricula + " - " + colaboradorItem?.ANome }}
+            </div>
+          </ng-template></p-dropdown
+        >
+      </div>
+    </div>
+  </form>
+
+  <br />
+  <div class="grid" *ngIf="!!colaborador">
+    <div class="col-3">
+      <small class="text-xs text-gray-500">Empresa</small>
+      <p class="mb-0 mt-1 text-base">
+        @if (colaborador) {
+        {{ colaborador?.NCodigoEmpresa + " - " + colaborador?.ANomeEmpresa }}
+        }
+      </p>
+    </div>
+
+    <div class="col-3">
+      <small class="text-xs text-gray-500">Tipo Colaborador</small>
+      <p class="mb-0 mt-1 text-base">
+        @if (colaborador) {
+        {{
+          colaborador?.NTipoColaborador +
+            " - " +
+            colaborador?.ADescricaoTipoColaborador
+        }}
+        }
+      </p>
+    </div>
+
+    <div class="col-3">
+      <small class="text-xs text-gray-500">Matrícula/Nome</small>
+      <p class="mb-0 mt-1 text-base">
+        @if (colaborador) {
+        {{ colaborador?.NMatricula + " - " + colaborador?.ANome }}
+        }
+      </p>
+    </div>
+  </div>
+</p-card>

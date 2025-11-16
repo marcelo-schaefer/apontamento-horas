@@ -3,4 +3,6 @@ export interface Projeto {
   ADescricaoProjeto: string;
   nQuantidade: string;
   label: string;
+  NTotalApontado: string;
+  NTotalHorasSaldo: string;
 }

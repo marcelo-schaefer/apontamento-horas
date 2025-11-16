@@ -4,7 +4,10 @@ import { finalize, lastValueFrom } from 'rxjs';
 import { CalendarModule } from 'primeng/calendar';
 
 import { InformacoesColaboradorService } from './services/informacoes-colaborador.service';
-import { Colaborador } from './services/models/colaborador.model';
+import {
+  BuscaColaborador,
+  Colaborador,
+} from './services/models/colaborador.model';
 
 import { InformacoesColaboradorComponent } from './components/informacoes-colaborador/informacoes-colaborador.component';
 import { LoadingComponent } from '../../shared/components/loading/loading.component';
@@ -15,10 +18,12 @@ import { RippleModule } from 'primeng/ripple';
 import { MessageService } from 'primeng/api';
 import {
   ApontamentosPersistencia,
+  HorasAdicionaisPersistencia,
   Persistencia,
 } from './services/models/persistencia';
 import { Apontamento } from './services/models/apontamento';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { BuscaColaboradoresComponent } from './components/busca-colaboradores/busca-colaboradores.component';
 
 @Component({
   selector: 'app-historicos-colaborador',
@@ -27,6 +32,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     FormsModule,
     InformacoesColaboradorComponent,
     ApontamentoHorasComponent,
+    BuscaColaboradoresComponent,
     LoadingComponent,
     CalendarModule,
     ToastModule,
@@ -41,6 +47,9 @@ export class HistoricosColaboradorComponent implements OnInit {
   @ViewChild(ApontamentoHorasComponent, { static: true })
   apontamentoHorasComponent: ApontamentoHorasComponent | undefined;
 
+  @ViewChild(BuscaColaboradoresComponent, { static: true })
+  buscaColaboradoresComponent: BuscaColaboradoresComponent | undefined;
+
   private informacoesColaboradorService = inject(InformacoesColaboradorService);
 
   protected informacoesColaborador = signal<Colaborador | undefined>(undefined);
@@ -48,6 +57,7 @@ export class HistoricosColaboradorComponent implements OnInit {
 
   public dataTeste = signal<Date | null>(null);
   solicitante!: Colaborador;
+  colaboradorSelecionado!: Colaborador;
 
   constructor(private messageService: MessageService) {}
 
@@ -56,13 +66,21 @@ export class HistoricosColaboradorComponent implements OnInit {
   }
 
   async inicializaComponente(): Promise<void> {
-    this.carregandoInformacoes.set(true);
+    this.carregarTela(true);
     await this.obterInformacoesColaborador();
     //this.solicitante = this.criarColaborador();
     this.tratarDadosSolicitante();
     this.informacoesColaborador.set(this.solicitante);
-    this.apontamentoHorasComponent?.preencherColaborador(this.solicitante);
-    this.carregandoInformacoes.set(false);
+    this.carregarTela(false);
+  }
+
+  carregarTela(carregar: boolean): void {
+    this.carregandoInformacoes.set(carregar);
+  }
+
+  desabilitarTela(desabilitar: boolean): void {
+    this.apontamentoHorasComponent?.desabilitarForm(desabilitar);
+    this.buscaColaboradoresComponent?.desabilitarFormulario(desabilitar);
   }
 
   tratarDadosSolicitante(): void {
@@ -77,10 +95,21 @@ export class HistoricosColaboradorComponent implements OnInit {
           ? [this.solicitante.projetos]
           : [];
 
+      if (!Array.isArray(this.solicitante?.limites))
+        this.solicitante.limites = this.solicitante.limites
+          ? [this.solicitante.limites]
+          : [];
+
       this.solicitante.datasApontamento.forEach((data) => {
         if (!Array.isArray(data.apontamentos))
           data.apontamentos = data.apontamentos ? [data.apontamentos] : [];
       });
+
+      if (this.solicitante.AEhGestor == 'S') {
+        this.buscaColaboradoresComponent?.opcoesIniciais();
+      } else {
+        this.apontamentoHorasComponent?.preencherColaborador(this.solicitante);
+      }
     }
   }
 
@@ -100,10 +129,11 @@ export class HistoricosColaboradorComponent implements OnInit {
   }
 
   async enviarSolicitacao(): Promise<void> {
-    this.carregandoInformacoes.set(true);
-    this.apontamentoHorasComponent?.desabilitarForm(true);
+    this.carregarTela(true);
+    this.desabilitarTela(true);
     await this.gravarEnvio();
-    this.apontamentoHorasComponent?.desabilitarForm(false);
+    this.desabilitarTela(false);
+    this.carregarTela(false);
   }
 
   async obterInformacoesColaborador(): Promise<void> {
@@ -116,16 +146,97 @@ export class HistoricosColaboradorComponent implements OnInit {
             'Erro ao identificar o solicitante, ' +
               (data.outputData?.message || data.outputData?.ARetorno)
           );
-          this.apontamentoHorasComponent?.desabilitarForm(true);
+          this.desabilitarTela(true);
         } else {
           this.solicitante = data.outputData;
         }
       },
       () => {
-        this.apontamentoHorasComponent?.desabilitarForm(true);
+        this.desabilitarTela(true);
         this.notificarErro(
           'Erro ao identificar o solicitante, tente mais tarde ou contate o administrador'
         );
+      }
+    );
+  }
+
+  async receberColaboradorSelecionado(colaborador: Colaborador): Promise<void> {
+    this.colaboradorSelecionado = colaborador;
+    this.carregarTela(true);
+    this.desabilitarTela(true);
+    await this.obterInformacoesColaboradorSelecionado(
+      this.montaCorpoBuscaColaborador()
+    );
+    this.apontamentoHorasComponent?.preencherColaborador(
+      this.colaboradorSelecionado
+    );
+    this.carregarTela(false);
+    this.desabilitarTela(false);
+  }
+
+  montaCorpoBuscaColaborador(): BuscaColaborador {
+    return {
+      nCodigoEmpresa: Number(this.colaboradorSelecionado.NCodigoEmpresa),
+      nTipoColaborador: Number(this.colaboradorSelecionado.NTipoColaborador),
+      nMatricula: Number(this.colaboradorSelecionado.NMatricula),
+    };
+  }
+
+  async obterInformacoesColaboradorSelecionado(
+    body: BuscaColaborador
+  ): Promise<void> {
+    await lastValueFrom(
+      this.informacoesColaboradorService.obterInformacoesColaboradorSelecionado(
+        body
+      )
+    ).then(
+      (data) => {
+        if (data.outputData.message || data.outputData.ARetorno != 'OK') {
+          this.notificarErro(
+            'Erro ao buscar informações do colaborador selecionado, ' +
+              (data.outputData?.message || data.outputData?.ARetorno)
+          );
+          this.desabilitarTela(true);
+        } else {
+          this.colaboradorSelecionado = data.outputData;
+        }
+      },
+      () => {
+        this.desabilitarTela(false);
+        this.notificarErro(
+          'Erro ao buscar informações do colaborador selecionado, tente mais tarde ou contate o administrador'
+        );
+      }
+    );
+  }
+
+  async gravarHorasAdicionais(
+    body: HorasAdicionaisPersistencia
+  ): Promise<void> {
+    this.carregarTela(true);
+    await lastValueFrom(
+      this.informacoesColaboradorService.gravarHorasAdicionais(body)
+    ).then(
+      (data) => {
+        if (data.outputData.message || data.outputData.ARetorno != 'OK') {
+          this.notificarErro(
+            'Erro ao gravar as horas adicionais, ' +
+              (data.outputData?.message || data.outputData?.ARetorno)
+          );
+          this.carregarTela(false);
+          this.desabilitarTela(false);
+        } else {
+          this.notificarSucesso('Gravado com sucesso!');
+          this.desabilitarTela(false);
+          this.carregarTela(false);
+        }
+      },
+      () => {
+        this.notificarErro(
+          'Erro ao gravar as horas adicionais, tente mais tarde ou contate o administrador'
+        );
+        this.carregarTela(false);
+        this.desabilitarTela(false);
       }
     );
   }
@@ -140,7 +251,8 @@ export class HistoricosColaboradorComponent implements OnInit {
             'Erro ao gravar os apontramentos, ' +
               (data.outputData?.message || data.outputData?.ARetorno)
           );
-          this.carregandoInformacoes.set(false);
+          this.carregarTela(false);
+          this.desabilitarTela(false);
         } else {
           this.notificarSucesso('Gravado com sucesso!');
           this.inicializaComponente();
@@ -156,10 +268,14 @@ export class HistoricosColaboradorComponent implements OnInit {
   }
 
   montaCorpoEnvio(): Persistencia {
+    const colaborador =
+      this.solicitante.AEhGestor == 'S'
+        ? this.colaboradorSelecionado
+        : this.solicitante;
     return {
-      nEmpresa: Number(this.solicitante.NCodigoEmpresa),
-      nTipoColaborador: Number(this.solicitante.NTipoColaborador),
-      nMatricula: Number(this.solicitante.NMatricula),
+      nEmpresa: Number(colaborador.NCodigoEmpresa),
+      nTipoColaborador: Number(colaborador.NTipoColaborador),
+      nMatricula: Number(colaborador.NMatricula),
       dData: this.apontamentoHorasComponent?.data.DData,
       apontamentos: this.apontamentoHorasComponent?.listaApontamentosAtual
         .filter((f) => f.incluido || f.excluido)

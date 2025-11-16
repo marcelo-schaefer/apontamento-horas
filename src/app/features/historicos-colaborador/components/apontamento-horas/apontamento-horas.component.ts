@@ -23,6 +23,9 @@ import { Message, MessageService } from 'primeng/api';
 import { ToastModule } from 'primeng/toast';
 import { RippleModule } from 'primeng/ripple';
 import { Projeto } from '../../services/models/projeto.model';
+import { TooltipModule } from 'primeng/tooltip';
+import { DialogModule } from 'primeng/dialog';
+import { HorasAdicionaisPersistencia } from '../../services/models/persistencia';
 
 @Component({
   selector: 'app-apontamento-horas',
@@ -41,6 +44,8 @@ import { Projeto } from '../../services/models/projeto.model';
     MessagesModule,
     ToastModule,
     RippleModule,
+    TooltipModule,
+    DialogModule,
   ],
   providers: [MessageService],
   templateUrl: './apontamento-horas.component.html',
@@ -49,6 +54,9 @@ import { Projeto } from '../../services/models/projeto.model';
 export class ApontamentoHorasComponent implements OnInit {
   @Output()
   enviarSolicitacao: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @Output()
+  enviarHorasAdicionais: EventEmitter<HorasAdicionaisPersistencia> =
+    new EventEmitter<HorasAdicionaisPersistencia>();
 
   public informacoesColaborador = input<Colaborador | undefined>(undefined);
   formApontamento!: FormGroup;
@@ -56,6 +64,9 @@ export class ApontamentoHorasComponent implements OnInit {
   listaApontamentosAtual: Apontamento[] = [];
   data!: any;
   desabilitar: boolean = false;
+  apresentarFiltroData: boolean = false;
+  projetoSelecionado: string = '';
+  horasAdicionais: Date = new Date();
   mensagemErroSomatoria: Message[] = [
     {
       severity: 'error',
@@ -222,13 +233,20 @@ export class ApontamentoHorasComponent implements OnInit {
   }
 
   converteMinutosParaString(minutos: number): string {
-    const minutes = minutos % 60;
-    const hours = Math.floor(minutos / 60);
-    return (
+    const negativo = minutos < 0;
+
+    if (negativo) minutos = minutos * -1;
+    let minutes = minutos % 60;
+    let hours = Math.floor(minutos / 60);
+
+    let horaFormatada =
       (hours > 9 ? hours.toString() : '0' + hours.toString()) +
       ':' +
-      (minutes > 9 ? minutes.toString() : '0' + minutes.toString())
-    );
+      (minutes > 9 ? minutes.toString() : '0' + minutes.toString());
+
+    horaFormatada = (negativo ? '- ' : '') + horaFormatada;
+
+    return horaFormatada;
   }
 
   converteMinutos(data: Date): number {
@@ -331,6 +349,104 @@ export class ApontamentoHorasComponent implements OnInit {
           return total + Number(apontamento.NQuantidade || 0);
         }, 0)
     );
+  }
+
+  calculaPorcentaghemHorasApontadas(codigoProjeto: string): number {
+    const totalPlanejado = Number(
+      this.colaborador.projetos.find(
+        (projeto) => projeto.NCodigoProjeto === codigoProjeto
+      )?.NTotalHorasSaldo || 0
+    );
+
+    const totalApontado = this.calculaTotalHorasProjeto(codigoProjeto);
+    const porcentagem = (totalApontado / totalPlanejado) * 100;
+    return isNaN(porcentagem) ? 0 : porcentagem;
+  }
+
+  retornaSaldoHoras(codigoProjeto: string): string {
+    if (!codigoProjeto) return '00:00';
+    const totalPlanejado = Number(
+      this.colaborador.projetos.find(
+        (projeto) => projeto.NCodigoProjeto === codigoProjeto
+      )?.NTotalHorasSaldo || 0
+    );
+
+    const totalApontado = this.calculaTotalHorasProjeto(codigoProjeto);
+    return this.converteMinutosParaString(totalPlanejado - totalApontado);
+  }
+
+  calculaTotalHorasProjeto(codigoProjeto: string): number {
+    if (!codigoProjeto) return 0;
+    let total = 0;
+    total = Number(
+      this.colaborador.projetos.find(
+        (projeto) => projeto.NCodigoProjeto === codigoProjeto
+      )?.NTotalApontado || 0
+    );
+
+    this.listaApontamentosAtual
+      .filter((f) => f.excluido && f.NCodigoProjeto === codigoProjeto)
+      .forEach((item) => {
+        total -= Number(item.NQuantidade || 0);
+      });
+
+    this.listaApontamentosAtual
+      .filter((f) => f.incluido && f.NCodigoProjeto === codigoProjeto)
+      .forEach((item) => {
+        total += Number(item.NQuantidade || 0);
+      });
+
+    return total;
+  }
+
+  retornaTotalHorasProjeto(codigoProjeto: string): string {
+    if (!codigoProjeto) return '00:00';
+    return this.converteMinutosParaString(
+      this.calculaTotalHorasProjeto(codigoProjeto)
+    );
+  }
+
+  retornaMenorPorcentagem(): number {
+    return (
+      Math.min(...this.colaborador.limites.map((l) => Number(l.porcentagem))) ||
+      100
+    );
+  }
+
+  retornaMensagemInformandoLimite(codigoProjeto: string): string {
+    const porcentagemAtual =
+      this.calculaPorcentaghemHorasApontadas(codigoProjeto);
+    let mensagem = '';
+    this.colaborador.limites.forEach((limite) => {
+      if (porcentagemAtual >= Number(limite.porcentagem)) {
+        mensagem = `Atenção! Você atingiu mais de ${limite.porcentagem}% de horas apontadas para este projeto.`;
+      }
+    });
+    return mensagem;
+  }
+
+  abrirSolicitarHorasAdicionais(codigoProjeto: string): void {
+    this.projetoSelecionado = codigoProjeto;
+    this.apresentarFiltroData = true;
+    this.horasAdicionais.setHours(0, 0, 0, 0);
+  }
+
+  solicitarHorasAdicionais(): void {
+    this.apresentarFiltroData = false;
+    this.desabilitarForm(false);
+    this.enviarHorasAdicionais.emit(this.montaCorpoHorasAdicionais());
+  }
+
+  montaCorpoHorasAdicionais(): HorasAdicionaisPersistencia {
+    return {
+      nEmpresa: Number(this.colaborador.NCodigoEmpresa),
+      nTipoColaborador: Number(this.colaborador.NTipoColaborador),
+      nMatricula: Number(this.colaborador.NMatricula),
+      nCodigoProjeto: Number(this.projetoSelecionado),
+      nQuantidade:
+        this.horasAdicionais.getHours() * 60 +
+        this.horasAdicionais.getMinutes(),
+    };
   }
 
   retornaHorasTrabalhadas(): string {
