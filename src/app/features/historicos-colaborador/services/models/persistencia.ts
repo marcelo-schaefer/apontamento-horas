@@ -11,6 +11,8 @@ export interface ApontamentosPersistencia {
   nQuantidade: number;
   aTipo: string;
   aObservacao: string;
+  nPorcentagemAtingida?: number;
+  aDescricaoProjeto?: string;
 }
 
 export interface HorasAdicionaisPersistencia {

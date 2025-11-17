@@ -62,6 +62,7 @@ export class ApontamentoHorasComponent implements OnInit {
   formApontamento!: FormGroup;
   colaborador!: Colaborador;
   listaApontamentosAtual: Apontamento[] = [];
+  listaApontamentosAtualOriginal: Apontamento[] = [];
   data!: any;
   desabilitar: boolean = false;
   apresentarFiltroData: boolean = false;
@@ -95,6 +96,7 @@ export class ApontamentoHorasComponent implements OnInit {
         'Marcações impares, favor revisar as marcações de ponto neste dia.',
     },
   ];
+  mensagemErroPorcentagemAtingida: Message[] = [];
 
   constructor(
     private fb: FormBuilder,
@@ -204,7 +206,11 @@ export class ApontamentoHorasComponent implements OnInit {
     this.listaApontamentosAtual = JSON.parse(
       JSON.stringify(this.data?.apontamentos || [])
     );
+    this.listaApontamentosAtualOriginal = JSON.parse(
+      JSON.stringify(this.data?.apontamentos || [])
+    );
     this.inicializacaoListaApontamentosAtual();
+    this.validarMensagensErroPorcentagem();
   }
 
   inicializacaoListaApontamentosAtual(): void {
@@ -251,6 +257,20 @@ export class ApontamentoHorasComponent implements OnInit {
 
   converteMinutos(data: Date): number {
     return data.getHours() * 60 + data.getMinutes();
+  }
+
+  converteStringParaDate(horas: string): Date {
+    if (!horas) return new Date(0);
+
+    const [hh, mm] = horas.split(':').map(Number);
+
+    const data = new Date();
+    data.setHours(hh);
+    data.setMinutes(mm);
+    data.setSeconds(0);
+    data.setMilliseconds(0);
+
+    return data;
   }
 
   adicioanrLinha(): void {
@@ -360,7 +380,7 @@ export class ApontamentoHorasComponent implements OnInit {
 
     const totalApontado = this.calculaTotalHorasProjeto(codigoProjeto);
     const porcentagem = (totalApontado / totalPlanejado) * 100;
-    return isNaN(porcentagem) ? 0 : porcentagem;
+    return isNaN(porcentagem) ? 0 : porcentagem > 100 ? 100 : porcentagem;
   }
 
   retornaSaldoHoras(codigoProjeto: string): string {
@@ -425,6 +445,50 @@ export class ApontamentoHorasComponent implements OnInit {
     return mensagem;
   }
 
+  retornaSeAtingiu100(codigoProjeto: string): boolean {
+    const porcentagemAtual =
+      this.calculaPorcentaghemHorasApontadas(codigoProjeto);
+    return porcentagemAtual >= 100;
+  }
+
+  onHoraChange(
+    novoValor: Date,
+    apontamento: Apontamento,
+    index: number,
+    codigoProjeto: string
+  ) {
+    const registroAntigo = this.listaApontamentosAtualOriginal.find(
+      (f) => f.NCodigoProjeto == codigoProjeto
+    );
+    if (registroAntigo) {
+      const antigoValor = Number(registroAntigo.NQuantidade);
+
+      if (this.retornaSeAtingiu100(codigoProjeto)) {
+        if (this.converteMinutos(novoValor) > antigoValor) {
+          apontamento.quantidadeHoras =
+            this.converteMinutosStringParaDate(antigoValor);
+          return;
+        }
+      }
+    } else {
+      const totalPlanejado = Number(
+        this.colaborador.projetos.find(
+          (projeto) => projeto.NCodigoProjeto === codigoProjeto
+        )?.NTotalHorasSaldo || 0
+      );
+
+      if (totalPlanejado < this.converteMinutos(novoValor)) {
+        apontamento.quantidadeHoras =
+          this.converteMinutosStringParaDate(totalPlanejado);
+        return;
+      }
+    }
+
+    apontamento.quantidadeHoras = novoValor;
+
+    this.atulizarFormatacaoQuantidadeHoras(index);
+  }
+
   abrirSolicitarHorasAdicionais(codigoProjeto: string): void {
     this.projetoSelecionado = codigoProjeto;
     this.apresentarFiltroData = true;
@@ -473,5 +537,42 @@ export class ApontamentoHorasComponent implements OnInit {
     }
 
     return totalMinutos;
+  }
+
+  validarMensagensErroPorcentagem(): void {
+    this.mensagemErroPorcentagemAtingida = [];
+
+    this.listaApontamentosAtual.forEach((apontamento) => {
+      let porcentagemAtingida = 0;
+      const nomePorjeto = this.colaborador.projetos.find(
+        (f) => f.NCodigoProjeto == apontamento.NCodigoProjeto
+      )?.ADescricaoProjeto;
+      const porcentagemAtual = this.calculaPorcentaghemHorasApontadas(
+        apontamento.NCodigoProjeto
+      );
+
+      if (porcentagemAtual >= 100) {
+        porcentagemAtingida = 100;
+      } else {
+        this.colaborador.limites.forEach((limite) => {
+          if (porcentagemAtual >= Number(limite.porcentagem)) {
+            porcentagemAtingida = Number(limite.porcentagem);
+          }
+        });
+      }
+
+      if (porcentagemAtingida > 0)
+        this.mensagemErroPorcentagemAtingida.push({
+          severity: porcentagemAtingida >= 100 ? 'error' : 'warn',
+          detail:
+            'O projeto ' +
+            apontamento.NCodigoProjeto +
+            ' - ' +
+            nomePorjeto +
+            ' atingiu ' +
+            porcentagemAtingida.toString() +
+            '% do apontamento previsto, recomendamos solicitar horas adicionais!',
+        });
+    });
   }
 }

@@ -285,6 +285,14 @@ export class HistoricosColaboradorComponent implements OnInit {
             nQuantidade: Number(apontamento.NQuantidade),
             aObservacao: apontamento.AObservacao,
             aTipo: apontamento.excluido ? 'E' : 'I',
+            nPorcentagemAtingida:
+              this.apontamentoHorasComponent?.calculaPorcentaghemHorasApontadas(
+                apontamento.NCodigoProjeto
+              ),
+            aDescricaoProjeto:
+              this.solicitante.projetos.find(
+                (f) => f.NCodigoProjeto == apontamento.NCodigoProjeto
+              )?.ADescricaoProjeto || '',
           } as ApontamentosPersistencia;
         })
         .concat(

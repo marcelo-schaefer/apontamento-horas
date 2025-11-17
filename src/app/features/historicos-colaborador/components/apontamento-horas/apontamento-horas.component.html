@@ -61,6 +61,12 @@
       [closable]="false"
       *ngIf="validarmarcacoesImpares()"
     />
+    <p-messages
+      [(value)]="mensagemErroPorcentagemAtingida"
+      [enableService]="false"
+      [closable]="false"
+      *ngIf="mensagemErroPorcentagemAtingida.length > 0"
+    />
   </div>
 
   <p-table
@@ -104,6 +110,7 @@
                 [filter]="true"
                 filterBy="ADescricaoProjeto"
                 appendTo="body"
+                (ngModelChange)="validarMensagensErroPorcentagem()"
                 [disabled]="apontamento.excluido || desabilitar"
                 [emptyMessage]="'Nenhum item disponível'"
               >
@@ -129,7 +136,14 @@
                 [(ngModel)]="apontamento.quantidadeHoras"
                 [timeOnly]="true"
                 [disabled]="apontamento.excluido || desabilitar"
-                (ngModelChange)="atulizarFormatacaoQuantidadeHoras(index)"
+                (ngModelChange)="
+                  onHoraChange(
+                    $event,
+                    apontamento,
+                    index,
+                    apontamento.NCodigoProjeto
+                  )
+                "
                 appendTo="body"
               />
             </ng-template>
