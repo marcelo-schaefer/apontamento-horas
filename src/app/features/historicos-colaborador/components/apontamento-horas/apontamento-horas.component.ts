@@ -26,6 +26,7 @@ import { Projeto } from '../../services/models/projeto.model';
 import { TooltipModule } from 'primeng/tooltip';
 import { DialogModule } from 'primeng/dialog';
 import { HorasAdicionaisPersistencia } from '../../services/models/persistencia';
+import { InputMaskModule } from 'primeng/inputmask';
 
 @Component({
   selector: 'app-apontamento-horas',
@@ -46,6 +47,7 @@ import { HorasAdicionaisPersistencia } from '../../services/models/persistencia'
     RippleModule,
     TooltipModule,
     DialogModule,
+    InputMaskModule,
   ],
   providers: [MessageService],
   templateUrl: './apontamento-horas.component.html',
@@ -67,7 +69,7 @@ export class ApontamentoHorasComponent implements OnInit {
   desabilitar: boolean = false;
   apresentarFiltroData: boolean = false;
   projetoSelecionado: string = '';
-  horasAdicionais: Date = new Date();
+  horasAdicionais = '';
   mensagemErroSomatoria: Message[] = [
     {
       severity: 'error',
@@ -217,7 +219,7 @@ export class ApontamentoHorasComponent implements OnInit {
     this.listaApontamentosAtual.forEach((apontamento) => {
       apontamento.alterado = false;
       apontamento.excluido = false;
-      apontamento.quantidadeHoras = this.converteMinutosStringParaDate(
+      apontamento.quantidadeHoras = this.converteMinutosNumberParaDate(
         Number(apontamento.NQuantidade)
       );
       apontamento.quantidadeFormatado = this.converteMinutosParaString(
@@ -226,7 +228,7 @@ export class ApontamentoHorasComponent implements OnInit {
     });
   }
 
-  converteMinutosStringParaDate(minutos: number): Date {
+  converteMinutosNumberParaDate(minutos: number): Date {
     const data = new Date();
     if (minutos) {
       data.setHours(Math.floor(minutos / 60));
@@ -259,6 +261,14 @@ export class ApontamentoHorasComponent implements OnInit {
     return data.getHours() * 60 + data.getMinutes();
   }
 
+  converteMinutosStrinParaNumber(horas: string): number {
+    if (!horas) return 0;
+
+    const [hh, mm] = horas.split(':').map(Number);
+
+    return hh * 60 + mm;
+  }
+
   converteStringParaDate(horas: string): Date {
     if (!horas) return new Date(0);
 
@@ -277,7 +287,7 @@ export class ApontamentoHorasComponent implements OnInit {
     this.listaApontamentosAtual.push({
       NCodigoProjeto: '',
       NQuantidade: '0',
-      quantidadeHoras: this.converteMinutosStringParaDate(0),
+      quantidadeHoras: this.converteMinutosNumberParaDate(0),
       AObservacao: '',
       quantidadeFormatado: this.converteMinutosParaString(0),
       incluido: true,
@@ -466,7 +476,7 @@ export class ApontamentoHorasComponent implements OnInit {
       if (this.retornaSeAtingiu100(codigoProjeto)) {
         if (this.converteMinutos(novoValor) > antigoValor) {
           apontamento.quantidadeHoras =
-            this.converteMinutosStringParaDate(antigoValor);
+            this.converteMinutosNumberParaDate(antigoValor);
           return;
         }
       }
@@ -479,7 +489,7 @@ export class ApontamentoHorasComponent implements OnInit {
 
       if (totalPlanejado < this.converteMinutos(novoValor)) {
         apontamento.quantidadeHoras =
-          this.converteMinutosStringParaDate(totalPlanejado);
+          this.converteMinutosNumberParaDate(totalPlanejado);
         return;
       }
     }
@@ -492,10 +502,11 @@ export class ApontamentoHorasComponent implements OnInit {
   abrirSolicitarHorasAdicionais(codigoProjeto: string): void {
     this.projetoSelecionado = codigoProjeto;
     this.apresentarFiltroData = true;
-    this.horasAdicionais.setHours(0, 0, 0, 0);
+    this.horasAdicionais = '';
   }
 
   solicitarHorasAdicionais(): void {
+    if (this.converteMinutosStrinParaNumber(this.horasAdicionais) < 1) return;
     this.apresentarFiltroData = false;
     this.desabilitarForm(false);
     this.enviarHorasAdicionais.emit(this.montaCorpoHorasAdicionais());
@@ -507,9 +518,7 @@ export class ApontamentoHorasComponent implements OnInit {
       nTipoColaborador: Number(this.colaborador.NTipoColaborador),
       nMatricula: Number(this.colaborador.NMatricula),
       nCodigoProjeto: Number(this.projetoSelecionado),
-      nQuantidade:
-        this.horasAdicionais.getHours() * 60 +
-        this.horasAdicionais.getMinutes(),
+      nQuantidade: this.converteMinutosStrinParaNumber(this.horasAdicionais),
     };
   }
 
@@ -537,6 +546,18 @@ export class ApontamentoHorasComponent implements OnInit {
     }
 
     return totalMinutos;
+  }
+
+  formatarHorasAdicionais(v: string) {
+    v = v.replace(/\D/g, '');
+    const h = v.slice(0, -2) || '0';
+    let m = v.slice(-2);
+    m = m.length < 2 ? m : Math.min(+m, 59).toString().padStart(2, '0');
+    this.horasAdicionais = `${h}:${m}`;
+  }
+
+  validaHabilitarSolicitacao(): boolean {
+    return this.converteMinutosStrinParaNumber(this.horasAdicionais) > 0;
   }
 
   validarMensagensErroPorcentagem(): void {

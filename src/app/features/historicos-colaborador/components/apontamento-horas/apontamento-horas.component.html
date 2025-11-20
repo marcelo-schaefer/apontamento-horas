@@ -4,8 +4,9 @@
     <h2>Informações do Apontamento</h2>
   </ng-template>
 
+  <!-- Primeira Linha -->
   <div class="grid">
-    <div class="col-3">
+    <div class="col-12 md:col-3">
       <h5 class="text-xs text-gray-500">Data do Apontamento</h5>
       <p-dropdown
         [options]="colaborador?.datasApontamento || []"
@@ -17,56 +18,61 @@
       ></p-dropdown>
     </div>
 
-    <div class="col-3">
+    <div class="col-12 md:col-3">
       <h5 class="text-xs text-gray-500">Marcações do Dia</h5>
-      <p class="mb-0 mt-1 text-base">
-        {{ data?.ABatidasPonto || "" }}
-      </p>
+      <p class="mb-0 mt-1 text-base">{{ data?.ABatidasPonto || "" }}</p>
     </div>
-    <div class="col-3">
+
+    <div class="col-12 md:col-3">
       <h5 class="text-xs text-gray-500">Horas Trabalhadas</h5>
       <p class="mb-0 mt-1 text-base">
         {{ retornaHorasTrabalhadas() || "00:00" }}
       </p>
     </div>
   </div>
+
   <br />
 
+  <!-- Botão Adicionar -->
   <div class="grid" *ngIf="data">
-    <div class="col-3">
+    <div class="col-12 md:col-3">
       <p-button
         label="Adicionar"
         (click)="adicioanrLinha()"
         [disabled]="desabilitar"
-      />
+      ></p-button>
     </div>
   </div>
 
+  <!-- Validações -->
   <div class="card">
     <p-messages
       [(value)]="mensagemErroAfastamento"
       [enableService]="false"
       [closable]="false"
       *ngIf="validarDataAfastado()"
-    />
+    ></p-messages>
+
     <p-messages
       [(value)]="mensagemErroMesmoProjeto"
       [enableService]="false"
       [closable]="false"
       *ngIf="validarProjetoRepetido()"
-    />
+    ></p-messages>
+
     <p-messages
       [(value)]="mensagemErroMarcacoesInpares"
       [enableService]="false"
       [closable]="false"
       *ngIf="validarmarcacoesImpares()"
-    />
+    ></p-messages>
+
     <p-messages
       [(value)]="mensagemErroPorcentagemAtingida"
       [enableService]="false"
       [closable]="false"
       *ngIf="mensagemErroPorcentagemAtingida.length > 0"
-    />
+    ></p-messages>
   </div>
 
   <p-table
@@ -208,9 +214,7 @@
     <div class="grid gap-3">
       <div class="col-12 md:col-3 flex align-items-center gap-2">
         <span class="font-bold text-base text-nowrap">Horas Apontadas:</span>
-        <span class="text-base">
-          {{ retornaHorasApontadas() || "00:00" }}
-        </span>
+        <span class="text-base">{{ retornaHorasApontadas() || "00:00" }}</span>
       </div>
     </div>
   </p-card>
@@ -241,12 +245,13 @@
         Horas Adicionais
       </label>
 
-      <p-calendar
-        inputId="calendar-timeonly"
-        [(ngModel)]="horasAdicionais"
-        [timeOnly]="true"
-        appendTo="body"
-        class="flex-1"
+      <input
+        type="text"
+        pInputText
+        class="form-control"
+        [ngModel]="horasAdicionais"
+        (ngModelChange)="formatarHorasAdicionais($event)"
+        placeholder="00:00"
       />
     </div>
 
