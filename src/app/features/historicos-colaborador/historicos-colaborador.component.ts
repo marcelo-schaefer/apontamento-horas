@@ -24,6 +24,7 @@ import {
 import { Apontamento } from './services/models/apontamento';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { BuscaColaboradoresComponent } from './components/busca-colaboradores/busca-colaboradores.component';
+import { TokenService } from '../../core/services/token.service';
 
 @Component({
   selector: 'app-historicos-colaborador',
@@ -53,6 +54,7 @@ export class HistoricosColaboradorComponent implements OnInit {
   private informacoesColaboradorService = inject(InformacoesColaboradorService);
 
   protected informacoesColaborador = signal<Colaborador | undefined>(undefined);
+  private tokenService = inject(TokenService);
   carregandoInformacoes = signal(false);
 
   public dataTeste = signal<Date | null>(null);
@@ -62,7 +64,18 @@ export class HistoricosColaboradorComponent implements OnInit {
   constructor(private messageService: MessageService) {}
 
   async ngOnInit(): Promise<void> {
+    await this.checkInicializacao();
     await this.inicializaComponente();
+  }
+
+  async checkInicializacao(): Promise<void> {
+    while (
+      !this.tokenService.token$.value?.accessToken ||
+      !this.tokenService.username
+    ) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      this.tokenService.carregarToken();
+    }
   }
 
   async inicializaComponente(): Promise<void> {
