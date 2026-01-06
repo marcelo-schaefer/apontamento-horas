@@ -473,13 +473,13 @@ export class ApontamentoHorasComponent implements OnInit {
     if (registroAntigo) {
       const antigoValor = Number(registroAntigo.NQuantidade);
 
-      if (this.retornaSeAtingiu100(codigoProjeto)) {
-        if (this.converteMinutos(novoValor) > antigoValor) {
-          apontamento.quantidadeHoras =
-            this.converteMinutosNumberParaDate(antigoValor);
-          return;
-        }
-      }
+      // if (this.retornaSeAtingiu100(codigoProjeto)) {
+      //   if (this.converteMinutos(novoValor) > antigoValor) {
+      //     apontamento.quantidadeHoras =
+      //       this.converteMinutosNumberParaDate(antigoValor);
+      //     return;
+      //   }
+      // }
     } else {
       const totalPlanejado = Number(
         this.colaborador.projetos.find(
@@ -487,11 +487,11 @@ export class ApontamentoHorasComponent implements OnInit {
         )?.NTotalHorasSaldo || 0
       );
 
-      if (totalPlanejado < this.converteMinutos(novoValor)) {
-        apontamento.quantidadeHoras =
-          this.converteMinutosNumberParaDate(totalPlanejado);
-        return;
-      }
+      // if (totalPlanejado < this.converteMinutos(novoValor)) {
+      //   apontamento.quantidadeHoras =
+      //     this.converteMinutosNumberParaDate(totalPlanejado);
+      //   return;
+      // }
     }
 
     apontamento.quantidadeHoras = novoValor;
@@ -584,7 +584,8 @@ export class ApontamentoHorasComponent implements OnInit {
 
       if (porcentagemAtingida > 0)
         this.mensagemErroPorcentagemAtingida.push({
-          severity: porcentagemAtingida >= 100 ? 'error' : 'warn',
+          // severity: porcentagemAtingida >= 100 ? 'error' : 'warn',
+          severity: 'warn',
           detail:
             'O projeto ' +
             apontamento.NCodigoProjeto +
