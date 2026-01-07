@@ -107,21 +107,13 @@ export class BuscaColaboradoresComponent implements OnInit {
           this.colaboradores = colaboradores.outputData.colaboradores || [];
           this.tratarColaboradores();
         }
-        if (!this.inicializando) this.dropdown.show();
         this.isLoadingColaboradores = false;
+        if (!this.inicializando) this.dropdown.show();
       });
 
     this.buildForm();
     this.opcoesIniciais();
   }
-
-  // ngAfterViewInit(): void {
-  //   this.isLoadingColaboradores.subscribe((loading) => {
-  //     if (loading) {
-  //       this.dropdown.hide();
-  //     }
-  //   });
-  // }
 
   preencherPapelAdm(papelAdm: string): void {
     this.aPapelAdm = papelAdm || 'N';
