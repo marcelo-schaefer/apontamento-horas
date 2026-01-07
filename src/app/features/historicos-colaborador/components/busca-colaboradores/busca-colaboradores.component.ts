@@ -64,7 +64,7 @@ import {
     RippleModule,
   ],
 })
-export class BuscaColaboradoresComponent implements OnInit, AfterViewInit {
+export class BuscaColaboradoresComponent implements OnInit {
   @Output()
   colaboradorSelecionadoEmit: EventEmitter<Colaborador> =
     new EventEmitter<Colaborador>();
@@ -72,8 +72,6 @@ export class BuscaColaboradoresComponent implements OnInit, AfterViewInit {
   @ViewChild('meuDropdown') dropdown!: Dropdown;
 
   private informacoesColaboradorService = inject(InformacoesColaboradorService);
-  isLoadingColaboradores$ = new BehaviorSubject<boolean>(false);
-
   constructor(private fb: FormBuilder) {}
 
   searchChange$ = new BehaviorSubject('');
@@ -81,6 +79,7 @@ export class BuscaColaboradoresComponent implements OnInit, AfterViewInit {
   inicializando = false;
   isEndColaboradores = false;
   colaboradoresDesabilitados = false;
+  isLoadingColaboradores = false;
   search = '';
   aPapelAdm = 'N';
   top = 10;
@@ -104,22 +103,25 @@ export class BuscaColaboradoresComponent implements OnInit, AfterViewInit {
         )
       )
       .subscribe((colaboradores: RetornoBuscaColaborador) => {
-        this.colaboradores = colaboradores.outputData.colaboradores || [];
-        this.tratarColaboradores();
+        if (colaboradores.outputData.colaboradores) {
+          this.colaboradores = colaboradores.outputData.colaboradores || [];
+          this.tratarColaboradores();
+        }
         if (!this.inicializando) this.dropdown.show();
-        this.isLoadingColaboradores$.next(false);
+        this.isLoadingColaboradores = false;
       });
 
     this.buildForm();
+    this.opcoesIniciais();
   }
 
-  ngAfterViewInit(): void {
-    this.isLoadingColaboradores$.subscribe((loading) => {
-      if (loading) {
-        this.dropdown.hide();
-      }
-    });
-  }
+  // ngAfterViewInit(): void {
+  //   this.isLoadingColaboradores.subscribe((loading) => {
+  //     if (loading) {
+  //       this.dropdown.hide();
+  //     }
+  //   });
+  // }
 
   preencherPapelAdm(papelAdm: string): void {
     this.aPapelAdm = papelAdm || 'N';
@@ -166,7 +168,7 @@ export class BuscaColaboradoresComponent implements OnInit, AfterViewInit {
   }
 
   searchLoadColaboradores(search: string): Observable<RetornoBuscaColaborador> {
-    this.isLoadingColaboradores$.next(true);
+    this.isLoadingColaboradores = true;
     this.cleanSelect();
     this.search = search;
     return this.loadColaboradores();
@@ -181,7 +183,7 @@ export class BuscaColaboradoresComponent implements OnInit, AfterViewInit {
 
   loadColaboradores(): Observable<RetornoBuscaColaborador> {
     if (!this.isEndColaboradores) {
-      this.isLoadingColaboradores$.next(true);
+      this.isLoadingColaboradores = true;
       const search: CorpoBusca = {
         nTop: this.top,
         nSkip: this.skip,
@@ -196,7 +198,9 @@ export class BuscaColaboradoresComponent implements OnInit, AfterViewInit {
       this.skip += this.top;
       return colaboradores;
     }
-    return of(new RetornoBuscaColaborador());
+    const emptyResult = new RetornoBuscaColaborador();
+    emptyResult.outputData = { colaboradores: [] };
+    return of(emptyResult);
   }
 
   onSearch(search: string): void {
@@ -218,7 +222,7 @@ export class BuscaColaboradoresComponent implements OnInit, AfterViewInit {
           this.colaboradores = this.colaboradores.concat(
             colaboradores.outputData.colaboradores
           );
-          this.isLoadingColaboradores$.next(false);
+          this.isLoadingColaboradores = false;
         });
     }
   }
@@ -240,7 +244,7 @@ export class BuscaColaboradoresComponent implements OnInit, AfterViewInit {
       );
       this.tratarColaboradores();
       this.inicializando = false;
-      this.isLoadingColaboradores$.next(false);
+      this.isLoadingColaboradores = false;
     });
   }
 

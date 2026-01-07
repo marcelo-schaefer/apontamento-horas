@@ -15,7 +15,7 @@ export interface Colaborador {
   projetos: Projeto[];
   limites: Limite[];
   AEhGestor: string;
-  message: string;
+  message?: string;
 }
 
 export interface RetornoColaborador {

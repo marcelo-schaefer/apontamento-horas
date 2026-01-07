@@ -65,16 +65,14 @@ export class InformacoesColaboradorService {
   public obterListaColaboradores(
     body: CorpoBusca
   ): Observable<RetornoColaborador> {
-    return this.http
-      .post<RetornoColaborador>(environment.plugin.invoke, {
-        ...this.basePayload,
-        inputData: {
-          ...this.basePayload.inputData,
-          port: 'buscaColaboradores',
-          ...body,
-        },
-      })
-      .pipe(retry(3));
+    return this.http.post<RetornoColaborador>(environment.plugin.invoke, {
+      ...this.basePayload,
+      inputData: {
+        ...this.basePayload.inputData,
+        port: 'buscaColaboradores',
+        ...body,
+      },
+    });
   }
 
   public gravarHorasAdicionais(

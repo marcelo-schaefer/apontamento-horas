@@ -174,17 +174,19 @@ export class HistoricosColaboradorComponent implements OnInit {
   }
 
   async receberColaboradorSelecionado(colaborador: Colaborador): Promise<void> {
-    this.colaboradorSelecionado = colaborador;
-    this.carregarTela(true);
-    this.desabilitarTela(true);
-    await this.obterInformacoesColaboradorSelecionado(
-      this.montaCorpoBuscaColaborador()
-    );
-    this.apontamentoHorasComponent?.preencherColaborador(
-      this.colaboradorSelecionado
-    );
-    this.carregarTela(false);
-    this.desabilitarTela(false);
+    if (colaborador?.NMatricula) {
+      this.colaboradorSelecionado = colaborador;
+      this.carregarTela(true);
+      this.desabilitarTela(true);
+      await this.obterInformacoesColaboradorSelecionado(
+        this.montaCorpoBuscaColaborador()
+      );
+      this.apontamentoHorasComponent?.preencherColaborador(
+        this.colaboradorSelecionado
+      );
+      this.carregarTela(false);
+      this.desabilitarTela(false);
+    }
   }
 
   montaCorpoBuscaColaborador(): BuscaColaborador {

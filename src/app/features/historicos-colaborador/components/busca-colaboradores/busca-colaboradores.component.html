@@ -7,7 +7,6 @@
     <div class="grid">
       <div class="col-12 md:col-4">
         <p-dropdown
-          #meuDropdown
           [options]="colaboradores || []"
           [style]="{ width: '100%' }"
           formControlName="colaboradorSelecionado"
@@ -17,11 +16,12 @@
           (ngModelChange)="onSearch($event)"
           (onChange)="selecionaColaborador($event)"
           (onScrollToBottom)="onScrollToBottom()"
-          [loading]="isLoadingColaboradores$.value || inicializando"
+          [loading]="isLoadingColaboradores || inicializando"
           [virtualScroll]="true"
           [virtualScrollItemSize]="30"
           optionLabel="ANome"
           [disabled]="desabilitar"
+          [panelStyle]="{ 'max-height': '200px' }"
         >
           <ng-template pTemplate="item" let-colaboradorItem>
             <div>
