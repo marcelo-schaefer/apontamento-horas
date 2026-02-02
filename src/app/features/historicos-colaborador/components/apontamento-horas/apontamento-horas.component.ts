@@ -102,7 +102,7 @@ export class ApontamentoHorasComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private messageService: MessageService
+    private messageService: MessageService,
   ) {}
 
   ngOnInit(): void {
@@ -135,7 +135,7 @@ export class ApontamentoHorasComponent implements OnInit {
     this.validarAlterqacaoNoApontamento();
     if (
       this.listaApontamentosAtual.filter(
-        (f) => f.incluido || f.alterado || f.excluido
+        (f) => f.incluido || f.alterado || f.excluido,
       ).length < 1
     ) {
       this.notificar('É obriatorio ter alguma alteração nos apontamentos');
@@ -144,11 +144,11 @@ export class ApontamentoHorasComponent implements OnInit {
 
     if (
       this.listaApontamentosAtual.filter(
-        (f) => !f.NCodigoProjeto || f.NQuantidade == '0'
+        (f) => !f.NCodigoProjeto || f.NQuantidade == '0',
       ).length > 0
     ) {
       this.notificar(
-        'As informações de projetos e quantidade de horas devem ser preenchidas e diferentes de zero'
+        'As informações de projetos e quantidade de horas devem ser preenchidas e diferentes de zero',
       );
       return false;
     }
@@ -159,7 +159,7 @@ export class ApontamentoHorasComponent implements OnInit {
       this.retornaHorasApontadas() !== this.retornaHorasTrabalhadas()
     ) {
       this.notificar(
-        'O total de horas apontadas deve ser igual ao total da jornada realizada no dia'
+        'O total de horas apontadas deve ser igual ao total da jornada realizada no dia',
       );
       return false;
     }
@@ -197,7 +197,7 @@ export class ApontamentoHorasComponent implements OnInit {
   labelProjeto(codigoProjeto: string): string {
     return this.colaborador?.projetos?.length > 0
       ? this.colaborador?.projetos.find(
-          (f) => f.NCodigoProjeto == codigoProjeto
+          (f) => f.NCodigoProjeto == codigoProjeto,
         )?.label || ''
       : 'Não existem projetos para serem selecionados';
   }
@@ -206,10 +206,10 @@ export class ApontamentoHorasComponent implements OnInit {
     this.formApontamento?.get('dataAcerto')?.setValue(data.value);
     this.data = data.value;
     this.listaApontamentosAtual = JSON.parse(
-      JSON.stringify(this.data?.apontamentos || [])
+      JSON.stringify(this.data?.apontamentos || []),
     );
     this.listaApontamentosAtualOriginal = JSON.parse(
-      JSON.stringify(this.data?.apontamentos || [])
+      JSON.stringify(this.data?.apontamentos || []),
     );
     this.inicializacaoListaApontamentosAtual();
     this.validarMensagensErroPorcentagem();
@@ -220,10 +220,10 @@ export class ApontamentoHorasComponent implements OnInit {
       apontamento.alterado = false;
       apontamento.excluido = false;
       apontamento.quantidadeHoras = this.converteMinutosNumberParaDate(
-        Number(apontamento.NQuantidade)
+        Number(apontamento.NQuantidade),
       );
       apontamento.quantidadeFormatado = this.converteMinutosParaString(
-        Number(apontamento.NQuantidade)
+        Number(apontamento.NQuantidade),
       );
     });
   }
@@ -305,11 +305,11 @@ export class ApontamentoHorasComponent implements OnInit {
 
   atulizarFormatacaoQuantidadeHoras(index: number): void {
     this.listaApontamentosAtual[index].NQuantidade = this.converteMinutos(
-      this.listaApontamentosAtual[index].quantidadeHoras
+      this.listaApontamentosAtual[index].quantidadeHoras,
     ).toString();
     this.listaApontamentosAtual[index].quantidadeFormatado =
       this.converteMinutosParaString(
-        Number(this.listaApontamentosAtual[index].NQuantidade)
+        Number(this.listaApontamentosAtual[index].NQuantidade),
       );
   }
 
@@ -337,7 +337,7 @@ export class ApontamentoHorasComponent implements OnInit {
     const vistos: Set<string> = new Set();
 
     for (const apontamento of this.listaApontamentosAtual.filter(
-      (f) => !f.excluido
+      (f) => !f.excluido,
     )) {
       if (
         apontamento.NCodigoProjeto &&
@@ -363,7 +363,7 @@ export class ApontamentoHorasComponent implements OnInit {
               apontamentoAntigo.NQuantidade != apontamentoNovo.NQuantidade ||
               apontamentoAntigo.AObservacao != apontamentoNovo.AObservacao;
           }
-        }
+        },
       );
   }
 
@@ -377,15 +377,15 @@ export class ApontamentoHorasComponent implements OnInit {
         .filter((f) => !f.excluido)
         .reduce((total, apontamento) => {
           return total + Number(apontamento.NQuantidade || 0);
-        }, 0)
+        }, 0),
     );
   }
 
   calculaPorcentaghemHorasApontadas(codigoProjeto: string): number {
     const totalPlanejado = Number(
       this.colaborador.projetos.find(
-        (projeto) => projeto.NCodigoProjeto === codigoProjeto
-      )?.NTotalHorasSaldo || 0
+        (projeto) => projeto.NCodigoProjeto === codigoProjeto,
+      )?.NTotalHorasSaldo || 0,
     );
 
     const totalApontado = this.calculaTotalHorasProjeto(codigoProjeto);
@@ -397,8 +397,8 @@ export class ApontamentoHorasComponent implements OnInit {
     if (!codigoProjeto) return '00:00';
     const totalPlanejado = Number(
       this.colaborador.projetos.find(
-        (projeto) => projeto.NCodigoProjeto === codigoProjeto
-      )?.NTotalHorasSaldo || 0
+        (projeto) => projeto.NCodigoProjeto === codigoProjeto,
+      )?.NTotalHorasSaldo || 0,
     );
 
     const totalApontado = this.calculaTotalHorasProjeto(codigoProjeto);
@@ -410,8 +410,8 @@ export class ApontamentoHorasComponent implements OnInit {
     let total = 0;
     total = Number(
       this.colaborador.projetos.find(
-        (projeto) => projeto.NCodigoProjeto === codigoProjeto
-      )?.NTotalApontado || 0
+        (projeto) => projeto.NCodigoProjeto === codigoProjeto,
+      )?.NTotalApontado || 0,
     );
 
     this.listaApontamentosAtual
@@ -432,7 +432,7 @@ export class ApontamentoHorasComponent implements OnInit {
   retornaTotalHorasProjeto(codigoProjeto: string): string {
     if (!codigoProjeto) return '00:00';
     return this.converteMinutosParaString(
-      this.calculaTotalHorasProjeto(codigoProjeto)
+      this.calculaTotalHorasProjeto(codigoProjeto),
     );
   }
 
@@ -465,33 +465,33 @@ export class ApontamentoHorasComponent implements OnInit {
     novoValor: Date,
     apontamento: Apontamento,
     index: number,
-    codigoProjeto: string
+    codigoProjeto: string,
   ) {
     const registroAntigo = this.listaApontamentosAtualOriginal.find(
-      (f) => f.NCodigoProjeto == codigoProjeto
+      (f) => f.NCodigoProjeto == codigoProjeto,
     );
     if (registroAntigo) {
       const antigoValor = Number(registroAntigo.NQuantidade);
 
-      // if (this.retornaSeAtingiu100(codigoProjeto)) {
-      //   if (this.converteMinutos(novoValor) > antigoValor) {
-      //     apontamento.quantidadeHoras =
-      //       this.converteMinutosNumberParaDate(antigoValor);
-      //     return;
-      //   }
-      // }
+      if (this.retornaSeAtingiu100(codigoProjeto)) {
+        if (this.converteMinutos(novoValor) > antigoValor) {
+          apontamento.quantidadeHoras =
+            this.converteMinutosNumberParaDate(antigoValor);
+          return;
+        }
+      }
     } else {
       const totalPlanejado = Number(
         this.colaborador.projetos.find(
-          (projeto) => projeto.NCodigoProjeto === codigoProjeto
-        )?.NTotalHorasSaldo || 0
+          (projeto) => projeto.NCodigoProjeto === codigoProjeto,
+        )?.NTotalHorasSaldo || 0,
       );
 
-      // if (totalPlanejado < this.converteMinutos(novoValor)) {
-      //   apontamento.quantidadeHoras =
-      //     this.converteMinutosNumberParaDate(totalPlanejado);
-      //   return;
-      // }
+      if (totalPlanejado < this.converteMinutos(novoValor)) {
+        apontamento.quantidadeHoras =
+          this.converteMinutosNumberParaDate(totalPlanejado);
+        return;
+      }
     }
 
     apontamento.quantidadeHoras = novoValor;
@@ -525,7 +525,7 @@ export class ApontamentoHorasComponent implements OnInit {
   retornaHorasTrabalhadas(): string {
     return this.data?.NQuantidadeBatidas
       ? this.converteMinutosParaString(
-          this.calcularMinutosMarcacoes(this.data?.ABatidasPonto || '')
+          this.calcularMinutosMarcacoes(this.data?.ABatidasPonto || ''),
         )
       : '00:00';
   }
@@ -566,10 +566,10 @@ export class ApontamentoHorasComponent implements OnInit {
     this.listaApontamentosAtual.forEach((apontamento) => {
       let porcentagemAtingida = 0;
       const nomePorjeto = this.colaborador.projetos.find(
-        (f) => f.NCodigoProjeto == apontamento.NCodigoProjeto
+        (f) => f.NCodigoProjeto == apontamento.NCodigoProjeto,
       )?.ADescricaoProjeto;
       const porcentagemAtual = this.calculaPorcentaghemHorasApontadas(
-        apontamento.NCodigoProjeto
+        apontamento.NCodigoProjeto,
       );
 
       if (porcentagemAtual >= 100) {
@@ -584,8 +584,7 @@ export class ApontamentoHorasComponent implements OnInit {
 
       if (porcentagemAtingida > 0)
         this.mensagemErroPorcentagemAtingida.push({
-          // severity: porcentagemAtingida >= 100 ? 'error' : 'warn',
-          severity: 'warn',
+          severity: porcentagemAtingida >= 100 ? 'error' : 'warn',
           detail:
             'O projeto ' +
             apontamento.NCodigoProjeto +
