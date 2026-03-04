@@ -5,4 +5,5 @@ export interface Projeto {
   label: string;
   NTotalApontado: string;
   NTotalHorasSaldo: string;
+  NHorasPlanejadas: string;
 }

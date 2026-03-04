@@ -501,8 +501,17 @@ export class ApontamentoHorasComponent implements OnInit {
 
   abrirSolicitarHorasAdicionais(codigoProjeto: string): void {
     this.projetoSelecionado = codigoProjeto;
-    this.apresentarFiltroData = true;
-    this.horasAdicionais = '';
+    const horasPlanejadas = this.colaborador.projetos.find(
+      (f) => f.NCodigoProjeto == this.projetoSelecionado,
+    )?.NHorasPlanejadas;
+    if (horasPlanejadas && horasPlanejadas != '0') {
+      this.apresentarFiltroData = true;
+      this.horasAdicionais = '';
+    } else {
+      this.notificar(
+        'Você não está planejado neste projeto, entre em contato com o Lider!',
+      );
+    }
   }
 
   solicitarHorasAdicionais(): void {
