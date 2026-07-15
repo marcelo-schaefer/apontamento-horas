@@ -164,6 +164,19 @@ export class ApontamentoHorasComponent implements OnInit {
       return false;
     }
 
+     if (
+      this.listaApontamentosAtual.filter(
+        (f) =>
+          (f.incluido || f.alterado) &&
+          this.retornaSeAtingiu100(f.NCodigoProjeto),
+      ).length > 0
+    ) {
+      this.notificar(
+        'Atenção! Você atingiu 100% de horas apontadas para este projeto.',
+      );
+      return false;
+    }
+
     return (
       !this.validarDataAfastado() &&
       !this.validarProjetoRepetido() &&
